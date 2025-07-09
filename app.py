@@ -4,25 +4,32 @@ import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-from wordcloud import WordCloud
-import matplotlib.pyplot as plt
 from textblob import TextBlob
 import re
 from collections import Counter
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.decomposition import LatentDirichletAllocation
-import nltk
-from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
 import warnings
 warnings.filterwarnings('ignore')
 
-# Download required NLTK data
+# Try to import optional dependencies with fallbacks
 try:
+    from wordcloud import WordCloud
+    import matplotlib.pyplot as plt
+    WORDCLOUD_AVAILABLE = True
+except ImportError:
+    WORDCLOUD_AVAILABLE = False
+    st.warning("📦 WordCloud not available - using alternative visualizations")
+
+try:
+    import nltk
+    from nltk.corpus import stopwords
+    from nltk.tokenize import word_tokenize
     nltk.download('punkt', quiet=True)
     nltk.download('stopwords', quiet=True)
+    NLTK_AVAILABLE = True
 except:
-    pass
+    NLTK_AVAILABLE = False
 
 st.set_page_config(page_title="Amazon Reviews Analytics Dashboard", page_icon="📊", layout="wide")
 
@@ -131,20 +138,7 @@ def advanced_fraud_detection(df):
             flags.append('Exact Duplicate')
             score += 3
         
-        # 2. Near-duplicate detection using similarity
-        similar_reviews = df[df['reviewText'].str.len() > 10]
-        if len(row['reviewText']) > 10:
-            for _, similar_row in similar_reviews.sample(min(50, len(similar_reviews))).iterrows():
-                if similar_row['reviewId'] != row['reviewId']:
-                    similarity = len(set(row['reviewText'].lower().split()) & 
-                                   set(similar_row['reviewText'].lower().split())) / \
-                                max(len(set(row['reviewText'].lower().split())), 1)
-                    if similarity > 0.8:
-                        flags.append('Near Duplicate')
-                        score += 2
-                        break
-        
-        # 3. Temporal anomaly detection
+        # 2. Temporal anomaly detection
         same_user_reviews = df[df['reviewerName'] == row['reviewerName']]
         if len(same_user_reviews) > 1:
             review_dates = same_user_reviews['reviewDate'].dropna()
@@ -154,7 +148,7 @@ def advanced_fraud_detection(df):
                     flags.append('Rapid Sequential Reviews')
                     score += 2
         
-        # 4. Content quality analysis
+        # 3. Content quality analysis
         words = row['reviewText'].lower().split()
         if len(words) < 3:
             flags.append('Too Short')
@@ -165,7 +159,7 @@ def advanced_fraud_detection(df):
                 flags.append('Low Lexical Diversity')
                 score += 1
         
-        # 5. Stylistic anomalies
+        # 4. Stylistic anomalies
         if row['reviewText'].isupper() and len(row['reviewText']) > 20:
             flags.append('Excessive Caps')
             score += 1
@@ -174,7 +168,7 @@ def advanced_fraud_detection(df):
             flags.append('Excessive Exclamation')
             score += 1
         
-        # 6. Generic content detection
+        # 5. Generic content detection
         generic_patterns = [
             r'\b(best|great|excellent|amazing|perfect|awesome)\s+(product|item|purchase|buy)\b',
             r'\b(highly\s+recommend|five\s+stars?|10/10|thumbs\s+up)\b',
@@ -187,7 +181,7 @@ def advanced_fraud_detection(df):
             flags.append('Generic Template')
             score += 2
         
-        # 7. Rating-content mismatch
+        # 6. Rating-content mismatch
         sentiment_score = TextBlob(row['reviewText']).sentiment.polarity
         if row['rating'] >= 4 and sentiment_score < -0.3:
             flags.append('Rating-Sentiment Mismatch')
@@ -221,10 +215,13 @@ def advanced_topic_modeling(texts, n_topics=8):
             return [], ['No Topic'] * len(texts)
         
         # Enhanced stopwords
-        try:
-            stop_words = set(stopwords.words('english'))
-        except:
-            stop_words = set()
+        if NLTK_AVAILABLE:
+            try:
+                stop_words = set(stopwords.words('english'))
+            except:
+                stop_words = set()
+        else:
+            stop_words = {'the', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by'}
         
         # Domain-specific stopwords for Amazon reviews
         additional_stops = {
@@ -325,6 +322,51 @@ def create_topic_label(key_words):
         return "Overall Satisfaction"
     else:
         return "General Features"
+
+def get_word_frequencies(text_series):
+    """Get word frequencies with robust text processing"""
+    text = ' '.join(text_series.dropna()).lower()
+    
+    # Use NLTK if available, otherwise basic processing
+    if NLTK_AVAILABLE:
+        try:
+            words = word_tokenize(text)
+            stop_words = set(stopwords.words('english'))
+        except:
+            words = re.findall(r'\b[a-zA-Z]{3,}\b', text)
+            stop_words = set()
+    else:
+        words = re.findall(r'\b[a-zA-Z]{3,}\b', text)
+        stop_words = set()
+    
+    # Enhanced stop words
+    additional_stops = {
+        'the', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by',
+        'is', 'are', 'was', 'were', 'been', 'be', 'have', 'has', 'had', 'do', 'does',
+        'did', 'will', 'would', 'could', 'should', 'may', 'might', 'must', 'can',
+        'shall', 'this', 'that', 'these', 'those', 'card', 'memory', 'product',
+        'item', 'amazon', 'one', 'get', 'use', 'work'
+    }
+    stop_words.update(additional_stops)
+    
+    filtered_words = [word for word in words if word not in stop_words and len(word) > 2]
+    return Counter(filtered_words).most_common(20)
+
+def create_word_frequency_chart(word_freq):
+    """Create enhanced word frequency visualization"""
+    if word_freq:
+        df_words = pd.DataFrame(word_freq, columns=['Word', 'Frequency'])
+        fig = px.bar(
+            df_words, x='Frequency', y='Word',
+            title="🔤 Top Keywords Analysis",
+            orientation='h',
+            color='Frequency',
+            color_continuous_scale='viridis',
+            height=600
+        )
+        fig.update_layout(yaxis={'categoryorder':'total ascending'})
+        return fig
+    return None
 
 def process_data_with_advanced_ml(df):
     """Process data with advanced ML algorithms"""
@@ -454,7 +496,7 @@ def main():
         
         **🚀 Advanced Features Include:**
         - Multi-level sentiment analysis with confidence scoring
-        - 7-algorithm fraud detection system
+        - 6-algorithm fraud detection system
         - Enhanced topic modeling with 8 categories
         - Temporal trend analysis
         - Content quality assessment
@@ -510,7 +552,7 @@ def main():
     # Enhanced Dashboard Tabs
     tab1, tab2, tab3, tab4, tab5 = st.tabs([
         "📊 Executive Overview", "🔍 Advanced Verbatim Analysis", "😊 Deep Sentiment Analysis", 
-        "🚨 Fraud Intelligence", "📈 Advanced Analytics & Forecasting"
+        "🚨 Fraud Intelligence", "📈 Advanced Analytics"
     ])
     
     # TAB 1: Executive Overview
@@ -576,17 +618,6 @@ def main():
                 title="📈 Review Volume Trends Over Time",
                 color_discrete_sequence=['#667eea']
             )
-            fig_trends.add_scatter(
-                x=time_trends['date'], 
-                y=time_trends['rating'] * 100,  # Scale for visibility
-                mode='lines',
-                name='Rating Trend (×100)',
-                yaxis='y2'
-            )
-            fig_trends.update_layout(
-                yaxis2=dict(overlaying='y', side='right'),
-                height=400
-            )
             st.plotly_chart(fig_trends, use_container_width=True)
             
             # Enhanced rating vs sentiment heatmap  
@@ -608,78 +639,52 @@ def main():
         col1, col2 = st.columns(2)
         
         with col1:
-            st.subheader("☁️ Enhanced Word Cloud")
-            if len(filtered_df) > 0:
-                text = ' '.join(filtered_df['reviewText'].dropna())
-                try:
-                    stop_words = set(stopwords.words('english'))
-                except:
-                    stop_words = set()
-                
-                additional_stops = {'card', 'memory', 'product', 'amazon', 'item', 'one', 'get', 'use', 'work'}
-                stop_words.update(additional_stops)
-                
-                try:
-                    words = word_tokenize(text.lower())
-                    words = [word for word in words if word.isalpha() and word not in stop_words and len(word) > 2]
-                    cleaned_text = ' '.join(words)
-                except:
-                    words = text.lower().split()
-                    words = [word for word in words if word.isalpha() and word not in stop_words and len(word) > 2]
-                    cleaned_text = ' '.join(words)
-                
-                if cleaned_text:
-                    wordcloud = WordCloud(
-                        width=800, height=400, 
-                        background_color='white',
-                        colormap='viridis',
-                        max_words=100
-                    ).generate(cleaned_text)
-                    
-                    fig, ax = plt.subplots(figsize=(10, 6))
-                    ax.imshow(wordcloud, interpolation='bilinear')
-                    ax.axis('off')
-                    st.pyplot(fig)
-                else:
-                    st.info("Not enough text data for word cloud")
+            # Word frequency analysis (WordCloud alternative)
+            st.subheader("🔤 Enhanced Keyword Analysis")
+            word_freq = get_word_frequencies(filtered_df['reviewText'])
+            fig_words = create_word_frequency_chart(word_freq)
+            if fig_words:
+                st.plotly_chart(fig_words, use_container_width=True)
             
-            # Enhanced keyword analysis
-            st.subheader("🔤 Top Keywords Analysis")
-            if len(filtered_df) > 0:
+            # WordCloud if available, otherwise enhanced text analysis
+            if WORDCLOUD_AVAILABLE:
+                st.subheader("☁️ Word Cloud")
                 text = ' '.join(filtered_df['reviewText'].dropna())
-                try:
-                    words = word_tokenize(text.lower())
-                except:
+                if NLTK_AVAILABLE:
+                    try:
+                        stop_words = set(stopwords.words('english'))
+                        words = word_tokenize(text.lower())
+                    except:
+                        words = text.lower().split()
+                        stop_words = set()
+                else:
                     words = text.lower().split()
-                
-                try:
-                    stop_words = set(stopwords.words('english'))
-                except:
                     stop_words = set()
                 
-                additional_stops = {'card', 'memory', 'product', 'amazon', 'item', 'one', 'get', 'use', 'work'}
+                additional_stops = {'card', 'memory', 'product', 'amazon', 'item'}
                 stop_words.update(additional_stops)
                 
                 words = [word for word in words if word.isalpha() and word not in stop_words and len(word) > 2]
-                word_freq = Counter(words).most_common(20)
+                cleaned_text = ' '.join(words)
                 
-                if word_freq:
-                    words_df = pd.DataFrame(word_freq, columns=['Word', 'Frequency'])
-                    fig_words = px.bar(
-                        words_df, x='Frequency', y='Word',
-                        title="Top 20 Keywords",
-                        orientation='h',
-                        color='Frequency',
-                        color_continuous_scale='viridis'
-                    )
-                    fig_words.update_layout(yaxis={'categoryorder':'total ascending'}, height=600)
-                    st.plotly_chart(fig_words, use_container_width=True)
+                if cleaned_text:
+                    try:
+                        wordcloud = WordCloud(width=800, height=400, background_color='white', colormap='viridis').generate(cleaned_text)
+                        fig, ax = plt.subplots(figsize=(10, 6))
+                        ax.imshow(wordcloud, interpolation='bilinear')
+                        ax.axis('off')
+                        st.pyplot(fig)
+                    except Exception as e:
+                        st.info("Word cloud generation failed, showing keyword analysis above")
+            else:
+                st.info("💡 Word cloud not available - enhanced keyword analysis shown above provides similar insights")
         
         with col2:
             st.subheader("🏷️ Advanced Topic Analysis")
             if topics:
+                st.write("**Discovered Topics:**")
                 for i, topic in enumerate(topics, 1):
-                    st.write(f"**{topic}**")
+                    st.write(f"**{i}. {topic}**")
             else:
                 st.info("Topic modeling results not available")
             
@@ -897,7 +902,7 @@ def main():
     
     # TAB 5: Advanced Analytics
     with tab5:
-        st.markdown("## 📈 Advanced Analytics & Forecasting")
+        st.markdown("## 📈 Advanced Analytics & Statistical Insights")
         
         col1, col2 = st.columns(2)
         
