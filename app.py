@@ -34,462 +34,140 @@ try:
 except:
     NLTK_AVAILABLE = False
 
-# Ultra-modern CSS for C-level presentation
+# Enhanced CSS from Cola dashboard for sexy look
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-    
-    * {
-        font-family: 'Inter', sans-serif;
-    }
-    
     .main-header {
-        font-size: 3.5rem;
-        font-weight: 800;
-        color: transparent;
+        font-size: 2.5rem;
+        color: #FF5733;
         text-align: center;
-        margin-bottom: 2rem;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
-        background-size: 300% 300%;
+        margin-bottom: 1rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        background: linear-gradient(45deg, #667eea, #764ba2);
         -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
         background-clip: text;
-        animation: gradient 3s ease infinite;
-        text-shadow: 0 4px 20px rgba(0,0,0,0.3);
-        letter-spacing: -2px;
-    }
-    
-    @keyframes gradient {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
     }
     
     @media (max-width: 768px) {
         .main-header {
-            font-size: 2.5rem;
-            letter-spacing: -1px;
+            font-size: 1.8rem;
         }
     }
     
     .subheader {
-        font-size: 2rem;
-        font-weight: 700;
-        color: #2c3e50;
-        margin-bottom: 1rem;
-        border-bottom: 3px solid transparent;
-        background: linear-gradient(90deg, #667eea, #764ba2);
-        background-clip: border-box;
-        border-image: linear-gradient(90deg, #667eea, #764ba2) 1;
-        padding-bottom: 0.8rem;
+        font-size: 1.5rem;
+        color: #3366FF;
+        margin-bottom: 0.5rem;
+        border-bottom: 2px solid #3366FF;
+        padding-bottom: 0.5rem;
     }
     
-    .executive-summary {
-        background: linear-gradient(135deg, rgba(102, 126, 234, 0.95) 0%, rgba(118, 75, 162, 0.95) 100%);
-        backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 25px;
-        padding: 3rem;
-        margin: 2rem 0;
-        color: white;
-        box-shadow: 
-            0 25px 50px -12px rgba(0, 0, 0, 0.25),
-            0 0 0 1px rgba(255, 255, 255, 0.1),
-            inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        position: relative;
-        overflow: hidden;
+    @media (max-width: 768px) {
+        .subheader {
+            font-size: 1.2rem;
+        }
     }
     
-    .executive-summary::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-                    radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
-                    radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
-        pointer-events: none;
-    }
-    
-    .executive-content {
-        position: relative;
-        z-index: 1;
-    }
-    
-    .metric-card {
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.1) 100%);
-        backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 20px;
-        padding: 2rem;
+    .insight-box {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-left: 5px solid #0066cc;
+        padding: 1.2rem;
         margin: 1rem 0;
-        text-align: center;
-        color: white;
-        box-shadow: 
-            0 20px 40px -10px rgba(0, 0, 0, 0.3),
-            0 0 0 1px rgba(255, 255, 255, 0.1),
-            inset 0 1px 0 rgba(255, 255, 255, 0.2);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        position: relative;
-        overflow: hidden;
+        border-radius: 0.8rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
     
-    .metric-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-        transition: left 0.5s;
+    .insight-box:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
     }
     
-    .metric-card:hover::before {
-        left: 100%;
-    }
-    
-    .metric-card:hover {
-        transform: translateY(-10px) scale(1.02);
-        box-shadow: 
-            0 30px 60px -15px rgba(0, 0, 0, 0.4),
-            0 0 0 1px rgba(255, 255, 255, 0.2),
-            inset 0 1px 0 rgba(255, 255, 255, 0.3);
-    }
-    
-    .metric-card h3 {
-        font-size: 1rem;
-        font-weight: 600;
-        margin-bottom: 1rem;
-        opacity: 0.9;
+    .insight-title {
+        font-weight: bold;
+        color: #0066cc;
+        font-size: 1.2rem;
+        margin-bottom: 0.8rem;
         text-transform: uppercase;
         letter-spacing: 1px;
     }
     
-    .metric-card h2 {
-        font-size: 2.5rem;
-        font-weight: 800;
-        margin: 0;
-        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-    }
-    
-    .metric-card p {
-        font-size: 0.9rem;
-        margin: 0.5rem 0 0 0;
-        opacity: 0.8;
-        font-weight: 500;
-    }
-    
-    .chart-container {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        border-radius: 25px;
-        padding: 2rem;
-        margin: 2rem 0;
-        box-shadow: 
-            0 25px 50px -12px rgba(0, 0, 0, 0.15),
-            0 0 0 1px rgba(255, 255, 255, 0.1),
-            inset 0 1px 0 rgba(255, 255, 255, 0.2);
-        position: relative;
-        overflow: hidden;
-        transition: all 0.3s ease;
-    }
-    
-    .chart-container::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: radial-gradient(circle at 10% 20%, rgba(102, 126, 234, 0.05) 0%, transparent 50%),
-                    radial-gradient(circle at 90% 80%, rgba(118, 75, 162, 0.05) 0%, transparent 50%);
-        pointer-events: none;
-    }
-    
-    .chart-container:hover {
-        transform: translateY(-5px);
-        box-shadow: 
-            0 35px 70px -15px rgba(0, 0, 0, 0.2),
-            0 0 0 1px rgba(255, 255, 255, 0.2),
-            inset 0 1px 0 rgba(255, 255, 255, 0.3);
-    }
-    
-    .insight-box {
-        background: linear-gradient(135deg, rgba(40, 167, 69, 0.1) 0%, rgba(40, 167, 69, 0.05) 100%);
-        border-left: 5px solid #28a745;
-        border-radius: 15px;
+    .filter-box {
+        background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
         padding: 1.5rem;
-        margin: 1.5rem 0;
-        backdrop-filter: blur(10px);
-        box-shadow: 0 10px 30px rgba(40, 167, 69, 0.1);
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .insight-box::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 3px;
-        height: 100%;
-        background: linear-gradient(to bottom, #28a745, #20c997);
-        border-radius: 0 3px 3px 0;
-    }
-    
-    .insight-title {
-        font-weight: 700;
-        color: #28a745;
-        font-size: 1.1rem;
-        margin-bottom: 0.8rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-    
-    .filter-sidebar {
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 249, 250, 0.95) 100%);
-        backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        border-radius: 25px;
-        padding: 2rem;
+        border-radius: 1rem;
         margin: 1rem 0;
-        box-shadow: 
-            0 20px 40px -10px rgba(0, 0, 0, 0.1),
-            0 0 0 1px rgba(255, 255, 255, 0.2),
-            inset 0 1px 0 rgba(255, 255, 255, 0.3);
-        position: sticky;
-        top: 2rem;
-        height: fit-content;
-    }
-    
-    .filter-header {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: #2c3e50;
-        margin-bottom: 1.5rem;
-        text-align: center;
-        border-bottom: 2px solid #e9ecef;
-        padding-bottom: 1rem;
-    }
-    
-    .filter-section {
-        margin-bottom: 1.5rem;
-        padding: 1rem;
-        background: rgba(255, 255, 255, 0.5);
-        border-radius: 15px;
-        border: 1px solid rgba(0, 0, 0, 0.05);
-    }
-    
-    .filter-label {
-        font-weight: 600;
-        color: #495057;
-        font-size: 0.9rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-bottom: 0.5rem;
-        display: block;
-    }
-    
-    .active-filters {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 1.5rem;
-        border-radius: 20px;
-        margin: 1.5rem 0;
-        box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-    
-    .recommendation-box {
-        background: linear-gradient(135deg, rgba(132, 250, 176, 0.2) 0%, rgba(143, 211, 244, 0.2) 100%);
-        backdrop-filter: blur(15px);
-        border: 1px solid rgba(132, 250, 176, 0.3);
-        border-radius: 20px;
-        padding: 2rem;
-        margin: 1.5rem 0;
-        color: #2c3e50;
-        box-shadow: 0 15px 35px rgba(132, 250, 176, 0.15);
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .recommendation-box::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: radial-gradient(circle at 20% 20%, rgba(132, 250, 176, 0.1) 0%, transparent 50%);
-        pointer-events: none;
-    }
-    
-    .verbatim-section {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(15px);
-        border: 1px solid rgba(0, 0, 0, 0.1);
-        border-radius: 15px;
-        padding: 1.5rem;
-        margin: 1rem 0;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-        transition: all 0.3s ease;
-    }
-    
-    .verbatim-section:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
-    }
-    
-    .positive-verbatim {
-        border-left: 4px solid #28a745;
-        background: linear-gradient(135deg, rgba(40, 167, 69, 0.05) 0%, rgba(40, 167, 69, 0.02) 100%);
-    }
-    
-    .negative-verbatim {
-        border-left: 4px solid #dc3545;
-        background: linear-gradient(135deg, rgba(220, 53, 69, 0.05) 0%, rgba(220, 53, 69, 0.02) 100%);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        border: 1px solid #ddd;
     }
     
     .explained-box {
-        background: linear-gradient(135deg, rgba(249, 249, 249, 0.95) 0%, rgba(232, 245, 232, 0.95) 100%);
-        backdrop-filter: blur(15px);
-        border: 1px solid rgba(76, 175, 80, 0.2);
+        background: linear-gradient(135deg, #f9f9f9 0%, #e8f5e8 100%);
         border-left: 5px solid #4CAF50;
-        border-radius: 20px;
-        padding: 2rem;
-        margin: 2rem 0;
-        box-shadow: 0 15px 35px rgba(76, 175, 80, 0.1);
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .explained-box::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: radial-gradient(circle at 10% 10%, rgba(76, 175, 80, 0.05) 0%, transparent 50%);
-        pointer-events: none;
+        padding: 1.5rem;
+        margin: 1rem 0;
+        border-radius: 0.8rem;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
     
     .explained-title {
-        font-weight: 700;
+        font-weight: bold;
         color: #4CAF50;
-        font-size: 1.8rem;
-        margin-bottom: 1.5rem;
+        font-size: 1.6rem;
+        margin-bottom: 1rem;
         text-align: center;
-        position: relative;
-        z-index: 1;
     }
     
-    /* Enhanced tabs */
-    .stTabs [data-baseweb="tab-list"] {
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 249, 250, 0.95) 100%);
-        backdrop-filter: blur(20px);
-        border-radius: 15px;
-        padding: 0.5rem;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-    }
-    
-    .stTabs [data-baseweb="tab"] {
-        background: transparent;
-        border-radius: 10px;
-        color: #6c757d;
-        font-weight: 600;
-        padding: 1rem 1.5rem;
-        transition: all 0.3s ease;
-    }
-    
-    .stTabs [aria-selected="true"] {
+    .metric-card {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
-        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-    }
-    
-    /* Enhanced buttons */
-    .stButton > button {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-        border-radius: 10px;
-        color: white;
-        font-weight: 600;
-        padding: 0.8rem 2rem;
-        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
-        transition: all 0.3s ease;
-    }
-    
-    .stButton > button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-    }
-    
-    /* Enhanced selectbox and multiselect */
-    .stSelectbox > div > div {
-        background: rgba(255, 255, 255, 0.9);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(0, 0, 0, 0.1);
-        border-radius: 10px;
-    }
-    
-    .stMultiSelect > div > div {
-        background: rgba(255, 255, 255, 0.9);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(0, 0, 0, 0.1);
-        border-radius: 10px;
-    }
-    
-    /* 3D effect for plotly charts */
-    .js-plotly-plot {
-        border-radius: 15px;
-        overflow: hidden;
-        box-shadow: 
-            0 20px 40px rgba(0, 0, 0, 0.1),
-            0 0 0 1px rgba(255, 255, 255, 0.1);
-    }
-    
-    /* Footer styling */
-    .footer {
+        padding: 1.5rem;
+        border-radius: 1rem;
         text-align: center;
-        padding: 2rem;
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(248, 249, 250, 0.1) 100%);
-        backdrop-filter: blur(10px);
-        border-top: 1px solid rgba(0, 0, 0, 0.1);
-        color: #6c757d;
-        font-weight: 500;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        margin: 0.5rem 0;
+        transition: transform 0.3s ease;
     }
     
-    /* Mobile responsiveness */
+    .metric-card:hover {
+        transform: scale(1.05);
+    }
+    
+    .chart-container {
+        background: white;
+        border-radius: 1rem;
+        padding: 1rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        margin: 1rem 0;
+        border: 1px solid #e0e0e0;
+    }
+    
+    /* Mobile optimization */
     @media (max-width: 768px) {
-        .executive-summary, .chart-container, .filter-sidebar {
-            padding: 1.5rem;
-            border-radius: 15px;
-        }
-        
-        .metric-card {
-            padding: 1.5rem;
+        .insight-box, .filter-box, .explained-box {
+            padding: 1rem;
             margin: 0.5rem 0;
         }
         
-        .metric-card h2 {
-            font-size: 2rem;
+        .metric-card {
+            padding: 1rem;
+            margin: 0.3rem 0;
+        }
+    }
+    
+    /* Responsive text sizing */
+    @media (max-width: 480px) {
+        .insight-title {
+            font-size: 1rem;
+        }
+        
+        .explained-title {
+            font-size: 1.3rem;
         }
     }
     
     /* Animation for page load */
-    .main-content {
-        animation: fadeInUp 0.8s ease-out;
-    }
-    
     @keyframes fadeInUp {
         from {
             opacity: 0;
@@ -501,24 +179,57 @@ st.markdown("""
         }
     }
     
-    /* Wordcloud container */
-    .wordcloud-container {
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 249, 250, 0.95) 100%);
-        backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        border-radius: 25px;
-        padding: 2rem;
+    .main-content {
+        animation: fadeInUp 0.8s ease-out;
+    }
+    
+    /* Glassmorphism effect for modern look */
+    .glass-effect {
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(10px);
+        border-radius: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    }
+    
+    .executive-summary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2.5rem;
+        border-radius: 20px;
         margin: 2rem 0;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
-        text-align: center;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+    
+    .recommendation-box {
+        background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+        padding: 1.5rem;
+        border-radius: 15px;
+        margin: 1rem 0;
+        color: #2c3e50;
+        font-weight: 500;
+    }
+    .verbatim-section {
+        background: rgba(255,255,255,0.9);
+        padding: 1.5rem;
+        border-radius: 10px;
+        border: 1px solid #e0e0e0;
+        margin: 1rem 0;
+    }
+    .positive-verbatim {
+        border-left: 4px solid #28a745;
+        background: rgba(40, 167, 69, 0.05);
+    }
+    .negative-verbatim {
+        border-left: 4px solid #dc3545;
+        background: rgba(220, 53, 69, 0.05);
     }
 </style>
 """, unsafe_allow_html=True)
 
 if 'processed_data' not in st.session_state:
     st.session_state.processed_data = None
-if 'apply_filters' not in st.session_state:
-    st.session_state.apply_filters = False
 
 @st.cache_data
 def load_and_process_data(uploaded_file):
@@ -822,132 +533,42 @@ def create_executive_summary(df):
         top_topics = df['topic'].value_counts().head(3)
     
     summary = f"""
-    <div class="executive-content">
-    
-    ## 🎯 **Executive Summary for Business Leaders**
-    *Transform customer feedback into strategic business decisions*
+    # 🎯 Executive Summary for Business Leaders
+    *Simple insights to help you make smart decisions*
 
-    ### 📊 **Customer Satisfaction Overview**
-    - **Total Customer Reviews:** {total_reviews:,} authentic customer voices analyzed
-    - **Customer Happiness Score:** {avg_rating:.2f}/5.0 ⭐ ({get_satisfaction_grade(avg_rating)})
-    - **Market Trend:** {rating_trend} compared to historical performance
-    - **Customer Engagement Level:** {"High" if engagement_rate > 30 else "Moderate" if engagement_rate > 15 else "Low"} ({engagement_rate:.1f}% write detailed feedback)
+    ## 📊 **How Customers Feel About Our Product**
+    - **Total Reviews:** {total_reviews:,} customers shared their thoughts.
+    - **Average Star Rating:** {avg_rating:.2f}/5.0 ⭐ ({get_satisfaction_grade(avg_rating)}).
+    - **Recent Trend:** {rating_trend} compared to past reviews.
+    - **Detailed Feedback:** {"Many" if engagement_rate > 30 else "Some" if engagement_rate > 15 else "Few"} customers ({engagement_rate:.1f}%) wrote detailed reviews.
     
-    ### 🎭 **Customer Sentiment Breakdown**
-    - **Brand Advocates:** {sentiment_dist.get('Extremely Positive', 0) + sentiment_dist.get('Very Positive', 0) + sentiment_dist.get('Positive', 0):.1f}% actively promote our product
-    - **Neutral Experience:** {sentiment_dist.get('Neutral', 0):.1f}% have average expectations met
-    - **Customer Concerns:** {sentiment_dist.get('Negative', 0) + sentiment_dist.get('Very Negative', 0) + sentiment_dist.get('Extremely Negative', 0):.1f}% require immediate attention
+    ## 🎭 **What Customers Are Saying**
+    - **Happy Customers:** {sentiment_dist.get('Extremely Positive', 0) + sentiment_dist.get('Very Positive', 0) + sentiment_dist.get('Positive', 0):.1f}% love our product.
+    - **Neutral Customers:** {sentiment_dist.get('Neutral', 0):.1f}% are okay with it.
+    - **Unhappy Customers:** {sentiment_dist.get('Negative', 0) + sentiment_dist.get('Very Negative', 0) + sentiment_dist.get('Extremely Negative', 0):.1f}% are not satisfied.
     
-    ### 🔍 **Review Authenticity & Trust**
-    - **High-Risk Reviews:** {high_risk_rate:.1f}% flagged for suspicious patterns 🚨
-    - **Medium-Risk Reviews:** {medium_risk_rate:.1f}% require verification ⚠️
-    - **Verified Authentic Reviews:** {100 - total_risk_rate:.1f}% confirmed genuine feedback ✅
-    - **Overall Trust Score:** {get_trust_score(total_risk_rate)}/10 (Market benchmark: 7.5+)
-    </div>
+    ## 🔍 **Can We Trust These Reviews?**
+    - **Very Suspicious Reviews:** {high_risk_rate:.1f}% might be fake 🚨.
+    - **Somewhat Suspicious Reviews:** {medium_risk_rate:.1f}% need checking ⚠️.
+    - **Trustworthy Reviews:** {100 - total_risk_rate:.1f}% seem genuine ✅.
+    - **Trust Level:** {get_trust_score(total_risk_rate)}/10 (higher is better).
+    
+    ## 🏆 **Top Customer Topics**
+    {chr(10).join([f"**{i+1}. {topic}:** {count:,} reviews ({count/total_reviews*100:.1f}%)" for i, (topic, count) in enumerate(top_topics.items())])}
+    
+    ## 💡 **What We Should Do Next**
+    
+    ### 🎯 **Top Priorities**
+    - **Customer Happiness:** {get_satisfaction_recommendation(avg_rating)}
+    - **Review Trust:** {get_trust_recommendation(total_risk_rate)}
+    - **Customer Engagement:** {get_engagement_recommendation(engagement_rate)}
+    
+    ### 📈 **How We're Doing**
+    - **Market Strength:** {get_market_position(avg_rating, sentiment_dist)}
+    - **Trustworthiness:** {'High' if total_risk_rate < 10 else 'Medium' if total_risk_rate < 20 else 'Low'}
     """
     
     return summary
-
-def create_enhanced_executive_summary_with_topics(df):
-    """Create a comprehensive executive summary with strategic insights"""
-    total_reviews = len(df)
-    avg_rating = df['rating'].mean()
-    
-    sentiment_dist = df['sentiment'].value_counts(normalize=True) * 100
-    
-    high_risk_rate = (df['fraudFlag'] == 'High Risk').sum() / total_reviews * 100
-    medium_risk_rate = (df['fraudFlag'] == 'Medium Risk').sum() / total_reviews * 100
-    total_risk_rate = high_risk_rate + medium_risk_rate
-    
-    recent_reviews = df[df['reviewDate'] > df['reviewDate'].max() - pd.Timedelta(days=90)]
-    recent_avg_rating = recent_reviews['rating'].mean() if len(recent_reviews) > 0 else avg_rating
-    rating_trend = "📈 Improving" if recent_avg_rating > avg_rating else "📉 Declining" if recent_avg_rating < avg_rating else "➡️ Stable"
-    
-    detailed_reviews = df[df['wordCount'] > 50]
-    engagement_rate = len(detailed_reviews) / total_reviews * 100
-    
-    # Top topics analysis
-    top_topics = df['topic'].value_counts()
-    top_topics = top_topics[~top_topics.index.isin(['Mixed Themes', 'General Discussion'])].head(3)
-    if len(top_topics) < 3:
-        top_topics = df['topic'].value_counts().head(3)
-    
-    # Strategic recommendations
-    strategic_recommendations = get_strategic_recommendations(avg_rating, total_risk_rate, engagement_rate, sentiment_dist)
-    
-    return f"""
-    <div class="executive-content">
-    
-    ## 🎯 **Strategic Customer Intelligence Report**
-    *Comprehensive analysis of {total_reviews:,} customer interactions*
-
-    ### 📈 **Market Position & Performance**
-    - **Customer Satisfaction Index:** {avg_rating:.2f}/5.0 ⭐ ({get_satisfaction_grade(avg_rating)})
-    - **Market Trajectory:** {rating_trend} ({abs(recent_avg_rating - avg_rating):.2f} point change)
-    - **Customer Engagement Quality:** {"Premium" if engagement_rate > 30 else "Standard" if engagement_rate > 15 else "Basic"} ({engagement_rate:.1f}% detailed feedback)
-    - **Brand Health Score:** {calculate_brand_health_score(avg_rating, sentiment_dist, total_risk_rate)}/100
-
-    ### 🎭 **Customer Sentiment Intelligence**
-    - **🟢 Brand Champions:** {sentiment_dist.get('Extremely Positive', 0) + sentiment_dist.get('Very Positive', 0) + sentiment_dist.get('Positive', 0):.1f}% (Premium customer advocates)
-    - **🟡 Neutral Zone:** {sentiment_dist.get('Neutral', 0):.1f}% (Conversion opportunity)
-    - **🔴 At-Risk Customers:** {sentiment_dist.get('Negative', 0) + sentiment_dist.get('Very Negative', 0) + sentiment_dist.get('Extremely Negative', 0):.1f}% (Retention priority)
-
-    ### 🛡️ **Data Integrity & Trust Metrics**
-    - **Verified Authentic Reviews:** {100 - total_risk_rate:.1f}% ✅
-    - **Suspicious Activity:** {total_risk_rate:.1f}% flagged for review
-    - **Data Confidence Level:** {get_trust_score(total_risk_rate)}/10 (Industry standard: 7.5+)
-
-    ### 🏆 **Top Customer Priorities**
-    {get_formatted_top_topics(top_topics, total_reviews)}
-
-    ### 💡 **Strategic Action Plan**
-    {strategic_recommendations}
-    
-    </div>
-    """
-
-def get_formatted_top_topics(top_topics, total_reviews):
-    """Format top topics for executive summary"""
-    formatted_topics = []
-    for i, (topic, count) in enumerate(top_topics.items(), 1):
-        impact_level = "🔥 Critical" if count/total_reviews > 0.15 else "⚡ High" if count/total_reviews > 0.10 else "📊 Moderate"
-        formatted_topics.append(f"**{i}. {topic}**: {count:,} mentions ({count/total_reviews*100:.1f}%) - {impact_level} Impact")
-    
-    return "\n".join(formatted_topics)
-
-def get_strategic_recommendations(avg_rating, total_risk_rate, engagement_rate, sentiment_dist):
-    """Generate strategic recommendations based on data"""
-    recommendations = []
-    
-    # Rating-based recommendations
-    if avg_rating >= 4.5:
-        recommendations.append("🎯 **Leverage Excellence**: Use positive reviews in marketing campaigns and case studies")
-    elif avg_rating >= 4.0:
-        recommendations.append("📈 **Optimize Performance**: Focus on converting 4-star to 5-star experiences")
-    elif avg_rating >= 3.0:
-        recommendations.append("🔧 **Quality Enhancement**: Address core product/service issues immediately")
-    else:
-        recommendations.append("🚨 **Crisis Management**: Implement emergency customer satisfaction protocols")
-    
-    # Trust-based recommendations
-    if total_risk_rate > 15:
-        recommendations.append("🛡️ **Review Verification**: Implement stricter review authenticity measures")
-    elif total_risk_rate > 5:
-        recommendations.append("👀 **Monitor Closely**: Enhanced suspicious activity detection required")
-    
-    # Engagement-based recommendations
-    if engagement_rate < 15:
-        recommendations.append("📢 **Increase Engagement**: Launch customer feedback incentive programs")
-    
-    return "\n".join(recommendations)
-
-def calculate_brand_health_score(avg_rating, sentiment_dist, total_risk_rate):
-    """Calculate overall brand health score out of 100"""
-    rating_score = (avg_rating / 5.0) * 40  # 40% weight
-    sentiment_score = (sentiment_dist.get('Extremely Positive', 0) + sentiment_dist.get('Very Positive', 0) + sentiment_dist.get('Positive', 0)) * 0.4  # 40% weight
-    trust_score = (100 - total_risk_rate) * 0.2  # 20% weight
-    
-    return int(rating_score + sentiment_score + trust_score)
 
 def get_satisfaction_grade(rating):
     if rating >= 4.5:
@@ -971,8 +592,45 @@ def get_trust_score(risk_rate):
     else:
         return 4
 
+def get_satisfaction_recommendation(rating):
+    if rating >= 4.5:
+        return "🟢 Keep up the great work - use positive reviews in marketing."
+    elif rating >= 4.0:
+        return "🟡 Doing well - find ways to make customers even happier."
+    elif rating >= 3.0:
+        return "🟠 Customers aren't thrilled - check product or service quality."
+    else:
+        return "🔴 Urgent action needed - fix major customer issues."
+
+def get_trust_recommendation(risk_rate):
+    if risk_rate < 5:
+        return "🟢 Reviews are mostly genuine - keep monitoring."
+    elif risk_rate < 15:
+        return "🟡 Some reviews might be fake - verify suspicious ones."
+    else:
+        return "🔴 Many reviews could be fake - take action to ensure trust."
+
+def get_engagement_recommendation(engagement_rate):
+    if engagement_rate > 30:
+        return "🟢 Customers are sharing great feedback - keep encouraging it."
+    elif engagement_rate > 15:
+        return "🟡 Some customers write detailed reviews - ask for more."
+    else:
+        return "🔴 Few detailed reviews - offer incentives for feedback."
+
+def get_market_position(rating, sentiment_dist):
+    positive_rate = sentiment_dist.get('Extremely Positive', 0) + sentiment_dist.get('Very Positive', 0) + sentiment_dist.get('Positive', 0)
+    if rating >= 4.5 and positive_rate > 80:
+        return "🟢 Top of the Market - Customers love us."
+    elif rating >= 4.0 and positive_rate > 65:
+        return "🟡 Strong Player - Better than average."
+    elif rating >= 3.5:
+        return "🟠 Average - Need to stand out more."
+    else:
+        return "🔴 Falling Behind - Need major improvements."
+
 def process_data_with_advanced_ml(df):
-    st.info("🤖 Analyzing reviews with advanced AI algorithms...")
+    st.info("🤖 Analyzing reviews with smart algorithms...")
     
     sentiment_results = []
     progress_bar = st.progress(0)
@@ -1049,54 +707,31 @@ def segment_customers(df):
     return segments
 
 def calculate_business_impact(df):
-    """
-    Calculate business impact score ranging from -5.0 to +5.0
-    Positive scores indicate positive business impact, negative scores indicate negative impact
-    """
     impact_scores = []
     for _, row in df.iterrows():
         impact = 0
         
-        # Rating contribution (scale: -3 to +3)
         if row['rating'] == 5:
             impact += 3
         elif row['rating'] == 4:
             impact += 1
-        elif row['rating'] == 3:
-            impact += 0
         elif row['rating'] == 2:
             impact -= 2
         elif row['rating'] == 1:
             impact -= 3
         
-        # Sentiment contribution (scale: -2 to +2)
         if 'Extremely Positive' in row['sentiment']:
             impact += 2
         elif 'Very Positive' in row['sentiment']:
             impact += 1
-        elif 'Positive' in row['sentiment']:
-            impact += 0.5
         elif 'Negative' in row['sentiment']:
             impact -= 1
         elif 'Very Negative' in row['sentiment'] or 'Extremely Negative' in row['sentiment']:
             impact -= 2
         
-        # Word count multiplier (detailed reviews have more impact)
-        if row['wordCount'] > 100:
+        if row['wordCount'] > 50:
             impact = impact * 1.5
-        elif row['wordCount'] > 50:
-            impact = impact * 1.2
-        elif row['wordCount'] < 10:
-            impact = impact * 0.5
         
-        # Trust factor (fraudulent reviews reduce impact)
-        if row['fraudFlag'] == 'High Risk':
-            impact = impact * 0.3
-        elif row['fraudFlag'] == 'Medium Risk':
-            impact = impact * 0.7
-        
-        # Cap the score between -5.0 and +5.0
-        impact = max(-5.0, min(5.0, impact))
         impact_scores.append(round(impact, 1))
     
     return impact_scores
@@ -1146,1375 +781,938 @@ def get_word_frequencies(text_series):
     filtered_words = [word for word in words if word not in stop_words and len(word) > 2]
     return Counter(filtered_words).most_common(20)
 
-def create_3d_enhanced_charts():
-    """Create enhanced 3D-style charts with modern styling"""
-    # Enhanced color palettes for 3D effect
-    colors_3d = [
-        '#667eea', '#764ba2', '#f093fb', '#f5576c',
-        '#4facfe', '#00f2fe', '#43e97b', '#38f9d7'
-    ]
-    
-    return colors_3d
-
-def generate_wordcloud(df):
-    """Generate word cloud from review text"""
-    if not WORDCLOUD_AVAILABLE:
-        return None
-    
-    # Combine all review text
-    text = ' '.join(df['reviewText'].dropna())
-    
-    # Remove common stop words
-    if NLTK_AVAILABLE:
-        try:
-            stop_words = set(stopwords.words('english'))
-        except:
-            stop_words = set()
-    else:
-        stop_words = set()
-    
-    # Add business-specific stop words
-    business_stops = {
-        'product', 'item', 'amazon', 'buy', 'bought', 'purchase', 'purchased',
-        'get', 'got', 'use', 'used', 'using', 'work', 'works', 'working',
-        'one', 'two', 'would', 'could', 'really', 'very', 'much', 'well',
-        'time', 'first', 'last', 'way', 'make', 'made', 'take', 'took'
-    }
-    stop_words.update(business_stops)
-    
-    try:
-        wordcloud = WordCloud(
-            width=800, 
-            height=400,
-            background_color='white',
-            stopwords=stop_words,
-            max_words=100,
-            colormap='viridis',
-            relative_scaling=0.5,
-            random_state=42
-        ).generate(text)
-        
-        fig, ax = plt.subplots(figsize=(10, 5))
-        ax.imshow(wordcloud, interpolation='bilinear')
-        ax.axis('off')
-        plt.tight_layout(pad=0)
-        
-        return fig
-    except:
-        return None
-
 def main():
     st.markdown('<div class="main-content"><h1 class="main-header">📊 Customer Reviews Intelligence Platform</h1></div>', unsafe_allow_html=True)
-    st.markdown("*Transform customer feedback into strategic business intelligence for C-level decision making*")
+    st.markdown("*Turning customer feedback into easy-to-understand business insights*")
     
-    # Create layout with sidebar for filters
-    col1, col2 = st.columns([1, 4])
+    uploaded_file = st.file_uploader("📁 Upload Amazon Reviews Dataset", type=['csv'])
     
-    with col1:
-        # Enhanced filter sidebar
-        st.markdown('<div class="filter-sidebar">', unsafe_allow_html=True)
-        st.markdown('<div class="filter-header">🎛️ Smart Filters</div>', unsafe_allow_html=True)
+    if uploaded_file:
+        with st.spinner('🔄 Analyzing data with smart algorithms...'):
+            df = load_and_process_data(uploaded_file)
+            if df is not None:
+                df, topics = process_data_with_advanced_ml(df)
+                st.session_state.processed_data = df
+                st.session_state.topics = topics
+                st.success(f"✅ Analyzed {len(df):,} customer reviews successfully!")
+            else:
+                st.error("❌ Something went wrong. Please check your CSV file.")
+                return
+    elif st.session_state.processed_data is not None:
+        df = st.session_state.processed_data
+        topics = getattr(st.session_state, 'topics', [])
+    else:
+        st.info("👆 Upload your Amazon reviews dataset to start the analysis")
+        st.markdown("""
+        ### 🎯 **Smart Analytics Dashboard**
         
-        # File upload in sidebar
-        uploaded_file = st.file_uploader("📁 Upload Dataset", type=['csv'], help="Upload your Amazon reviews CSV file")
+        **What This Dashboard Does:**
+        - 🧠 Understands if customers are happy or upset.
+        - 🔍 Checks if reviews are real or possibly fake.
+        - 🏷️ Finds key topics customers talk about.
+        - 📈 Tracks trends to help you make better decisions.
+        - 💼 Measures how reviews impact your business.
+        - 👥 Groups customers by their behavior.
         
-        if uploaded_file or st.session_state.processed_data is not None:
-            if uploaded_file and st.session_state.processed_data is None:
-                with st.spinner('🤖 Processing with AI...'):
-                    df = load_and_process_data(uploaded_file)
-                    if df is not None:
-                        df, topics = process_data_with_advanced_ml(df)
-                        st.session_state.processed_data = df
-                        st.session_state.topics = topics
-                        st.success("✅ Analysis Complete!")
+        **Data Needed:** A CSV file with Amazon reviews, including review text, star ratings, dates, and reviewer names.
+        """)
+        return
+    
+    # Advanced Filtering System with enhanced styling
+    st.markdown('<div class="filter-box glass-effect">', unsafe_allow_html=True)
+    st.subheader("🎛️ Dynamic Dashboard Filters")
+    
+    st.markdown("💡 **Pro Tip**: Apply multiple filters to drill down into specific consumer segments")
+    
+    filter_col1, filter_col2, filter_col3, filter_col4 = st.columns(4)
+    
+    with filter_col1:
+        rating_filter = st.multiselect("⭐ Star Ratings", 
+                                      sorted(df['rating'].unique()), 
+                                      default=sorted(df['rating'].unique()),
+                                      help="Choose which star ratings (1-5) to include in the analysis.")
+    
+    with filter_col2:
+        sentiment_filter = st.multiselect("😊 Customer Feelings", 
+                                         df['sentiment'].unique(), 
+                                         default=df['sentiment'].unique(),
+                                         help="Select the emotions shown in reviews (e.g., Positive, Negative).")
+    
+    with filter_col3:
+        trust_filter = st.selectbox("🔍 Review Trust", 
+                                   ['All Reviews', 'Trusted Only', 'Suspicious Only', 'High Risk Only'],
+                                   help="Filter reviews by how trustworthy they seem.")
+    
+    with filter_col4:
+        segment_filter = st.multiselect("👥 Customer Types", 
+                                       df['customerSegment'].unique(), 
+                                       default=df['customerSegment'].unique(),
+                                       help="Choose which customer groups to analyze (e.g., Satisfied Customers).")
+    
+    fcol1, fcol2 = st.columns(2)
+    
+    with fcol1:
+        min_impact = st.slider("💼 Minimum Business Impact", 
+                              float(df['businessImpact'].min()), 
+                              float(df['businessImpact'].max()), 
+                              float(df['businessImpact'].min()),
+                              help="Set the minimum impact a review has on your business.")
+    
+    with fcol2:
+        min_confidence = st.slider("🎯 Minimum Analysis Confidence", 0.0, 1.0, 0.0, 0.1,
+                                  help="Set how certain the analysis should be (0 to 1).")
+    
+    # Filter action buttons
+    fbtn1, fbtn2 = st.columns(2)
+    
+    with fbtn1:
+        if st.button("Apply Filters"):
+            pass  # Filters are applied dynamically below
+    
+    with fbtn2:
+        if st.button("Clear Filters"):
+            st.experimental_rerun()  # Clear by rerunning
+    
+    st.markdown("</div>", unsafe_allow_html=True)
+    
+    # Apply filters
+    filtered_df = df[
+        (df['rating'].isin(rating_filter)) & 
+        (df['sentiment'].isin(sentiment_filter)) &
+        (df['customerSegment'].isin(segment_filter)) &
+        (df['businessImpact'] >= min_impact) &
+        (df['sentimentConfidence'] >= min_confidence)
+    ]
+    
+    if trust_filter == 'Trusted Only':
+        filtered_df = filtered_df[filtered_df['fraudFlag'] == 'Legitimate']
+    elif trust_filter == 'Suspicious Only':
+        filtered_df = filtered_df[filtered_df['fraudFlag'].isin(['Low Risk', 'Medium Risk'])]
+    elif trust_filter == 'High Risk Only':
+        filtered_df = filtered_df[filtered_df['fraudFlag'] == 'High Risk']
+    
+    # Show active filters with enhanced styling
+    active_filters = []
+    if sorted(rating_filter) != sorted(df['rating'].unique().tolist()):
+        active_filters.append(f"Ratings: {rating_filter}")
+    if sorted(sentiment_filter) != sorted(df['sentiment'].unique().tolist()):
+        active_filters.append(f"Sentiments: {sentiment_filter}")
+    if trust_filter != 'All Reviews':
+        active_filters.append(f"Trust: {trust_filter}")
+    if sorted(segment_filter) != sorted(df['customerSegment'].unique().tolist()):
+        active_filters.append(f"Segments: {segment_filter}")
+    if min_impact != float(df['businessImpact'].min()):
+        active_filters.append(f"Min Impact: {min_impact}")
+    if min_confidence != 0.0:
+        active_filters.append(f"Min Confidence: {min_confidence}")
+    
+    if active_filters:
+        st.markdown(f"""
+        <div style='background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); 
+                    color: white; 
+                    padding: 1rem; 
+                    border-radius: 0.8rem; 
+                    margin: 1rem 0;
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.2);'>
+            <strong>🎯 Active Filters:</strong> {', '.join(active_filters)} 
+            <br><strong>📈 Filtered Reviews:</strong> {len(filtered_df):,} out of {len(df):,} total reviews
+            <br><strong>📊 Coverage:</strong> {len(filtered_df)/len(df)*100:.1f}% of total dataset
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        st.markdown(f"""
+        <div style='background: linear-gradient(90deg, #28a745 0%, #20c997 100%); 
+                    color: white; 
+                    padding: 1rem; 
+                    border-radius: 0.8rem; 
+                    margin: 1rem 0;
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.2);'>
+            <strong>🌐 Viewing:</strong> Complete Dataset ({len(df):,} reviews)
+            <br><strong>📊 Status:</strong> No filters applied - showing all customer data
+        </div>
+        """, unsafe_allow_html=True)
+    
+    # Executive Dashboard Tabs with subheader styling
+    tab1, tab2, tab3, tab4, tab5 = st.tabs([
+        "🎯 Executive Summary", "📊 Business Insights", "🔍 Deep Analysis", 
+        "💬 Customer Voices", "🚨 Risk Assessment"
+    ])
+    
+    # TAB 1: Executive Summary - Made sexier with metric cards and insight boxes
+    with tab1:
+        st.markdown('<div class="executive-summary">', unsafe_allow_html=True)
+        st.markdown(create_executive_summary(filtered_df))
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+        # Sexy metric cards
+        col1, col2, col3, col4, col5 = st.columns(5)
+        
+        with col1:
+            avg_rating = filtered_df['rating'].mean()
+            st.markdown(f"""
+            <div class='metric-card'>
+                <h3>📊 Customer Happiness</h3>
+                <h2>{avg_rating:.2f}/5.0</h2>
+                <p>vs neutral { (avg_rating - 3.0):.1f}</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col2:
+            fraud_rate = (filtered_df['fraudFlag'].isin(['High Risk', 'Medium Risk'])).sum() / len(filtered_df) * 100
+            st.markdown(f"""
+            <div class='metric-card'>
+                <h3>🔍 Trust Score</h3>
+                <h2>{100-fraud_rate:.1f}%</h2>
+                <p>-{fraud_rate:.1f}% risk</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col3:
+            positive_sentiment = (filtered_df['sentiment'].str.contains('Positive')).sum() / len(filtered_df) * 100
+            st.markdown(f"""
+            <div class='metric-card'>
+                <h3>😊 Positive Feelings</h3>
+                <h2>{positive_sentiment:.1f}%</h2>
+                <p>Brand Sentiment</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col4:
+            engagement_rate = (filtered_df['wordCount'] > 50).sum() / len(filtered_df) * 100
+            st.markdown(f"""
+            <div class='metric-card'>
+                <h3>💬 Detailed Reviews</h3>
+                <h2>{engagement_rate:.1f}%</h2>
+                <p>Engagement Rate</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col5:
+            avg_business_impact = filtered_df['businessImpact'].mean()
+            st.markdown(f"""
+            <div class='metric-card'>
+                <h3>💼 Business Impact</h3>
+                <h2>{avg_business_impact:.1f}</h2>
+                <p>per review</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        # Strategic Overview Charts in chart containers
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            fig_rating = px.histogram(
+                filtered_df, x='rating', 
+                title="📊 How Customers Rate Us",
+                color_discrete_sequence=['#667eea'],
+                text_auto=True,
+                category_orders={"rating": [1, 2, 3, 4, 5]}
+            )
+            fig_rating.update_layout(
+                xaxis_title="Star Rating",
+                yaxis_title="Number of Reviews",
+                showlegend=False, 
+                height=400
+            )
             
-            if st.session_state.processed_data is not None:
-                df = st.session_state.processed_data
-                topics = getattr(st.session_state, 'topics', [])
-                
-                st.markdown('<div class="filter-section">', unsafe_allow_html=True)
-                st.markdown('<span class="filter-label">⭐ Rating Filter</span>', unsafe_allow_html=True)
-                rating_filter = st.multiselect("", 
-                                              sorted(df['rating'].unique()), 
-                                              default=sorted(df['rating'].unique()),
-                                              key="rating_filter")
-                st.markdown('</div>', unsafe_allow_html=True)
-                
-                st.markdown('<div class="filter-section">', unsafe_allow_html=True)
-                st.markdown('<span class="filter-label">😊 Sentiment Filter</span>', unsafe_allow_html=True)
-                sentiment_filter = st.multiselect("", 
-                                                 df['sentiment'].unique(), 
-                                                 default=df['sentiment'].unique(),
-                                                 key="sentiment_filter")
-                st.markdown('</div>', unsafe_allow_html=True)
-                
-                st.markdown('<div class="filter-section">', unsafe_allow_html=True)
-                st.markdown('<span class="filter-label">🔍 Trust Level</span>', unsafe_allow_html=True)
-                trust_filter = st.selectbox("", 
-                                           ['All Reviews', 'Trusted Only', 'Suspicious Only', 'High Risk Only'],
-                                           key="trust_filter")
-                st.markdown('</div>', unsafe_allow_html=True)
-                
-                st.markdown('<div class="filter-section">', unsafe_allow_html=True)
-                st.markdown('<span class="filter-label">👥 Customer Segments</span>', unsafe_allow_html=True)
-                segment_filter = st.multiselect("", 
-                                               df['customerSegment'].unique(), 
-                                               default=df['customerSegment'].unique(),
-                                               key="segment_filter")
-                st.markdown('</div>', unsafe_allow_html=True)
-                
-                st.markdown('<div class="filter-section">', unsafe_allow_html=True)
-                st.markdown('<span class="filter-label">💼 Business Impact</span>', unsafe_allow_html=True)
-                min_impact = st.slider("", 
-                                      float(df['businessImpact'].min()), 
-                                      float(df['businessImpact'].max()), 
-                                      float(df['businessImpact'].min()),
-                                      key="impact_filter")
-                st.markdown('</div>', unsafe_allow_html=True)
-                
-                st.markdown('<div class="filter-section">', unsafe_allow_html=True)
-                st.markdown('<span class="filter-label">🎯 Confidence Level</span>', unsafe_allow_html=True)
-                min_confidence = st.slider("", 0.0, 1.0, 0.0, 0.1, key="confidence_filter")
-                st.markdown('</div>', unsafe_allow_html=True)
-                
-                # Filter action buttons
-                col_btn1, col_btn2 = st.columns(2)
-                with col_btn1:
-                    if st.button("Apply Filters", type="primary"):
-                        st.session_state.apply_filters = True
-                
-                with col_btn2:
-                    if st.button("Reset All"):
-                        st.session_state.apply_filters = False
-                        st.experimental_rerun()
-                
+            high_satisfaction = (filtered_df['rating'] >= 4).sum() / len(filtered_df) * 100
+            insight_text = f"**{high_satisfaction:.1f}% of customers gave 4 or 5 stars**, showing strong happiness with our product. This suggests we're doing well in the market."
+            
+            st.markdown('<div class="chart-container">', unsafe_allow_html=True)
+            create_chart_with_insights(fig_rating, insight_text)
+            st.markdown('</div>', unsafe_allow_html=True)
+        
+        with col2:
+            sentiment_counts = filtered_df['sentiment'].value_counts()
+            colors = {
+                'Extremely Positive': '#0d7377', 'Very Positive': '#14a085', 'Positive': '#2ca02c',
+                'Neutral': '#ffbb33', 'Negative': '#ff6b6b', 'Very Negative': '#d62728', 'Extremely Negative': '#8b0000'
+            }
+            
+            fig_sentiment = px.pie(
+                values=sentiment_counts.values, 
+                names=sentiment_counts.index,
+                title="🎭 Customer Feelings Breakdown",
+                color=sentiment_counts.index,
+                color_discrete_map=colors
+            )
+            
+            brand_advocates = sentiment_counts.get('Extremely Positive', 0) + sentiment_counts.get('Very Positive', 0)
+            detractors = sentiment_counts.get('Very Negative', 0) + sentiment_counts.get('Extremely Negative', 0)
+            nps_proxy = (brand_advocates - detractors) / len(filtered_df) * 100
+            
+            insight_text = f"**{brand_advocates:,} customers love our product**, while {detractors:,} are unhappy. This gives us a customer happiness score of {nps_proxy:.1f}%. We should focus on keeping happy customers and helping the unhappy ones."
+            
+            st.markdown('<div class="chart-container">', unsafe_allow_html=True)
+            create_chart_with_insights(fig_sentiment, insight_text)
+            st.markdown('</div>', unsafe_allow_html=True)
+        
+        # Download buttons
+        export_df = filtered_df[[
+            'reviewId', 'reviewerName', 'reviewText', 'rating', 'reviewDate',
+            'sentiment', 'sentimentScore', 'sentimentConfidence', 'emotion',
+            'fraudFlag', 'fraudReason', 'fraudScore',
+            'topic', 'customerSegment', 'businessImpact', 'reviewValue',
+            'wordCount', 'reviewLength'
+        ]].copy()
+        
+        csv_data = export_df.to_csv(index=False)
+        st.download_button(
+            label="📄 Download Full Data",
+            data=csv_data,
+            file_name=f"reviews_analysis_{pd.Timestamp.now().strftime('%Y%m%d')}.csv",
+            mime="text/csv"
+        )
+        
+        executive_summary = create_executive_summary(filtered_df)
+        
+        st.download_button(
+            label="📋 Download Summary",
+            data=executive_summary,
+            file_name=f"executive_summary_{pd.Timestamp.now().strftime('%Y%m%d')}.md",
+            mime="text/markdown"
+        )
+        
+        # Metrics Explained
+        st.markdown('<div class="explained-box">', unsafe_allow_html=True)
+        st.markdown("""
+        ### 📘 Understanding the Metrics
+        Here's what each number means, how we calculate it, and what it tells you:
+
+        | **Metric** | **What It Means** | **How It's Calculated / How to Read It** |
+        |------------|-------------------|-----------------------------------------|
+        | **Customer Happiness (Average Rating)** | The average star rating customers give our product. | Add up all star ratings (1-5) and divide by the number of reviews. Higher means customers are happier. |
+        | **Trust Score** | How many reviews seem real and trustworthy. | Percentage of reviews not flagged as suspicious. Higher means more genuine feedback. |
+        | **Positive Feelings (Brand Sentiment)** | How many customers feel good about our product. | Percentage of reviews with positive words (e.g., "great," "love"). Higher means more happy customers. |
+        | **Detailed Reviews (Engagement Rate)** | How many customers write long, detailed reviews. | Percentage of reviews with more than 50 words. Higher means customers are sharing valuable feedback. |
+        | **Business Impact** | How much a review influences other customers or our business. | Based on star rating, review positivity, and length. Higher means the review matters more. |
+        | **Brand Advocacy** | Customers who love our product and recommend it. | Percentage of reviews that are very positive (Extremely or Very Positive). Higher means more loyal fans. |
+
+        **Customer Types (Segments):**
+        - **Engaged Advocate**: Writes long, detailed, positive reviews. They're our biggest fans.
+        - **Satisfied Customer**: Gives high ratings (4-5 stars) and positive feedback.
+        - **Dissatisfied Customer**: Gives low ratings (1-2 stars) and negative feedback.
+        - **Passive User**: Writes short, vague reviews with little detail.
+        - **Suspicious**: Reviews that might be fake, based on unusual patterns.
+        - **Average Customer**: Doesn't stand out - gives moderate ratings and feedback.
+
+        These groups are based on review length, star rating, positivity, and trustworthiness.
+        """)
         st.markdown('</div>', unsafe_allow_html=True)
     
-    with col2:
-        # Main content area
-        if st.session_state.processed_data is not None:
-            df = st.session_state.processed_data
-            topics = getattr(st.session_state, 'topics', [])
+    # TAB 2: Business Insights  
+    with tab2:
+        st.markdown("<h2 class='subheader'>📊 Business Insights</h2>", unsafe_allow_html=True)
+        st.markdown("*Clear insights to understand customer behavior and key topics*")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("<div class='chart-container'>", unsafe_allow_html=True)
+            # Customer segment analysis
+            st.markdown("### 👥 Customer Types Performance")
+            st.markdown("This chart shows how different customer groups rate our product and their impact.")
             
-            # Apply filters only when button is clicked
-            if st.session_state.apply_filters:
-                filtered_df = df[
-                    (df['rating'].isin(rating_filter)) & 
-                    (df['sentiment'].isin(sentiment_filter)) &
-                    (df['customerSegment'].isin(segment_filter)) &
-                    (df['businessImpact'] >= min_impact) &
-                    (df['sentimentConfidence'] >= min_confidence)
-                ]
-                
-                if trust_filter == 'Trusted Only':
-                    filtered_df = filtered_df[filtered_df['fraudFlag'] == 'Legitimate']
-                elif trust_filter == 'Suspicious Only':
-                    filtered_df = filtered_df[filtered_df['fraudFlag'].isin(['Low Risk', 'Medium Risk'])]
-                elif trust_filter == 'High Risk Only':
-                    filtered_df = filtered_df[filtered_df['fraudFlag'] == 'High Risk']
-            else:
-                filtered_df = df
+            segment_analysis = filtered_df.groupby('customerSegment').agg({
+                'rating': 'mean',
+                'businessImpact': 'mean',
+                'reviewValue': 'mean',
+                'reviewId': 'count'
+            }).round(2).reset_index()
+            segment_analysis.columns = ['Customer Type', 'Average Rating', 'Business Impact', 'Review Value', 'Number of Reviews']
             
-            # Show filter status
-            if st.session_state.apply_filters:
-                st.markdown(f"""
-                <div class="active-filters">
-                    <strong>🎯 Filters Applied</strong><br>
-                    Showing {len(filtered_df):,} of {len(df):,} reviews ({len(filtered_df)/len(df)*100:.1f}% of dataset)
-                </div>
-                """, unsafe_allow_html=True)
+            fig_segments = px.scatter(
+                segment_analysis, 
+                x='Business Impact', 
+                y='Average Rating',
+                size='Number of Reviews',
+                color='Customer Type',
+                title="Customer Types Impact vs Happiness",
+                hover_data=['Review Value']
+            )
             
-            # Enhanced tabs for C-level presentation
-            tab1, tab2, tab3, tab4, tab5 = st.tabs([
-                "🎯 Executive Dashboard", "📊 Strategic Analytics", "🔍 Deep Intelligence", 
-                "💬 Customer Voices", "🚨 Risk Management"
-            ])
+            insight_text = f"**{segment_analysis.loc[segment_analysis['Business Impact'].idxmax(), 'Customer Type']}** has the biggest impact on our business. **{segment_analysis.loc[segment_analysis['Number of Reviews'].idxmax(), 'Customer Type']}** is our largest group, so we should focus on keeping them happy."
             
-            # TAB 1: Executive Dashboard
-            with tab1:
-                # Enhanced Executive Summary
-                st.markdown('<div class="executive-summary">', unsafe_allow_html=True)
-                executive_summary = create_enhanced_executive_summary_with_topics(filtered_df)
-                st.markdown(executive_summary, unsafe_allow_html=True)
-                st.markdown('</div>', unsafe_allow_html=True)
+            create_chart_with_insights(fig_segments, insight_text)
+            
+            st.markdown("""
+            **What Are Customer Types?**
+            - **Engaged Advocate**: Long, positive, detailed reviews. They're loyal fans.
+            - **Satisfied Customer**: High ratings (4-5 stars) with positive comments.
+            - **Dissatisfied Customer**: Low ratings (1-2 stars) with negative feedback.
+            - **Passive User**: Short, vague reviews with little detail.
+            - **Suspicious**: Possibly fake reviews, flagged for unusual patterns.
+            - **Average Customer**: Moderate ratings and feedback, not extreme.
+            
+            **How We Group Them:**
+            We look at:
+            - How long their reviews are.
+            - Whether their comments are positive or negative.
+            - The star rating they give.
+            - If the review seems trustworthy or suspicious.
+            """)
+            st.markdown("</div>", unsafe_allow_html=True)
+            
+            # Topic performance analysis
+            if topics:
+                st.markdown("<div class='chart-container'>", unsafe_allow_html=True)
+                st.markdown("### 🏷️ Key Customer Topics")
+                st.markdown("This chart shows what customers talk about most and how they rate those topics.")
                 
-                # Premium metric cards with 3D effects
-                st.markdown("### 📊 Key Performance Indicators")
-                col1, col2, col3, col4, col5 = st.columns(5)
+                topic_performance = filtered_df.groupby('topic').agg({
+                    'rating': 'mean',
+                    'businessImpact': 'mean',
+                    'sentimentScore': 'mean',
+                    'reviewId': 'count'
+                }).round(2).reset_index()
+                topic_performance.columns = ['Topic', 'Average Rating', 'Business Impact', 'Sentiment Score', 'Number of Reviews']
                 
-                with col1:
-                    avg_rating = filtered_df['rating'].mean()
-                    rating_change = "📈" if avg_rating > 3.5 else "📉" if avg_rating < 3.0 else "➡️"
-                    st.markdown(f"""
-                    <div class='metric-card'>
-                        <h3>⭐ Customer Satisfaction</h3>
-                        <h2>{avg_rating:.2f}/5.0</h2>
-                        <p>{rating_change} Market Position</p>
-                    </div>
-                    """, unsafe_allow_html=True)
+                top_topics_perf = topic_performance.nlargest(8, 'Business Impact')
                 
-                with col2:
-                    fraud_rate = (filtered_df['fraudFlag'].isin(['High Risk', 'Medium Risk'])).sum() / len(filtered_df) * 100
-                    trust_icon = "🛡️" if fraud_rate < 10 else "⚠️" if fraud_rate < 20 else "🚨"
-                    st.markdown(f"""
-                    <div class='metric-card'>
-                        <h3>🔍 Trust Score</h3>
-                        <h2>{100-fraud_rate:.1f}%</h2>
-                        <p>{trust_icon} Data Integrity</p>
-                    </div>
-                    """, unsafe_allow_html=True)
+                fig_topics = px.bar(
+                    top_topics_perf, 
+                    x='Business Impact', 
+                    y='Topic',
+                    color='Average Rating',
+                    title="Top Customer Topics by Impact",
+                    orientation='h',
+                    color_continuous_scale='RdYlGn'
+                )
+                fig_topics.update_layout(yaxis={'categoryorder':'total ascending'})
                 
-                with col3:
-                    positive_sentiment = (filtered_df['sentiment'].str.contains('Positive')).sum() / len(filtered_df) * 100
-                    sentiment_trend = "📈" if positive_sentiment > 70 else "📊" if positive_sentiment > 50 else "📉"
-                    st.markdown(f"""
-                    <div class='metric-card'>
-                        <h3>😊 Brand Sentiment</h3>
-                        <h2>{positive_sentiment:.1f}%</h2>
-                        <p>{sentiment_trend} Customer Love</p>
-                    </div>
-                    """, unsafe_allow_html=True)
+                best_topic = top_topics_perf.iloc[0]['Topic']
+                worst_topic = topic_performance.nsmallest(1, 'Business Impact').iloc[0]['Topic']
                 
-                with col4:
-                    engagement_rate = (filtered_df['wordCount'] > 50).sum() / len(filtered_df) * 100
-                    engagement_icon = "🔥" if engagement_rate > 30 else "📝" if engagement_rate > 15 else "💤"
-                    st.markdown(f"""
-                    <div class='metric-card'>
-                        <h3>💬 Engagement Rate</h3>
-                        <h2>{engagement_rate:.1f}%</h2>
-                        <p>{engagement_icon} Detail Level</p>
-                    </div>
-                    """, unsafe_allow_html=True)
+                insight_text = f"**'{best_topic}'** is what customers talk about most positively. We should highlight this in marketing. **'{worst_topic}'** needs improvement to make customers happier."
                 
-                with col5:
-                    avg_business_impact = filtered_df['businessImpact'].mean()
-                    impact_icon = "🚀" if avg_business_impact > 2 else "📈" if avg_business_impact > 0 else "📉"
-                    st.markdown(f"""
-                    <div class='metric-card'>
-                        <h3>💼 Business Impact</h3>
-                        <h2>{avg_business_impact:.1f}/5.0</h2>
-                        <p>{impact_icon} Revenue Effect</p>
-                    </div>
-                    """, unsafe_allow_html=True)
+                create_chart_with_insights(fig_topics, insight_text)
                 
-                # Enhanced 3D-style charts
-                col1, col2 = st.columns(2)
+                st.markdown("""
+                **What Each Topic Means:**
+                - **Camera & Video Performance**: Reviews about camera quality, video, photos, or picture clarity.
+                - **Mobile Device Compatibility**: How well the product works with phones or tablets.
+                - **Speed & Transfer Performance**: Comments on speed, data transfer, or loading times.
+                - **Storage Capacity & Management**: Feedback on memory or storage space.
+                - **Price & Value Proposition**: Opinions about cost or value for money.
+                - **Build Quality & Durability**: Mentions of product strength or how long it lasts.
+                - **Shipping & Delivery Experience**: Comments about delivery speed or packaging.
+                - **Ease of Use & Installation**: Feedback on how easy or hard it is to use or set up.
+                - **Overall Customer Satisfaction**: General happiness or disappointment.
+                - **Technical Issues & Problems**: Reports of errors or product failures.
+                - **General Product Discussion**: Other general comments.
                 
-                with col1:
-                    st.markdown('<div class="chart-container">', unsafe_allow_html=True)
+                **How We Find Topics:**
+                We use smart text analysis to group reviews by common words (e.g., "camera" and "photo" go together).
+                """)
+                st.markdown("</div>", unsafe_allow_html=True)
+        
+        with col2:
+            # Time-based business trends
+            st.markdown("<div class='chart-container'>", unsafe_allow_html=True)
+            st.markdown("### 📈 Trends Over Time")
+            monthly_trends = filtered_df.groupby(['year', 'month']).agg({
+                'rating': 'mean',
+                'businessImpact': 'mean',
+                'fraudScore': 'mean',
+                'reviewId': 'count'
+            }).reset_index()
+            monthly_trends['date'] = pd.to_datetime(monthly_trends[['year', 'month']].assign(day=1))
+            monthly_trends = monthly_trends.sort_values('date')
+            
+            fig_trends = make_subplots(
+                rows=2, cols=1,
+                subplot_titles=('Customer Happiness Trend', 'Business Impact Trend'),
+                vertical_spacing=0.1
+            )
+            
+            fig_trends.add_trace(
+                go.Scatter(x=monthly_trends['date'], y=monthly_trends['rating'],
+                          mode='lines+markers', name='Average Rating', line=dict(color='#667eea')),
+                row=1, col=1
+            )
+            
+            fig_trends.add_trace(
+                go.Scatter(x=monthly_trends['date'], y=monthly_trends['businessImpact'],
+                          mode='lines+markers', name='Business Impact', line=dict(color='#f093fb')),
+                row=2, col=1
+            )
+            
+            fig_trends.update_layout(height=500, title_text="Performance Over Time", xaxis_tickangle=45, xaxis2_tickangle=45)
+            
+            recent_rating = monthly_trends['rating'].tail(3).mean()
+            historical_rating = monthly_trends['rating'].head(3).mean()
+            trend_direction = "getting better" if recent_rating > historical_rating else "getting worse"
+            
+            insight_text = f"**Customer happiness is {trend_direction}** with a {abs(recent_rating - historical_rating):.2f} star change. This means we {'should keep up the good work' if trend_direction == 'getting better' else 'need to fix issues quickly'}."
+            
+            create_chart_with_insights(fig_trends, insight_text)
+            st.markdown("</div>", unsafe_allow_html=True)
+            
+            # Business impact heatmap
+            st.markdown("<div class='chart-container'>", unsafe_allow_html=True)
+            st.markdown("### 🔥 Rating vs Feelings Matrix")
+            impact_heatmap = pd.crosstab(filtered_df['rating'], filtered_df['sentiment'])
+            sentiment_order = ['Extremely Negative', 'Very Negative', 'Negative', 'Neutral', 
+                              'Positive', 'Very Positive', 'Extremely Positive']
+            impact_heatmap = impact_heatmap.reindex(columns=sentiment_order, fill_value=0)
+            
+            fig_heatmap = px.imshow(
+                impact_heatmap.values,
+                x=impact_heatmap.columns,
+                y=impact_heatmap.index,
+                title="Rating vs Customer Feelings",
+                color_continuous_scale='RdYlBu_r',
+                text_auto=True
+            )
+            fig_heatmap.update_layout(
+                xaxis_title="Customer Feelings",
+                yaxis_title="Star Rating",
+                xaxis_tickangle=45
+            )
+            
+            concerning_areas = impact_heatmap.loc[4:5, ['Negative', 'Very Negative', 'Extremely Negative']].sum().sum()
+            positive_areas = impact_heatmap.loc[4:5, ['Positive', 'Very Positive', 'Extremely Positive']].sum().sum()
+            
+            insight_text = f"**{concerning_areas} high-rated reviews seem negative**, which could mean fake reviews or mixed feelings. **{positive_areas} reviews show happy customers giving high ratings**, which is great for our brand."
+            
+            create_chart_with_insights(fig_heatmap, insight_text)
+            
+            st.markdown("""
+            **How to Read This Chart:**
+            - Each box shows how many reviews have a certain star rating (1-5) and feeling (e.g., Positive, Negative).
+            - **Red boxes**: Reviews where the rating and feeling don't match (e.g., 1 star but positive words). These might be suspicious.
+            - **Darker red**: 1-star ratings with positive feelings (very suspicious).
+            - **Lighter red**: 2-star ratings with positive feelings (less suspicious).
+            - **Green boxes**: Ratings and feelings match (e.g., 5 stars with positive words).
+            - **Bar on the right**: Shows the total number of reviews for each star rating.
+            """)
+            st.markdown("</div>", unsafe_allow_html=True)
+        
+        # Metrics Explained
+        st.markdown('<div class="explained-box">', unsafe_allow_html=True)
+        st.markdown("""
+        ### 📘 Understanding the Metrics
+        | **Metric** | **What It Means** | **How It's Calculated / How to Read It** |
+        |------------|-------------------|-----------------------------------------|
+        | **Average Rating** | The average star rating customers give our product. | Add up all star ratings (1-5) and divide by the number of reviews. Higher means customers are happier. |
+        | **Business Impact** | How much a review influences other customers or our business. | Based on star rating, review positivity, and length. Higher means the review matters more. |
+        | **Review Value** | How useful a review is for understanding customer needs. | Based on length, helpfulness, and trustworthiness. Higher means more valuable feedback. |
+        | **Number of Reviews** | How many reviews are in each customer group or topic. | Total count of reviews. More reviews mean the group or topic is more important. |
+        | **Sentiment Score** | How positive or negative a review is. | Analyzed from review text. Positive numbers mean happy reviews; negative means unhappy. |
+
+        **Customer Types and Topics are explained above under each chart.**
+        """)
+        st.markdown('</div>', unsafe_allow_html=True)
+    
+    # TAB 3: Deep Analysis
+    with tab3:
+        st.markdown("<h2 class='subheader'>🔍 Deep Analysis</h2>", unsafe_allow_html=True)
+        st.markdown("*Detailed insights to guide big decisions*")
+        
+        # Advanced topic analysis with business recommendations
+        if topics:
+            st.markdown("<div class='chart-container'>", unsafe_allow_html=True)
+            st.subheader("🏷️ Key Themes Analysis")
+            
+            topic_insights = []
+            for idx, topic_name in enumerate(sorted(topics), 1):
+                topic_reviews = filtered_df[filtered_df['topic'] == topic_name]
+                if len(topic_reviews) > 0:
+                    avg_rating = topic_reviews['rating'].mean()
+                    avg_sentiment = topic_reviews['sentimentScore'].mean()
+                    review_count = len(topic_reviews)
+                    avg_impact = topic_reviews['businessImpact'].mean()
                     
-                    # 3D-enhanced rating distribution
-                    fig_rating = px.histogram(
-                        filtered_df, x='rating', 
-                        title="📊 Customer Rating Distribution",
-                        color_discrete_sequence=['#667eea'],
-                        text_auto=True,
-                        category_orders={"rating": [1, 2, 3, 4, 5]}
-                    )
-                    
-                    # Enhanced 3D styling
-                    fig_rating.update_layout(
-                        xaxis_title="Star Rating",
-                        yaxis_title="Number of Reviews",
-                        showlegend=False, 
-                        height=450,
-                        plot_bgcolor='rgba(0,0,0,0)',
-                        paper_bgcolor='rgba(0,0,0,0)',
-                        font=dict(family="Inter, sans-serif", size=12),
-                        title_font_size=16,
-                        title_x=0.5,
-                        xaxis=dict(
-                            showgrid=True,
-                            gridwidth=1,
-                            gridcolor='rgba(128,128,128,0.2)',
-                            showline=True,
-                            linewidth=2,
-                            linecolor='rgb(204, 204, 204)'
-                        ),
-                        yaxis=dict(
-                            showgrid=True,
-                            gridwidth=1,
-                            gridcolor='rgba(128,128,128,0.2)',
-                            showline=True,
-                            linewidth=2,
-                            linecolor='rgb(204, 204, 204)'
-                        )
-                    )
-                    
-                    # Add shadow effect
-                    fig_rating.update_traces(
-                        marker=dict(
-                            line=dict(width=2, color='rgba(102, 126, 234, 0.8)'),
-                            opacity=0.8
-                        )
-                    )
-                    
-                    high_satisfaction = (filtered_df['rating'] >= 4).sum() / len(filtered_df) * 100
-                    insight_text = f"**{high_satisfaction:.1f}% customer satisfaction rate** indicates strong market position. Focus on converting 4-star experiences to 5-star loyalty."
-                    
-                    create_chart_with_insights(fig_rating, insight_text)
-                    st.markdown('</div>', unsafe_allow_html=True)
-                
-                with col2:
-                    st.markdown('<div class="chart-container">', unsafe_allow_html=True)
-                    
-                    # 3D-enhanced sentiment pie chart
-                    sentiment_counts = filtered_df['sentiment'].value_counts()
-                    colors = {
-                        'Extremely Positive': '#0d7377', 'Very Positive': '#14a085', 'Positive': '#2ca02c',
-                        'Neutral': '#ffbb33', 'Negative': '#ff6b6b', 'Very Negative': '#d62728', 'Extremely Negative': '#8b0000'
-                    }
-                    
-                    fig_sentiment = px.pie(
-                        values=sentiment_counts.values, 
-                        names=sentiment_counts.index,
-                        title="🎭 Customer Sentiment Analysis",
-                        color=sentiment_counts.index,
-                        color_discrete_map=colors
-                    )
-                    
-                    # Enhanced 3D styling for pie chart
-                    fig_sentiment.update_layout(
-                        height=450,
-                        plot_bgcolor='rgba(0,0,0,0)',
-                        paper_bgcolor='rgba(0,0,0,0)',
-                        font=dict(family="Inter, sans-serif", size=12),
-                        title_font_size=16,
-                        title_x=0.5,
-                        showlegend=True,
-                        legend=dict(
-                            orientation="v",
-                            yanchor="middle",
-                            y=0.5,
-                            xanchor="left",
-                            x=1.05
-                        )
-                    )
-                    
-                    # Add 3D effect to pie slices
-                    fig_sentiment.update_traces(
-                        textposition='inside',
-                        textinfo='percent+label',
-                        marker=dict(
-                            line=dict(color='#FFFFFF', width=3)
-                        ),
-                        pull=[0.1 if 'Positive' in name else 0 for name in sentiment_counts.index]
-                    )
-                    
-                    brand_advocates = sentiment_counts.get('Extremely Positive', 0) + sentiment_counts.get('Very Positive', 0)
-                    detractors = sentiment_counts.get('Very Negative', 0) + sentiment_counts.get('Extremely Negative', 0)
-                    nps_proxy = (brand_advocates - detractors) / len(filtered_df) * 100
-                    
-                    insight_text = f"**Net Promoter Score: {nps_proxy:.1f}%** - {brand_advocates:,} brand advocates vs {detractors:,} detractors. Excellent customer loyalty foundation."
-                    
-                    create_chart_with_insights(fig_sentiment, insight_text)
-                    st.markdown('</div>', unsafe_allow_html=True)
-                
-                # Word Cloud Section
-                st.markdown("### 🔤 Customer Voice Cloud")
-                if WORDCLOUD_AVAILABLE:
-                    st.markdown('<div class="wordcloud-container">', unsafe_allow_html=True)
-                    wordcloud_fig = generate_wordcloud(filtered_df)
-                    if wordcloud_fig:
-                        st.pyplot(wordcloud_fig)
-                        st.markdown("**Key Insight:** Most frequently mentioned words reveal primary customer concerns and satisfaction drivers.")
+                    if avg_rating >= 4.5 and avg_sentiment > 0.3:
+                        recommendation = "🟢 Highlight in marketing campaigns to attract more customers."
+                    elif avg_rating >= 4.0 and avg_sentiment > 0.1:
+                        recommendation = "🟡 Improve slightly to make this a strength."
+                    elif avg_rating >= 3.0:
+                        recommendation = "🟠 Review processes to reduce complaints by 20%."
                     else:
-                        st.info("Word cloud generation failed - using alternative word frequency analysis")
-                        word_freq = get_word_frequencies(filtered_df['reviewText'])
-                        if word_freq:
-                            freq_df = pd.DataFrame(word_freq[:15], columns=['Word', 'Frequency'])
-                            fig_words = px.bar(freq_df, x='Frequency', y='Word', orientation='h',
-                                             title="Top 15 Most Mentioned Words",
-                                             color='Frequency', color_continuous_scale='viridis')
-                            fig_words.update_layout(height=400, yaxis={'categoryorder':'total ascending'})
-                            st.plotly_chart(fig_words, use_container_width=True)
-                    st.markdown('</div>', unsafe_allow_html=True)
-                else:
-                    st.markdown('<div class="wordcloud-container">', unsafe_allow_html=True)
-                    word_freq = get_word_frequencies(filtered_df['reviewText'])
-                    if word_freq:
-                        freq_df = pd.DataFrame(word_freq[:15], columns=['Word', 'Frequency'])
-                        fig_words = px.bar(freq_df, x='Frequency', y='Word', orientation='h',
-                                         title="🔤 Top Customer Keywords",
-                                         color='Frequency', color_continuous_scale='viridis')
-                        fig_words.update_layout(
-                            height=400, 
-                            yaxis={'categoryorder':'total ascending'},
-                            plot_bgcolor='rgba(0,0,0,0)',
-                            paper_bgcolor='rgba(0,0,0,0)'
-                        )
-                        st.plotly_chart(fig_words, use_container_width=True)
-                        st.markdown("**Strategic Insight:** These keywords represent your brand's core value propositions and customer priorities.")
-                    st.markdown('</div>', unsafe_allow_html=True)
-                
-                # Business Impact Explanation
-                st.markdown('<div class="explained-box">', unsafe_allow_html=True)
-                st.markdown("""
-                ### 📊 Business Impact Score Explained
-                
-                **What it measures:** The Business Impact Score quantifies how much each review influences your business success, ranging from **-5.0 to +5.0**.
-                
-                **How it's calculated:**
-                - **Rating Component (-3 to +3):** 5-star = +3, 4-star = +1, 3-star = 0, 2-star = -2, 1-star = -3
-                - **Sentiment Component (-2 to +2):** Extremely Positive = +2, Very Positive = +1, Positive = +0.5, Negative = -1, Very/Extremely Negative = -2
-                - **Engagement Multiplier:** Detailed reviews (100+ words) get 1.5x impact, medium reviews (50+ words) get 1.2x impact
-                - **Trust Factor:** High-risk reviews reduced to 30% impact, medium-risk to 70% impact
-                
-                **Interpretation:**
-                - **+3.0 to +5.0:** Premium advocates driving significant business value
-                - **+1.0 to +2.9:** Positive contributors to brand reputation
-                - **-1.0 to +0.9:** Neutral impact on business metrics
-                - **-2.9 to -1.1:** Negative impact requiring attention
-                - **-5.0 to -3.0:** Crisis-level detractors needing immediate intervention
-                
-                **Strategic Use:** Prioritize high-impact positive reviews for marketing and address high-impact negative reviews immediately.
-                """)
-                st.markdown('</div>', unsafe_allow_html=True)
+                        recommendation = "🔴 Fix issues urgently to improve customer trust."
+                    
+                    topic_insights.append({
+                        'ID': idx,
+                        'Theme': topic_name,
+                        'Volume': review_count,
+                        'Avg Rating': f"{avg_rating:.2f}",
+                        'Sentiment Score': f"{avg_sentiment:.2f}",
+                        'Business Impact': f"{avg_impact:.2f}",
+                        'Action': recommendation
+                    })
             
-            # TAB 2: Strategic Analytics
-            with tab2:
-                st.markdown("<h2 class='subheader'>📊 Strategic Business Analytics</h2>", unsafe_allow_html=True)
-                st.markdown("*Advanced insights for strategic decision making*")
+            if topic_insights:
+                insights_df = pd.DataFrame(topic_insights).sort_values('Business Impact', ascending=False)
+                st.dataframe(insights_df, use_container_width=True)
                 
-                col1, col2 = st.columns(2)
-                
-                with col1:
-                    st.markdown("<div class='chart-container'>", unsafe_allow_html=True)
-                    
-                    # Customer segment performance analysis
-                    st.markdown("### 👥 Customer Segment Performance Matrix")
-                    
-                    segment_analysis = filtered_df.groupby('customerSegment').agg({
-                        'rating': 'mean',
-                        'businessImpact': 'mean',
-                        'reviewValue': 'mean',
-                        'reviewId': 'count'
-                    }).round(2).reset_index()
-                    segment_analysis.columns = ['Customer Segment', 'Avg Rating', 'Business Impact', 'Review Value', 'Volume']
-                    
-                    # 3D-enhanced scatter plot
-                    fig_segments = px.scatter(
-                        segment_analysis, 
-                        x='Business Impact', 
-                        y='Avg Rating',
-                        size='Volume',
-                        color='Customer Segment',
-                        title="Customer Segments: Impact vs Satisfaction",
-                        hover_data=['Review Value'],
-                        size_max=60
-                    )
-                    
-                    # Enhanced 3D styling
-                    fig_segments.update_layout(
-                        height=500,
-                        plot_bgcolor='rgba(0,0,0,0)',
-                        paper_bgcolor='rgba(0,0,0,0)',
-                        font=dict(family="Inter, sans-serif"),
-                        xaxis=dict(
-                            showgrid=True,
-                            gridwidth=1,
-                            gridcolor='rgba(128,128,128,0.2)',
-                            zeroline=True,
-                            zerolinecolor='rgba(128,128,128,0.5)',
-                            zerolinewidth=2
-                        ),
-                        yaxis=dict(
-                            showgrid=True,
-                            gridwidth=1,
-                            gridcolor='rgba(128,128,128,0.2)',
-                            zeroline=True,
-                            zerolinecolor='rgba(128,128,128,0.5)',
-                            zerolinewidth=2
-                        )
-                    )
-                    
-                    # Add drop shadow effect to markers
-                    fig_segments.update_traces(
-                        marker=dict(
-                            line=dict(width=2, color='rgba(255,255,255,0.8)'),
-                            opacity=0.8
-                        )
-                    )
-                    
-                    best_segment = segment_analysis.loc[segment_analysis['Business Impact'].idxmax(), 'Customer Segment']
-                    largest_segment = segment_analysis.loc[segment_analysis['Volume'].idxmax(), 'Customer Segment']
-                    
-                    insight_text = f"**Strategic Priority:** {best_segment} delivers highest business value. **Scale Focus:** {largest_segment} represents your largest customer base."
-                    
-                    create_chart_with_insights(fig_segments, insight_text)
-                    st.markdown("</div>", unsafe_allow_html=True)
-                
-                with col2:
-                    st.markdown("<div class='chart-container'>", unsafe_allow_html=True)
-                    
-                    # Performance trends over time
-                    st.markdown("### 📈 Performance Trends Analysis")
-                    
-                    monthly_trends = filtered_df.groupby(['year', 'month']).agg({
-                        'rating': 'mean',
-                        'businessImpact': 'mean',
-                        'fraudScore': 'mean',
-                        'reviewId': 'count'
-                    }).reset_index()
-                    monthly_trends['date'] = pd.to_datetime(monthly_trends[['year', 'month']].assign(day=1))
-                    monthly_trends = monthly_trends.sort_values('date')
-                    
-                    # 3D-enhanced multi-line chart
-                    fig_trends = make_subplots(
-                        rows=2, cols=1,
-                        subplot_titles=('Customer Satisfaction Trend', 'Business Impact Evolution'),
-                        vertical_spacing=0.15,
-                        specs=[[{"secondary_y": False}], [{"secondary_y": False}]]
-                    )
-                    
-                    # Add satisfaction trend
-                    fig_trends.add_trace(
-                        go.Scatter(
-                            x=monthly_trends['date'], 
-                            y=monthly_trends['rating'],
-                            mode='lines+markers', 
-                            name='Satisfaction Rating',
-                            line=dict(color='#667eea', width=4, shape='spline'),
-                            marker=dict(size=8, line=dict(width=2, color='white')),
-                            fill='tonexty',
-                            fillcolor='rgba(102, 126, 234, 0.1)'
-                        ),
-                        row=1, col=1
-                    )
-                    
-                    # Add impact trend
-                    fig_trends.add_trace(
-                        go.Scatter(
-                            x=monthly_trends['date'], 
-                            y=monthly_trends['businessImpact'],
-                            mode='lines+markers', 
-                            name='Business Impact',
-                            line=dict(color='#f093fb', width=4, shape='spline'),
-                            marker=dict(size=8, line=dict(width=2, color='white')),
-                            fill='tonexty',
-                            fillcolor='rgba(240, 147, 251, 0.1)'
-                        ),
-                        row=2, col=1
-                    )
-                    
-                    fig_trends.update_layout(
-                        height=550, 
-                        title_text="Strategic Performance Metrics Over Time",
-                        title_x=0.5,
-                        plot_bgcolor='rgba(0,0,0,0)',
-                        paper_bgcolor='rgba(0,0,0,0)',
-                        font=dict(family="Inter, sans-serif"),
-                        showlegend=False,
-                        xaxis=dict(showgrid=True, gridcolor='rgba(128,128,128,0.2)'),
-                        xaxis2=dict(showgrid=True, gridcolor='rgba(128,128,128,0.2)'),
-                        yaxis=dict(showgrid=True, gridcolor='rgba(128,128,128,0.2)'),
-                        yaxis2=dict(showgrid=True, gridcolor='rgba(128,128,128,0.2)')
-                    )
-                    
-                    # Calculate trend direction
-                    recent_rating = monthly_trends['rating'].tail(3).mean()
-                    historical_rating = monthly_trends['rating'].head(3).mean()
-                    trend_direction = "improving" if recent_rating > historical_rating else "declining"
-                    trend_magnitude = abs(recent_rating - historical_rating)
-                    
-                    insight_text = f"**Trend Analysis:** Customer satisfaction is {trend_direction} with {trend_magnitude:.2f} point change. {'Maintain momentum with current strategies.' if trend_direction == 'improving' else 'Implement corrective measures immediately.'}"
-                    
-                    create_chart_with_insights(fig_trends, insight_text)
-                    st.markdown("</div>", unsafe_allow_html=True)
-                
-                # Topic performance analysis
-                if topics:
-                    st.markdown("<div class='chart-container'>", unsafe_allow_html=True)
-                    st.markdown("### 🏷️ Strategic Topic Performance Dashboard")
-                    
-                    topic_performance = filtered_df.groupby('topic').agg({
-                        'rating': 'mean',
-                        'businessImpact': 'mean',
-                        'sentimentScore': 'mean',
-                        'reviewId': 'count'
-                    }).round(2).reset_index()
-                    topic_performance.columns = ['Topic', 'Avg Rating', 'Business Impact', 'Sentiment Score', 'Volume']
-                    
-                    # Get top topics by business impact
-                    top_topics_perf = topic_performance.nlargest(8, 'Business Impact')
-                    
-                    # 3D-enhanced horizontal bar chart
-                    fig_topics = px.bar(
-                        top_topics_perf, 
-                        x='Business Impact', 
-                        y='Topic',
-                        color='Avg Rating',
-                        title="Strategic Topic Impact Matrix",
-                        orientation='h',
-                        color_continuous_scale='RdYlGn',
-                        hover_data=['Volume', 'Sentiment Score']
-                    )
-                    
-                    # Enhanced 3D styling
-                    fig_topics.update_layout(
-                        height=500,
-                        yaxis={'categoryorder':'total ascending'},
-                        plot_bgcolor='rgba(0,0,0,0)',
-                        paper_bgcolor='rgba(0,0,0,0)',
-                        font=dict(family="Inter, sans-serif"),
-                        xaxis=dict(showgrid=True, gridcolor='rgba(128,128,128,0.2)'),
-                        yaxis=dict(showgrid=False)
-                    )
-                    
-                    # Add shadow effect to bars
-                    fig_topics.update_traces(
-                        marker=dict(
-                            line=dict(width=1, color='rgba(255,255,255,0.6)'),
-                            opacity=0.9
-                        )
-                    )
-                    
-                    best_topic = top_topics_perf.iloc[0]['Topic']
-                    worst_topic = topic_performance.nsmallest(1, 'Business Impact').iloc[0]['Topic']
-                    
-                    insight_text = f"**Market Opportunity:** '{best_topic}' drives highest customer value - leverage in marketing. **Risk Area:** '{worst_topic}' needs strategic intervention."
-                    
-                    create_chart_with_insights(fig_topics, insight_text)
-                    st.markdown("</div>", unsafe_allow_html=True)
-            
-            # TAB 3: Deep Intelligence
-            with tab3:
-                st.markdown("<h2 class='subheader'>🔍 Deep Customer Intelligence</h2>", unsafe_allow_html=True)
-                st.markdown("*Advanced analytics for competitive advantage*")
-                
-                # Advanced topic analysis with business recommendations
-                if topics:
-                    st.markdown("<div class='chart-container'>", unsafe_allow_html=True)
-                    st.subheader("🎯 Strategic Topic Intelligence Matrix")
-                    
-                    topic_insights = []
-                    for idx, topic_name in enumerate(sorted(topics), 1):
-                        topic_reviews = filtered_df[filtered_df['topic'] == topic_name]
-                        if len(topic_reviews) > 0:
-                            avg_rating = topic_reviews['rating'].mean()
-                            avg_sentiment = topic_reviews['sentimentScore'].mean()
-                            review_count = len(topic_reviews)
-                            avg_impact = topic_reviews['businessImpact'].mean()
-                            trust_score = (topic_reviews['fraudFlag'] == 'Legitimate').sum() / len(topic_reviews) * 100
-                            
-                            # Strategic classification
-                            if avg_rating >= 4.5 and avg_sentiment > 0.3:
-                                classification = "🟢 Strategic Strength"
-                                recommendation = "Leverage in premium marketing campaigns and competitive positioning"
-                            elif avg_rating >= 4.0 and avg_sentiment > 0.1:
-                                classification = "🟡 Growth Opportunity"
-                                recommendation = "Optimize to convert into strategic strength"
-                            elif avg_rating >= 3.0:
-                                classification = "🟠 Performance Gap"
-                                recommendation = "Implement immediate process improvements"
-                            else:
-                                classification = "🔴 Critical Risk"
-                                recommendation = "Crisis management and emergency intervention required"
-                            
-                            topic_insights.append({
-                                'Rank': idx,
-                                'Strategic Topic': topic_name,
-                                'Customer Volume': f"{review_count:,}",
-                                'Satisfaction': f"{avg_rating:.2f}/5.0",
-                                'Business Impact': f"{avg_impact:.2f}",
-                                'Trust Level': f"{trust_score:.1f}%",
-                                'Classification': classification,
-                                'Strategic Action': recommendation
-                            })
-                    
-                    if topic_insights:
-                        insights_df = pd.DataFrame(topic_insights)
-                        
-                        # Sort by business impact
-                        insights_df['Impact_Numeric'] = insights_df['Business Impact'].str.replace(r'[^\d.-]', '', regex=True).astype(float)
-                        insights_df = insights_df.sort_values('Impact_Numeric', ascending=False).drop('Impact_Numeric', axis=1)
-                        
-                        st.dataframe(
-                            insights_df, 
-                            use_container_width=True,
-                            hide_index=True,
-                            column_config={
-                                "Strategic Topic": st.column_config.TextColumn("Strategic Topic", width="medium"),
-                                "Classification": st.column_config.TextColumn("Classification", width="medium"),
-                                "Strategic Action": st.column_config.TextColumn("Strategic Action", width="large")
-                            }
-                        )
-                        
-                        # Strategic recommendations
-                        st.markdown('<div class="recommendation-box">', unsafe_allow_html=True)
-                        st.markdown("### 🎯 **C-Level Strategic Recommendations**")
-                        
-                        top_opportunity = insights_df.iloc[0]
-                        biggest_risks = insights_df[insights_df['Classification'].str.contains('🔴')].head(2)
-                        growth_opportunities = insights_df[insights_df['Classification'].str.contains('🟡')].head(2)
-                        
-                        st.markdown(f"""
-                        **🚀 Primary Market Opportunity:** 
-                        - **Focus Area:** {top_opportunity['Strategic Topic']} 
-                        - **Market Size:** {top_opportunity['Customer Volume']} customer touchpoints
-                        - **Revenue Impact:** {top_opportunity['Business Impact']} business value score
-                        - **Action:** {top_opportunity['Strategic Action']}
-                        
-                        **⚠️ Critical Risk Management:**
-                        {chr(10).join([f"- **{row['Strategic Topic']}**: {row['Strategic Action']}" for _, row in biggest_risks.iterrows()])}
-                        
-                        **📈 Growth Acceleration Targets:**
-                        {chr(10).join([f"- **{row['Strategic Topic']}**: Convert to market leadership position" for _, row in growth_opportunities.iterrows()])}
-                        
-                        **🎯 Executive Action Items:**
-                        1. **Immediate (0-30 days):** Address critical risk topics with crisis management protocols
-                        2. **Short-term (1-3 months):** Launch optimization initiatives for growth opportunities  
-                        3. **Long-term (3-12 months):** Build competitive moats around strategic strengths
-                        """)
-                        st.markdown('</div>', unsafe_allow_html=True)
-                    st.markdown("</div>", unsafe_allow_html=True)
-                
-                # Customer journey intelligence
-                col1, col2 = st.columns(2)
-                
-                with col1:
-                    st.markdown("<div class='chart-container'>", unsafe_allow_html=True)
-                    
-                    # Review engagement vs satisfaction analysis
-                    st.markdown("### 📝 Customer Engagement Intelligence")
-                    
-                    filtered_df['engagementTier'] = pd.cut(
-                        filtered_df['wordCount'],
-                        bins=[0, 10, 30, 75, 150, float('inf')],
-                        labels=['Minimal (≤10)', 'Brief (11-30)', 'Standard (31-75)', 'Detailed (76-150)', 'Comprehensive (150+)']
-                    )
-                    
-                    engagement_analysis = filtered_df.groupby('engagementTier').agg({
-                        'rating': 'mean',
-                        'sentimentScore': 'mean',
-                        'businessImpact': 'mean',
-                        'reviewId': 'count',
-                        'fraudFlag': lambda x: (x == 'Legitimate').sum() / len(x) * 100
-                    }).round(2).reset_index()
-                    engagement_analysis.columns = ['Engagement Level', 'Avg Rating', 'Sentiment Score', 'Business Impact', 'Volume', 'Trust %']
-                    
-                    # 3D-enhanced bar chart
-                    fig_engagement = px.bar(
-                        engagement_analysis, 
-                        x='Engagement Level', 
-                        y='Avg Rating',
-                        color='Business Impact',
-                        title="Customer Engagement vs Satisfaction Matrix",
-                        color_continuous_scale='Viridis',
-                        hover_data=['Volume', 'Trust %']
-                    )
-                    
-                    # Enhanced styling
-                    fig_engagement.update_layout(
-                        height=450,
-                        plot_bgcolor='rgba(0,0,0,0)',
-                        paper_bgcolor='rgba(0,0,0,0)',
-                        font=dict(family="Inter, sans-serif"),
-                        xaxis=dict(showgrid=True, gridcolor='rgba(128,128,128,0.2)'),
-                        yaxis=dict(showgrid=True, gridcolor='rgba(128,128,128,0.2)')
-                    )
-                    
-                    fig_engagement.update_traces(
-                        marker=dict(
-                            line=dict(width=2, color='rgba(255,255,255,0.8)'),
-                            opacity=0.9
-                        )
-                    )
-                    
-                    optimal_engagement = engagement_analysis.loc[engagement_analysis['Avg Rating'].idxmax(), 'Engagement Level']
-                    optimal_impact = engagement_analysis.loc[engagement_analysis['Business Impact'].idxmax(), 'Business Impact']
-                    
-                    insight_text = f"**Engagement Sweet Spot:** {optimal_engagement} reviews generate highest satisfaction. **Business Optimization:** Focus on encouraging detailed feedback (impact score: {optimal_impact})."
-                    
-                    create_chart_with_insights(fig_engagement, insight_text)
-                    st.markdown("</div>", unsafe_allow_html=True)
-                
-                with col2:
-                    st.markdown("<div class='chart-container'>", unsafe_allow_html=True)
-                    
-                    # Customer sentiment journey heatmap
-                    st.markdown("### 🎭 Customer Sentiment Journey Map")
-                    
-                    # Create sentiment order for consistent display
-                    sentiment_order = ['Extremely Negative', 'Very Negative', 'Negative', 'Neutral', 
-                                      'Positive', 'Very Positive', 'Extremely Positive']
-                    
-                    segment_journey = filtered_df.groupby(['customerSegment', 'sentiment']).size().unstack(fill_value=0)
-                    segment_journey = segment_journey.reindex(columns=sentiment_order, fill_value=0)
-                    segment_journey_pct = segment_journey.div(segment_journey.sum(axis=1), axis=0) * 100
-                    
-                    # 3D-enhanced heatmap
-                    fig_journey = px.imshow(
-                        segment_journey_pct.values,
-                        x=segment_journey_pct.columns,
-                        y=segment_journey_pct.index,
-                        title="Customer Segment Sentiment Distribution",
-                        color_continuous_scale='RdYlGn',
-                        text_auto='.1f',
-                        aspect="auto"
-                    )
-                    
-                    # Enhanced styling
-                    fig_journey.update_layout(
-                        height=450,
-                        plot_bgcolor='rgba(0,0,0,0)',
-                        paper_bgcolor='rgba(0,0,0,0)',
-                        font=dict(family="Inter, sans-serif"),
-                        xaxis_title="Customer Sentiment",
-                        yaxis_title="Customer Segment",
-                        coloraxis_colorbar=dict(
-                            title="Percentage",
-                            thickness=15,
-                            len=0.7
-                        )
-                    )
-                    
-                    # Calculate segment scores
-                    segment_scores = (segment_journey_pct[['Positive', 'Very Positive', 'Extremely Positive']].sum(axis=1) - 
-                                    segment_journey_pct[['Negative', 'Very Negative', 'Extremely Negative']].sum(axis=1))
-                    best_segment = segment_scores.idxmax()
-                    worst_segment = segment_scores.idxmin()
-                    
-                    insight_text = f"**Champion Segment:** {best_segment} shows {segment_scores.max():.1f}% net positive sentiment. **Priority Segment:** {worst_segment} needs immediate attention ({segment_scores.min():.1f}% net sentiment)."
-                    
-                    create_chart_with_insights(fig_journey, insight_text)
-                    st.markdown("</div>", unsafe_allow_html=True)
-            
-            # TAB 4: Customer Voices
-            with tab4:
-                st.markdown("<h2 class='subheader'>💬 Customer Voice Intelligence</h2>", unsafe_allow_html=True)
-                st.markdown("*Authentic customer feedback driving strategic decisions*")
-                
-                # Extract enhanced verbatims
-                positive_verbatims, negative_verbatims = extract_sample_verbatims(filtered_df)
-                
-                col1, col2 = st.columns(2)
-                
-                with col1:
-                    st.markdown("### 🌟 **Brand Champions & Success Stories**")
-                    st.markdown("*High-impact positive feedback driving business growth*")
-                    
-                    for idx, (_, review) in enumerate(positive_verbatims.iterrows(), 1):
-                        st.markdown(f'<div class="verbatim-section positive-verbatim">', unsafe_allow_html=True)
-                        st.markdown(f"**Champion Voice #{idx}** | ⭐{review['rating']}/5 | Business Impact: **{review['businessImpact']:.1f}/5.0**")
-                        
-                        # Enhanced review preview with smart truncation
-                        review_text = review['reviewText']
-                        if len(review_text) > 200:
-                            sentences = review_text.split('.')
-                            preview = '. '.join(sentences[:2]) + '...' if len(sentences) > 2 else review_text
-                        else:
-                            preview = review_text
-                        
-                        st.markdown(f"*\"{preview}\"*")
-                        
-                        # Enhanced metadata
-                        col_a, col_b = st.columns(2)
-                        with col_a:
-                            st.markdown(f"**Focus Area:** {review['topic']}")
-                            st.markdown(f"**Customer Type:** {review['customerSegment']}")
-                        with col_b:
-                            st.markdown(f"**Emotion:** {review['sentiment']}")
-                            st.markdown(f"**Confidence:** {review['sentimentConfidence']:.0%}")
-                        
-                        st.markdown('</div>', unsafe_allow_html=True)
-                
-                with col2:
-                    st.markdown("### ⚠️ **Critical Customer Concerns**")
-                    st.markdown("*High-priority issues requiring immediate executive attention*")
-                    
-                    for idx, (_, review) in enumerate(negative_verbatims.iterrows(), 1):
-                        st.markdown(f'<div class="verbatim-section negative-verbatim">', unsafe_allow_html=True)
-                        st.markdown(f"**Critical Issue #{idx}** | ⭐{review['rating']}/5 | Business Impact: **{review['businessImpact']:.1f}/5.0**")
-                        
-                        # Enhanced review preview
-                        review_text = review['reviewText']
-                        if len(review_text) > 200:
-                            sentences = review_text.split('.')
-                            preview = '. '.join(sentences[:2]) + '...' if len(sentences) > 2 else review_text
-                        else:
-                            preview = review_text
-                        
-                        st.markdown(f"*\"{preview}\"*")
-                        
-                        # Enhanced metadata with urgency indicators
-                        col_a, col_b = st.columns(2)
-                        with col_a:
-                            urgency = "🚨 Critical" if review['businessImpact'] < -3 else "⚠️ High" if review['businessImpact'] < -1 else "📊 Monitor"
-                            st.markdown(f"**Urgency Level:** {urgency}")
-                            st.markdown(f"**Issue Category:** {review['topic']}")
-                        with col_b:
-                            st.markdown(f"**Customer Type:** {review['customerSegment']}")
-                            st.markdown(f"**Confidence:** {review['sentimentConfidence']:.0%}")
-                        
-                        st.markdown('</div>', unsafe_allow_html=True)
-                
-                # Enhanced impact analysis
-                st.markdown('<div class="explained-box">', unsafe_allow_html=True)
-                st.markdown("""
-                ### 📊 Business Impact Score - Executive Guide
-                
-                **Strategic Framework:** The Business Impact Score is your north star metric for prioritizing customer feedback actions.
-                
-                **Scoring Methodology:**
-                - **Foundation Layer:** Star ratings provide base impact (-3 to +3)
-                - **Sentiment Amplification:** Customer emotion multiplies influence (-2 to +2)  
-                - **Engagement Weighting:** Detailed reviews carry more market weight (up to 1.5x multiplier)
-                - **Trust Validation:** Suspicious reviews are discounted to maintain data integrity
-                
-                **Executive Decision Matrix:**
-                
-                | **Score Range** | **Business Meaning** | **Strategic Action** | **Priority Level** |
-                |-----------------|----------------------|---------------------|-------------------|
-                | **+3.0 to +5.0** | Premium brand advocates | Leverage in marketing campaigns | 🟢 Strategic Asset |
-                | **+1.0 to +2.9** | Satisfied customers | Nurture loyalty programs | 🟡 Growth Opportunity |
-                | **-1.0 to +0.9** | Neutral market position | Monitor and optimize | 📊 Baseline Management |
-                | **-2.9 to -1.1** | Customer satisfaction risk | Immediate process review | 🟠 Action Required |
-                | **-5.0 to -3.0** | Brand reputation threat | Crisis management protocol | 🔴 Executive Escalation |
-                
-                **ROI Optimization:** Focus resources on high-impact positive reviews for marketing leverage and high-impact negative reviews for risk mitigation.
-                """)
-                st.markdown('</div>', unsafe_allow_html=True)
-                
-                # Strategic topic summary
-                st.markdown("### 🏆 **Strategic Customer Priorities Dashboard**")
-                if topics:
-                    col1, col2, col3 = st.columns(3)
-                    
-                    topic_summary = filtered_df['topic'].value_counts().head(9)
-                    topic_sentiment = filtered_df.groupby('topic')['businessImpact'].mean().round(2)
-                    
-                    for idx, (topic, count) in enumerate(topic_summary.items()):
-                        col_idx = idx % 3
-                        impact = topic_sentiment.get(topic, 0)
-                        
-                        # Determine priority level
-                        if impact > 2:
-                            priority = "🟢 Strategic Strength"
-                            action = "Leverage in marketing"
-                        elif impact > 0:
-                            priority = "🟡 Growth Area"
-                            action = "Optimize for excellence"
-                        elif impact > -1:
-                            priority = "📊 Monitor"
-                            action = "Track performance"
-                        else:
-                            priority = "🔴 Critical Issue"
-                            action = "Immediate intervention"
-                        
-                        if col_idx == 0:
-                            with col1:
-                                st.markdown(f"""
-                                **{idx+1}. {topic}**
-                                - **Volume:** {count:,} mentions ({count/len(filtered_df)*100:.1f}%)
-                                - **Impact:** {impact:.1f}/5.0
-                                - **Status:** {priority}
-                                - **Action:** {action}
-                                """)
-                        elif col_idx == 1:
-                            with col2:
-                                st.markdown(f"""
-                                **{idx+1}. {topic}**
-                                - **Volume:** {count:,} mentions ({count/len(filtered_df)*100:.1f}%)
-                                - **Impact:** {impact:.1f}/5.0
-                                - **Status:** {priority}
-                                - **Action:** {action}
-                                """)
-                        else:
-                            with col3:
-                                st.markdown(f"""
-                                **{idx+1}. {topic}**
-                                - **Volume:** {count:,} mentions ({count/len(filtered_df)*100:.1f}%)
-                                - **Impact:** {impact:.1f}/5.0
-                                - **Status:** {priority}
-                                - **Action:** {action}
-                                """)
-            
-            # TAB 5: Risk Management
-            with tab5:
-                st.markdown("<h2 class='subheader'>🚨 Enterprise Risk Management</h2>", unsafe_allow_html=True)
-                st.markdown("*Advanced threat detection and business continuity analytics*")
-                
-                # Enhanced risk metrics with executive KPIs
-                col1, col2, col3, col4 = st.columns(4)
-                
-                with col1:
-                    high_risk_count = (filtered_df['fraudFlag'] == 'High Risk').sum()
-                    risk_trend = "📈" if high_risk_count > len(filtered_df) * 0.1 else "📊" if high_risk_count > len(filtered_df) * 0.05 else "📉"
-                    st.markdown(f"""
-                    <div class='metric-card'>
-                        <h3>🚨 Critical Threats</h3>
-                        <h2>{high_risk_count}</h2>
-                        <p>{high_risk_count/len(filtered_df)*100:.1f}% {risk_trend}</p>
-                    </div>
-                    """, unsafe_allow_html=True)
-                
-                with col2:
-                    reputation_risk = len(filtered_df[filtered_df['rating'] <= 2]) / len(filtered_df) * 100
-                    rep_status = "🟢 Stable" if reputation_risk < 10 else "🟡 Monitor" if reputation_risk < 20 else "🔴 Alert"
-                    st.markdown(f"""
-                    <div class='metric-card'>
-                        <h3>📉 Reputation Risk</h3>
-                        <h2>{reputation_risk:.1f}%</h2>
-                        <p>{rep_status}</p>
-                    </div>
-                    """, unsafe_allow_html=True)
-                
-                with col3:
-                    data_integrity = len(filtered_df[filtered_df['fraudFlag'] == 'Legitimate']) / len(filtered_df) * 100
-                    integrity_grade = "A+" if data_integrity > 90 else "A" if data_integrity > 80 else "B" if data_integrity > 70 else "C"
-                    st.markdown(f"""
-                    <div class='metric-card'>
-                        <h3>🛡️ Data Integrity</h3>
-                        <h2>{data_integrity:.1f}%</h2>
-                        <p>Grade: {integrity_grade}</p>
-                    </div>
-                    """, unsafe_allow_html=True)
-                
-                with col4:
-                    avg_fraud_score = filtered_df['fraudScore'].mean()
-                    risk_level = "Low" if avg_fraud_score < 2 else "Medium" if avg_fraud_score < 4 else "High"
-                    st.markdown(f"""
-                    <div class='metric-card'>
-                        <h3>⚖️ Risk Index</h3>
-                        <h2>{avg_fraud_score:.1f}/10</h2>
-                        <p>{risk_level} Risk</p>
-                    </div>
-                    """, unsafe_allow_html=True)
-                
-                # Advanced risk analytics
-                col1, col2 = st.columns(2)
-                
-                with col1:
-                    st.markdown("<div class='chart-container'>", unsafe_allow_html=True)
-                    
-                    # Enhanced fraud detection dashboard
-                    fraud_dist = filtered_df['fraudFlag'].value_counts()
-                    
-                    # 3D-enhanced donut chart
-                    fig_fraud = px.pie(
-                        values=fraud_dist.values,
-                        names=fraud_dist.index,
-                        title="🔍 Review Authenticity Intelligence",
-                        color_discrete_map={
-                            'Legitimate': '#28a745',
-                            'Low Risk': '#ffc107', 
-                            'Medium Risk': '#fd7e14',
-                            'High Risk': '#dc3545'
-                        },
-                        hole=0.4
-                    )
-                    
-                    # Enhanced styling
-                    fig_fraud.update_layout(
-                        height=450,
-                        plot_bgcolor='rgba(0,0,0,0)',
-                        paper_bgcolor='rgba(0,0,0,0)',
-                        font=dict(family="Inter, sans-serif"),
-                        showlegend=True,
-                        legend=dict(
-                            orientation="v",
-                            yanchor="middle",
-                            y=0.5,
-                            xanchor="left",
-                            x=1.05
-                        )
-                    )
-                    
-                    # Add 3D effect with pull and shadow
-                    fig_fraud.update_traces(
-                        textposition='inside',
-                        textinfo='percent+label',
-                        marker=dict(
-                            line=dict(color='#FFFFFF', width=3)
-                        ),
-                        pull=[0.1 if 'High Risk' in name else 0.05 if 'Medium Risk' in name else 0 for name in fraud_dist.index]
-                    )
-                    
-                    legitimate_rate = fraud_dist.get('Legitimate', 0) / len(filtered_df) * 100
-                    total_risk = 100 - legitimate_rate
-                    
-                    insight_text = f"**Data Integrity Status:** {legitimate_rate:.1f}% verified authentic reviews. **Risk Exposure:** {total_risk:.1f}% requires monitoring. {'Implement enhanced verification protocols.' if total_risk > 15 else 'Maintain current security standards.'}"
-                    
-                    create_chart_with_insights(fig_fraud, insight_text)
-                    st.markdown("</div>", unsafe_allow_html=True)
-                
-                with col2:
-                    st.markdown("<div class='chart-container'>", unsafe_allow_html=True)
-                    
-                    # Risk trend analysis
-                    st.markdown("### 📈 Risk Evolution Timeline")
-                    
-                    risk_trends = filtered_df.groupby(['year', 'month']).agg({
-                        'fraudScore': 'mean',
-                        'fraudFlag': lambda x: (x != 'Legitimate').sum(),
-                        'reviewId': 'count',
-                        'businessImpact': 'mean'
-                    }).reset_index()
-                    
-                    risk_trends['risk_rate'] = risk_trends['fraudFlag'] / risk_trends['reviewId'] * 100
-                    risk_trends['date'] = pd.to_datetime(risk_trends[['year', 'month']].assign(day=1))
-                    risk_trends = risk_trends.sort_values('date')
-                    
-                    # 3D-enhanced dual axis chart
-                    fig_risk = make_subplots(
-                        specs=[[{"secondary_y": True}]],
-                        subplot_titles=["Risk Rate vs Business Impact Correlation"]
-                    )
-                    
-                    # Risk rate line
-                    fig_risk.add_trace(
-                        go.Scatter(
-                            x=risk_trends['date'], 
-                            y=risk_trends['risk_rate'],
-                            mode='lines+markers',
-                            name='Suspicious Review Rate (%)',
-                            line=dict(color='#dc3545', width=4, shape='spline'),
-                            marker=dict(size=8, line=dict(width=2, color='white')),
-                            fill='tonexty',
-                            fillcolor='rgba(220, 53, 69, 0.1)'
-                        ),
-                        secondary_y=False
-                    )
-                    
-                    # Business impact line
-                    fig_risk.add_trace(
-                        go.Scatter(
-                            x=risk_trends['date'], 
-                            y=risk_trends['businessImpact'],
-                            mode='lines+markers',
-                            name='Business Impact Score',
-                            line=dict(color='#28a745', width=4, shape='spline'),
-                            marker=dict(size=8, line=dict(width=2, color='white')),
-                            fill='tonexty',
-                            fillcolor='rgba(40, 167, 69, 0.1)'
-                        ),
-                        secondary_y=True
-                    )
-                    
-                    # Enhanced styling
-                    fig_risk.update_layout(
-                        height=450,
-                        plot_bgcolor='rgba(0,0,0,0)',
-                        paper_bgcolor='rgba(0,0,0,0)',
-                        font=dict(family="Inter, sans-serif"),
-                        title_x=0.5,
-                        showlegend=True,
-                        legend=dict(x=0, y=1.1, orientation="h"),
-                        xaxis=dict(showgrid=True, gridcolor='rgba(128,128,128,0.2)')
-                    )
-                    
-                    fig_risk.update_yaxes(
-                        title_text="Suspicious Review Rate (%)",
-                        secondary_y=False,
-                        showgrid=True,
-                        gridcolor='rgba(128,128,128,0.2)'
-                    )
-                    fig_risk.update_yaxes(
-                        title_text="Business Impact Score",
-                        secondary_y=True,
-                        showgrid=False
-                    )
-                    
-                    # Calculate risk trajectory
-                    recent_risk = risk_trends['risk_rate'].tail(3).mean()
-                    historical_risk = risk_trends['risk_rate'].head(3).mean()
-                    risk_direction = "increasing" if recent_risk > historical_risk else "decreasing"
-                    risk_change = abs(recent_risk - historical_risk)
-                    
-                    insight_text = f"**Risk Trajectory:** Suspicious activity is {risk_direction} by {risk_change:.1f}%. **Correlation Impact:** {'Negative correlation detected - higher risk = lower business value' if risk_trends['risk_rate'].corr(risk_trends['businessImpact']) < -0.3 else 'Monitor for emerging patterns'}."
-                    
-                    create_chart_with_insights(fig_risk, insight_text)
-                    st.markdown("</div>", unsafe_allow_html=True)
-                
-                # Detailed fraud detection results
-                st.markdown("### 🕵️ **Advanced Threat Detection Results**")
-                suspicious_df = filtered_df[filtered_df['fraudFlag'].isin(['High Risk', 'Medium Risk'])]
-                
-                if not suspicious_df.empty:
-                    st.markdown(f"**🚨 Security Alert:** {len(suspicious_df)} suspicious reviews detected requiring investigation")
-                    
-                    # Enhanced suspicious review analysis
-                    fraud_analysis = suspicious_df.groupby(['fraudFlag', 'fraudReason']).size().reset_index(name='Count')
-                    fraud_analysis = fraud_analysis.sort_values('Count', ascending=False)
-                    
-                    st.markdown("#### **Threat Pattern Analysis**")
-                    for _, row in fraud_analysis.head(10).iterrows():
-                        threat_level = "🔴 Critical" if row['fraudFlag'] == 'High Risk' else "🟡 Moderate"
-                        st.markdown(f"- **{threat_level}**: {row['fraudReason']} ({row['Count']} instances)")
-                    
-                    # Sample suspicious reviews table
-                    st.markdown("#### **High-Risk Review Samples**")
-                    display_cols = ['reviewId', 'reviewText', 'rating', 'fraudFlag', 'fraudReason', 'fraudScore']
-                    sample_suspicious = suspicious_df.nlargest(5, 'fraudScore')[display_cols]
-                    
-                    st.dataframe(
-                        sample_suspicious, 
-                        use_container_width=True,
-                        hide_index=True,
-                        column_config={
-                            "reviewText": st.column_config.TextColumn("Review Text", width="large"),
-                            "fraudReason": st.column_config.TextColumn("Risk Factors", width="medium")
-                        }
-                    )
-                    
-                else:
-                    st.success("✅ **All Clear:** No suspicious reviews detected in current filter selection")
-                
-                # Executive risk management recommendations
                 st.markdown('<div class="recommendation-box">', unsafe_allow_html=True)
-                st.markdown("### 🛡️ **Executive Risk Management Strategy**")
+                st.markdown("### 💡 **What We Should Do**")
                 
-                total_risk_rate = (filtered_df['fraudFlag'] != 'Legitimate').sum() / len(filtered_df) * 100
-                high_impact_negative = len(filtered_df[(filtered_df['businessImpact'] < -2) & (filtered_df['rating'] <= 2)])
-                
-                # Dynamic risk assessment
-                if total_risk_rate > 20:
-                    risk_status = "🔴 **CRISIS LEVEL**"
-                    action_urgency = "Immediate C-suite intervention required"
-                elif total_risk_rate > 10:
-                    risk_status = "🟠 **ELEVATED RISK**"
-                    action_urgency = "Deploy enhanced monitoring protocols"
-                elif total_risk_rate > 5:
-                    risk_status = "🟡 **MODERATE RISK**"
-                    action_urgency = "Implement preventive measures"
-                else:
-                    risk_status = "🟢 **LOW RISK**"
-                    action_urgency = "Maintain current security posture"
+                top_opportunity = insights_df.iloc[0]
+                biggest_risk = insights_df[insights_df['Action'].str.contains('🔴')].head(1)
                 
                 st.markdown(f"""
-                **Current Threat Level:** {risk_status}
-                **Immediate Action Required:** {action_urgency}
-                **High-Impact Negative Reviews:** {high_impact_negative} requiring crisis management
+                **🎯 Best Opportunity:** Focus on **{top_opportunity['Theme']}** - it has {top_opportunity['Volume']} reviews and high impact.
                 
-                **Strategic Risk Mitigation Framework:**
+                **⚠️ Biggest Issue:** {biggest_risk['Theme'].iloc[0] if len(biggest_risk) > 0 else 'No major issues found'} needs urgent fixes.
                 
-                **🚨 Immediate Actions (0-7 days):**
-                - Investigate all high-risk flagged reviews for authenticity
-                - Implement emergency response for reviews with business impact < -3.0
-                - Deploy advanced AI detection for similar pattern recognition
-                
-                **🛡️ Short-term Fortification (1-4 weeks):**
-                - Establish review verification protocols with multiple validation layers
-                - Create customer feedback authentication system
-                - Launch proactive customer satisfaction intervention programs
-                
-                **📊 Long-term Strategic Defense (1-6 months):**
-                - Build predictive analytics for early threat detection
-                - Implement blockchain-based review authenticity verification
-                - Develop customer advocacy programs to increase authentic positive reviews
-                - Create competitor analysis to identify market manipulation attempts
-                
-                **💼 Business Continuity Measures:**
-                - Monitor brand reputation metrics across all channels
-                - Establish crisis communication protocols for reputation management
-                - Create legal framework for fraudulent review prosecution
-                - Develop customer trust restoration programs
+                **📈 Next Steps:** Build on strong themes and fix weak ones to keep customers happy.
                 """)
+                st.markdown('</div>', unsafe_allow_html=True)
+            st.markdown("</div>", unsafe_allow_html=True)
+        
+        # Customer journey analysis
+        st.subheader("🛤️ Customer Experience Insights")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("<div class='chart-container'>", unsafe_allow_html=True)
+            # Review length vs satisfaction analysis
+            st.markdown("### 📝 Review Length vs Happiness")
+            filtered_df['lengthCategory'] = pd.cut(
+                filtered_df['wordCount'],
+                bins=[0, 10, 30, 75, 150, float('inf')],
+                labels=['Minimal (≤10)', 'Brief (11-30)', 'Standard (31-75)', 'Detailed (76-150)', 'Comprehensive (150+)']
+            )
+            
+            length_analysis = filtered_df.groupby('lengthCategory').agg({
+                'rating': 'mean',
+                'sentimentScore': 'mean',
+                'businessImpact': 'mean',
+                'reviewId': 'count'
+            }).round(2).reset_index()
+            
+            fig_length = px.bar(
+                length_analysis, 
+                x='lengthCategory', 
+                y='rating',
+                color='businessImpact',
+                title="Review Length vs Customer Happiness",
+                color_continuous_scale='Viridis'
+            )
+            
+            optimal_length = length_analysis.loc[length_analysis['rating'].idxmax(), 'lengthCategory']
+            optimal_rating = length_analysis['rating'].max()
+            
+            insight_text = f"**{optimal_length} reviews give the highest ratings** ({optimal_rating:.2f}/5.0). These reviews have a {length_analysis.loc[length_analysis['lengthCategory'] == optimal_length, 'businessImpact'].iloc[0]:.1f} impact, showing detailed feedback matters."
+            
+            create_chart_with_insights(fig_length, insight_text)
+            
+            st.markdown("""
+            **What This Means:**
+            - **Review Length**: How many words a customer writes (short, medium, long).
+            - **Rating**: The star rating they give (1-5).
+            - **Business Detail**: The topics they mention (e.g., shipping, quality).
+            - **How to Read**: Longer reviews often give better insights. If long reviews have high ratings, customers are happy and detailed. If they have low ratings, there are serious issues to fix.
+            """)
+            st.markdown("</div>", unsafe_allow_html=True)
+        
+        with col2:
+            st.markdown("<div class='chart-container'>", unsafe_allow_html=True)
+            # Customer segment journey
+            st.markdown("### 👥 Customer Types Feelings")
+            segment_journey = filtered_df.groupby(['customerSegment', 'sentiment']).size().unstack(fill_value=0)
+            segment_journey = segment_journey.reindex(columns=sentiment_order, fill_value=0)
+            segment_journey_pct = segment_journey.div(segment_journey.sum(axis=1), axis=0) * 100
+            
+            fig_journey = px.imshow(
+                segment_journey_pct.values,
+                x=segment_journey_pct.columns,
+                y=segment_journey_pct.index,
+                title="Customer Types Feelings Breakdown",
+                color_continuous_scale='RdYlGn',
+                text_auto='.1f'
+            )
+            
+            segment_scores = (segment_journey_pct[['Positive', 'Very Positive', 'Extremely Positive']].sum(axis=1) - 
+                            segment_journey_pct[['Negative', 'Very Negative', 'Extremely Negative']].sum(axis=1))
+            best_segment = segment_scores.idxmax()
+            worst_segment = segment_scores.idxmin()
+            
+            insight_text = f"**{best_segment}** customers are the happiest ({segment_scores.max():.1f}% positive), so we should reward them. **{worst_segment}** customers are least happy ({segment_scores.min():.1f}%), so we need to help them."
+            
+            create_chart_with_insights(fig_journey, insight_text)
+            
+            st.markdown("""
+            **How to Read This Chart:**
+            - Each box shows the percentage of a customer group (e.g., Satisfied Customers) with a certain feeling (e.g., Positive).
+            - **Green boxes**: More customers in that group feel positive.
+            - **Red boxes**: More customers feel negative, which needs attention.
+            - **Bar on the right**: Shows the total number of reviews for each customer group.
+            """)
+            st.markdown("</div>", unsafe_allow_html=True)
+        
+        # Metrics Explained
+        st.markdown('<div class="explained-box">', unsafe_allow_html=True)
+        st.markdown("""
+        ### 📘 Understanding the Metrics
+        | **Metric** | **What It Means** | **How It's Calculated / How to Read It** |
+        |------------|-------------------|-----------------------------------------|
+        | **Volume** | Number of reviews about a topic. | Total count of reviews for each topic. More reviews mean the topic is important. |
+        | **Avg Rating** | Average star rating for a topic or review length. | Add up ratings and divide by number of reviews. Higher means customers like it. |
+        | **Sentiment Score** | How positive or negative reviews are. | Analyzed from review text. Positive numbers mean happy reviews; negative means unhappy. |
+        | **Business Impact** | How much a topic or review affects the business. | Based on rating, positivity, and length. Higher means bigger influence. |
+        | **Action** | What we should do about a topic. | Based on ratings and positivity. Green means promote it; red means fix it. |
+
+        **Customer Types are explained in the Executive Summary tab.**
+        """)
+        st.markdown('</div>', unsafe_allow_html=True)
+    
+    # TAB 4: Customer Voices
+    with tab4:
+        st.markdown("<h2 class='subheader'>💬 Customer Voices</h2>", unsafe_allow_html=True)
+        st.markdown("*What customers are really saying about our product*")
+        
+        # Extract and display sample verbatims
+        positive_verbatims, negative_verbatims = extract_sample_verbatims(filtered_df)
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("### 🌟 **Happy Customers**")
+            st.markdown("*Customers who love our product and help our brand*")
+            
+            for idx, (_, review) in enumerate(positive_verbatims.iterrows(), 1):
+                st.markdown(f'<div class="verbatim-section positive-verbatim">', unsafe_allow_html=True)
+                st.markdown(f"**Happy Customer #{idx}** | ⭐{review['rating']}/5 | Impact: {review['businessImpact']:.1f}")
+                review_preview = review['reviewText'][:300]
+                if len(review['reviewText']) > 300:
+                    review_preview += "..."
+                st.markdown(f"*\"{review_preview}\"*")
+                st.markdown(f"**Topic:** {review['topic']} | **Feeling:** {review['sentiment']}")
                 st.markdown('</div>', unsafe_allow_html=True)
         
-        else:
-            # Enhanced onboarding experience
-            st.markdown('<div class="chart-container">', unsafe_allow_html=True)
+        with col2:
+            st.markdown("### ⚠️ **Customer Concerns**")
+            st.markdown("*Issues we need to fix to keep customers happy*")
+            
+            for idx, (_, review) in enumerate(negative_verbatims.iterrows(), 1):
+                st.markdown(f'<div class="verbatim-section negative-verbatim">', unsafe_allow_html=True)
+                st.markdown(f"**Concern #{idx}** | ⭐{review['rating']}/5 | Impact: {review['businessImpact']:.1f}")
+                review_preview = review['reviewText'][:300]
+                if len(review['reviewText']) > 300:
+                    review_preview += "..."
+                st.markdown(f"*\"{review_preview}\"*")
+                st.markdown(f"**Topic:** {review['topic']} | **Feeling:** {review['sentiment']}")
+                st.markdown('</div>', unsafe_allow_html=True)
+        
+        # Impact score explanation
+        st.markdown('<div class="explained-box">', unsafe_allow_html=True)
+        st.markdown("""
+        ### 📘 Understanding the Impact Score
+        **What It Means:** The Impact Score shows how much a review could affect your business - positive reviews help sales, negative ones hurt.
+        
+        **How It's Calculated:** Based on star rating (high = positive), sentiment (positive words = positive), and review length (longer = more impact). Scores range from -4.5 to 4.5.
+        
+        **How to Read It (3 Buckets):**
+        - **Positive Impact (>0):** Good reviews that boost your brand. Focus on sharing these.
+        - **Neutral Impact (0):** Balanced reviews with little effect. Monitor for trends.
+        - **Negative Impact (<0):** Bad reviews that could harm sales. Address these issues quickly.
+        """)
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+        # Key themes summary (dynamic with filtered_df)
+        st.subheader("🔤 Top Customer Topics")
+        if topics:
+            topic_summary = filtered_df['topic'].value_counts().head(5)
+            st.markdown("Here are the top 5 things customers are talking about:")
+            for idx, (topic, count) in enumerate(topic_summary.items(), 1):
+                st.markdown(f"**{idx}. {topic}**: Mentioned in {count:,} reviews ({count/len(filtered_df)*100:.1f}%)")
+            st.markdown("**What to Do:** Use these topics to improve products, marketing, or customer service.")
+        
+        # Metrics Explained
+        st.markdown('<div class="explained-box">', unsafe_allow_html=True)
+        st.markdown("""
+        ### 📘 Understanding the Metrics
+        | **Metric** | **What It Means** | **How It's Calculated / How to Read It** |
+        |------------|-------------------|-----------------------------------------|
+        | **Rating** | The star rating a customer gave. | From 1 to 5 stars. Higher means they liked the product. |
+        | **Business Impact** | How much a review affects our business. | Based on rating, positivity, and length. Higher means bigger influence. |
+        | **Topic** | What the review is about (e.g., shipping, quality). | Found by analyzing common words in reviews. Helps us know what matters to customers. |
+        | **Feeling (Sentiment)** | Whether the review is positive, negative, or neutral. | Analyzed from review text. Positive means happy; negative means unhappy. |
+        """)
+        st.markdown('</div>', unsafe_allow_html=True)
+    
+    # TAB 5: Risk Assessment
+    with tab5:
+        st.markdown("<h2 class='subheader'>🚨 Risk Assessment</h2>", unsafe_allow_html=True)
+        st.markdown("*Checking for fake reviews and customer issues*")
+        
+        # Risk metrics dashboard with metric cards
+        col1, col2, col3, col4 = st.columns(4)
+        
+        with col1:
+            high_risk_count = (filtered_df['fraudFlag'] == 'High Risk').sum()
+            st.markdown(f"""
+            <div class='metric-card'>
+                <h3>🚨 Very Suspicious Reviews</h3>
+                <h2>{high_risk_count}</h2>
+                <p>{high_risk_count/len(filtered_df)*100:.1f}%</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col2:
+            negative_trend_risk = len(filtered_df[filtered_df['rating'] <= 2]) / len(filtered_df) * 100
+            st.markdown(f"""
+            <div class='metric-card'>
+                <h3>📉 Unhappy Customers</h3>
+                <h2>{negative_trend_risk:.1f}%</h2>
+                <p>Dissatisfaction Risk</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col3:
+            inconsistent_reviews = len(filtered_df[
+                ((filtered_df['rating'] >= 4) & (filtered_df['sentiment'].str.contains('Negative', na=False))) |
+                ((filtered_df['rating'] <= 2) & (filtered_df['sentiment'].str.contains('Positive', na=False)))
+            ])
+            st.markdown(f"""
+            <div class='metric-card'>
+                <h3>⚠️ Mismatched Reviews</h3>
+                <h2>{inconsistent_reviews}</h2>
+                <p>Inconsistent Reviews</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col4:
+            avg_fraud_score = filtered_df['fraudScore'].mean()
+            st.markdown(f"""
+            <div class='metric-card'>
+                <h3>🎯 Average Risk Score</h3>
+                <h2>{avg_fraud_score:.1f}/10</h2>
+                <p>Average Risk Score</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        # Detailed fraud analysis in chart containers
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("<div class='chart-container'>", unsafe_allow_html=True)
+            fraud_dist = filtered_df['fraudFlag'].value_counts()
+            fig_fraud = px.pie(
+                values=fraud_dist.values,
+                names=fraud_dist.index,
+                title="🔍 Review Trust Breakdown",
+                color_discrete_map={
+                    'Legitimate': '#28a745',
+                    'Low Risk': '#ffc107', 
+                    'Medium Risk': '#fd7e14',
+                    'High Risk': '#dc3545'
+                }
+            )
+            
+            legitimate_rate = fraud_dist.get('Legitimate', 0) / len(filtered_df) * 100
+            insight_text = f"**{legitimate_rate:.1f}% of reviews are trustworthy**. We should verify the {100-legitimate_rate:.1f}% suspicious reviews to keep our feedback reliable."
+            
+            create_chart_with_insights(fig_fraud, insight_text)
+            st.markdown("</div>", unsafe_allow_html=True)
+        
+        with col2:
+            st.markdown("<div class='chart-container'>", unsafe_allow_html=True)
+            risk_trends = filtered_df.groupby(['year', 'month']).agg({
+                'fraudScore': 'mean',
+                'fraudFlag': lambda x: (x != 'Legitimate').sum(),
+                'reviewId': 'count'
+            }).reset_index()
+            risk_trends['risk_rate'] = risk_trends['fraudFlag'] / risk_trends['reviewId'] * 100
+            risk_trends['date'] = pd.to_datetime(risk_trends[['year', 'month']].assign(day=1))
+            
+            fig_risk_trends = px.line(
+                risk_trends, 
+                x='date', 
+                y='risk_rate',
+                title="📈 Suspicious Reviews Over Time",
+                color_discrete_sequence=['#dc3545']
+            )
+            fig_risk_trends.update_layout(xaxis_tickangle=45)
+            
+            recent_risk = risk_trends['risk_rate'].tail(3).mean()
+            historical_risk = risk_trends['risk_rate'].head(3).mean()
+            risk_direction = "going up" if recent_risk > historical_risk else "going down"
+            
+            insight_text = f"**The number of suspicious reviews is {risk_direction}** by {abs(recent_risk - historical_risk):.1f}%. This means our efforts to keep reviews honest are {'working' if risk_direction == 'going down' else 'not enough, and we need stronger checks'}."
+            
+            create_chart_with_insights(fig_risk_trends, insight_text)
+            
             st.markdown("""
-            ### 🚀 **Welcome to Your C-Level Customer Intelligence Platform**
-            
-            **Transform Raw Reviews into Strategic Business Intelligence**
-            
-            This enterprise-grade dashboard converts customer feedback into actionable insights for executive decision making.
-            
-            #### **🎯 What You'll Discover:**
-            - **📊 Executive KPIs:** Customer satisfaction, business impact, and market position metrics
-            - **🧠 AI-Powered Analytics:** Advanced sentiment analysis and topic modeling
-            - **🔍 Fraud Detection:** Sophisticated algorithms to identify suspicious reviews
-            - **💬 Customer Voices:** Strategic verbatims driving business decisions
-            - **🚨 Risk Management:** Enterprise-level threat detection and mitigation
-            - **📈 Competitive Intelligence:** Market positioning and performance benchmarks
-            
-            #### **📋 Required Data Format:**
-            Upload a CSV file containing Amazon reviews with these columns:
-            - Review ID, Reviewer Name, Review Text, Rating (1-5)
-            - Summary, Helpful Votes, Total Votes, Review Date, Year
-            
-            #### **🎨 Advanced Features:**
-            - **3D-Enhanced Visualizations** for premium presentation quality
-            - **Interactive Filtering** with smart controls in the left sidebar
-            - **Word Cloud Analysis** showing customer priority keywords
-            - **Strategic Recommendations** with C-level action items
-            - **Export Capabilities** for board presentations and reports
-            
-            **Ready to unlock your customer intelligence? Upload your dataset to begin the analysis.**
+            **What is Risk Rate?**
+            - **Risk Rate**: The percentage of reviews that seem suspicious (Low, Medium, or High Risk).
+            - **How to Read**: A lower risk rate means fewer fake or problematic reviews. If it's going down, our review system is getting more trustworthy.
             """)
-            st.markdown('</div>', unsafe_allow_html=True)
+            st.markdown("</div>", unsafe_allow_html=True)
+        
+        # New Fraud Detection section
+        st.subheader("🕵️ Fraud Detection")
+        suspicious_df = filtered_df[filtered_df['fraudFlag'].isin(['High Risk', 'Medium Risk'])]
+        if not suspicious_df.empty:
+            st.markdown(f"**Found {len(suspicious_df)} suspicious reviews.**")
+            st.dataframe(suspicious_df[['reviewId', 'reviewText', 'rating', 'fraudFlag', 'fraudReason']], use_container_width=True)
+            st.info("These are added to the downloadable CSV with columns 'fraudFlag' and 'fraudReason'.")
+        else:
+            st.success("No suspicious reviews found in current filters.")
+        
+        # Risk mitigation recommendations
+        st.markdown('<div class="recommendation-box">', unsafe_allow_html=True)
+        st.markdown("### 🛡️ **How to Reduce Risks**")
+        
+        total_risk_rate = (filtered_df['fraudFlag'] != 'Legitimate').sum() / len(filtered_df) * 100
+        
+        if total_risk_rate > 20:
+            st.markdown("🔴 **URGENT:** Too many suspicious reviews - check all reviews carefully.")
+        elif total_risk_rate > 10:
+            st.markdown("🟠 **WARNING:** Some reviews are suspicious - verify the risky ones.")
+        else:
+            st.markdown("🟢 **GOOD:** Most reviews are trustworthy - keep monitoring.")
+        
+        st.markdown("""
+        **Quick Actions:**
+        1. Flag reviews with unusual patterns (e.g., same text repeated).
+        2. Verify reviews with high risk scores (>5).
+        3. Watch suspicious customer groups closely.
+        
+        **Long-Term Plans:**
+        1. Use smart tools to spot fake reviews instantly.
+        2. Score reviews for trustworthiness.
+        3. Reward honest reviewers to encourage real feedback.
+        """)
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+        # Metrics Explained
+        st.markdown('<div class="explained-box">', unsafe_allow_html=True)
+        st.markdown("""
+        ### 📘 Understanding the Metrics
+        | **Metric** | **What It Means** | **How It's Calculated / How to Read It** |
+        |------------|-------------------|-----------------------------------------|
+        | **Very Suspicious Reviews (High Risk Reviews)** | Reviews that are very likely fake. | Flagged for patterns like repeated text, mismatched ratings, or excessive enthusiasm. Higher numbers mean more fake reviews. |
+        | **Unhappy Customers (Dissatisfaction Risk)** | Percentage of customers who are not happy. | Percentage of reviews with low ratings (1-2 stars) and negative comments. Higher means more customers are upset. |
+        | **Mismatched Reviews (Inconsistent Reviews)** | Reviews where the star rating and comments don't match. | E.g., 5 stars but negative text. Higher numbers mean possible fake reviews or confusion. |
+        | **Average Risk Score** | How suspicious reviews are on average. | Each review gets a score based on suspicious features (0-10). Higher means more risk. |
+
+        **Review Trust Levels:**
+        - **Legitimate**: Seems genuine with no suspicious signs. No issues found.
+        - **Low Risk**: Slightly suspicious, but mostly okay. Might be short or generic.
+        - **Medium Risk**: Several warning signs, could be fake. E.g., repetitive words or odd ratings.
+        - **High Risk**: Very likely fake. E.g., duplicate text or mismatched rating and comments.
+        
+        These levels are based on patterns like review length, word repetition, and rating-comment mismatches.
+        """)
+        st.markdown('</div>', unsafe_allow_html=True)
     
-    # Enhanced sidebar with quick analytics
-    if st.session_state.processed_data is not None:
-        with st.sidebar:
-            st.markdown("---")
-            st.subheader("📊 **Executive Summary**")
-            
-            df = st.session_state.processed_data
-            filtered_for_sidebar = df if not st.session_state.apply_filters else filtered_df
-            
-            # Key metrics with trend indicators
-            avg_rating = filtered_for_sidebar['rating'].mean()
-            rating_grade = "🟢" if avg_rating >= 4.0 else "🟡" if avg_rating >= 3.0 else "🔴"
-            st.metric("⭐ Customer Satisfaction", f"{avg_rating:.2f}/5.0", 
-                     delta=f"{rating_grade} {get_satisfaction_grade(avg_rating)}")
-            
-            positive_pct = (filtered_for_sidebar['sentiment'].str.contains('Positive', na=False)).sum()/len(filtered_for_sidebar)*100
-            sentiment_trend = "🟢" if positive_pct >= 70 else "🟡" if positive_pct >= 50 else "🔴"
-            st.metric("😊 Brand Sentiment", f"{positive_pct:.1f}%", 
-                     delta=f"{sentiment_trend} Customer Love")
-            
-            trust_pct = (filtered_for_sidebar['fraudFlag'] == 'Legitimate').sum()/len(filtered_for_sidebar)*100
-            trust_grade = "🟢" if trust_pct >= 85 else "🟡" if trust_pct >= 70 else "🔴"
-            st.metric("🔍 Data Integrity", f"{trust_pct:.1f}%", 
-                     delta=f"{trust_grade} Trust Level")
-            
-            business_impact = filtered_for_sidebar['businessImpact'].mean()
-            impact_trend = "🟢" if business_impact >= 1.0 else "🟡" if business_impact >= 0 else "🔴"
-            st.metric("💼 Business Impact", f"{business_impact:.2f}/5.0", 
-                     delta=f"{impact_trend} Revenue Effect")
-            
-            # Data export options
-            st.markdown("---")
-            st.subheader("📥 **Export Options**")
-            
-            # Prepare enhanced export data
-            export_df = filtered_for_sidebar[[
-                'reviewId', 'reviewerName', 'reviewText', 'rating', 'reviewDate',
-                'sentiment', 'sentimentScore', 'sentimentConfidence', 'emotion',
-                'fraudFlag', 'fraudReason', 'fraudScore',
-                'topic', 'customerSegment', 'businessImpact', 'reviewValue',
-                'wordCount', 'reviewLength'
-            ]].copy()
-            
-            csv_data = export_df.to_csv(index=False)
-            st.download_button(
-                label="📄 Complete Dataset",
-                data=csv_data,
-                file_name=f"customer_intelligence_{pd.Timestamp.now().strftime('%Y%m%d_%H%M')}.csv",
-                mime="text/csv",
-                help="Download complete analyzed dataset with all AI insights"
-            )
-            
-            # Executive summary export
-            executive_summary = create_enhanced_executive_summary_with_topics(filtered_for_sidebar)
-            st.download_button(
-                label="📋 Executive Report",
-                data=executive_summary,
-                file_name=f"executive_summary_{pd.Timestamp.now().strftime('%Y%m%d_%H%M')}.md",
-                mime="text/markdown",
-                help="Download C-level summary report for board presentations"
-            )
+    # Sidebar with quick stats (no download report)
+    st.sidebar.markdown("---")
+    st.sidebar.subheader("📊 Quick Stats")
+    st.sidebar.metric("📈 Total Reviews", f"{len(filtered_df):,}", help="Number of reviews analyzed.")
+    st.sidebar.metric("⭐ Average Rating", f"{filtered_df['rating'].mean():.2f}/5.0", help="Average star rating from all reviews.")
+    st.sidebar.metric("😊 Positive Feelings", f"{(filtered_df['sentiment'].str.contains('Positive', na=False)).sum()/len(filtered_df)*100:.1f}%", help="Percentage of happy reviews.")
+    st.sidebar.metric("🔍 Trust Score", f"{(filtered_df['fraudFlag'] == 'Legitimate').sum()/len(filtered_df)*100:.1f}%", help="Percentage of genuine reviews.")
+    st.sidebar.metric("💼 Business Impact", f"{filtered_df['businessImpact'].mean():.2f}", help="Average influence per review.")
     
-    # Enhanced footer
+    # Footer
     st.markdown("---")
-    st.markdown(
-        '<div class="footer">Customer Reviews Intelligence Platform | Created by insights3d - email to aneesh@insights3d.com</div>', 
-        unsafe_allow_html=True
-    )
+    st.markdown("<div style='text-align: center;'>Customer Reviews Intelligence Platform | Created by xAI</div>", unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
