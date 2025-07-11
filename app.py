@@ -530,7 +530,7 @@ def create_executive_summary(df):
     top_topics = df['topic'].value_counts()
     top_topics = top_topics[~top_topics.index.isin(['Mixed Themes', 'General Discussion'])].head(3)
     if len(top_topics) < 3:
-        top_topics = df['topic'].value_count().head(3)
+        top_topics = df['topic'].value_counts().head(3)
     
     summary = f"""
     # 🎯 Executive Summary for Business Leaders
@@ -893,13 +893,13 @@ def main():
     
     # Show active filters with enhanced styling
     active_filters = []
-    if rating_filter != sorted(df['rating'].unique()):
+    if sorted(rating_filter) != sorted(df['rating'].unique().tolist()):
         active_filters.append(f"Ratings: {rating_filter}")
-    if sentiment_filter != df['sentiment'].unique():
+    if sorted(sentiment_filter) != sorted(df['sentiment'].unique().tolist()):
         active_filters.append(f"Sentiments: {sentiment_filter}")
     if trust_filter != 'All Reviews':
         active_filters.append(f"Trust: {trust_filter}")
-    if segment_filter != df['customerSegment'].unique():
+    if sorted(segment_filter) != sorted(df['customerSegment'].unique().tolist()):
         active_filters.append(f"Segments: {segment_filter}")
     if min_impact != float(df['businessImpact'].min()):
         active_filters.append(f"Min Impact: {min_impact}")
