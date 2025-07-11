@@ -1284,7 +1284,8 @@ def main():
             for idx, (_, review) in enumerate(positive_verbatims.iterrows(), 1):
                 st.markdown(f'<div class="verbatim-section positive-verbatim">', unsafe_allow_html=True)
                 st.markdown(f"**Advocate #{idx}** | ⭐{review['rating']}/5 | Impact: {review['businessImpact']:.1f}")
-                st.markdown(f"*\"{review['reviewText'][:300]}{'...' if len(review['reviewText']) > 300 else ''}\"*")
+                review_preview = review['reviewText'][:300] + ('...' if len(review['reviewText']) > 300 else '')
+                st.markdown(f"*\"{review_preview}\"*")
                 st.markdown(f"**Theme:** {review['topic']} | **Sentiment:** {review['sentiment']} ({review['sentimentConfidence']:.2f} confidence)")
                 st.markdown('</div>', unsafe_allow_html=True)
         
