@@ -1,4 +1,22 @@
-import streamlit as st
+legitimate_rate = fraud_dist.get('Legitimate', 0) / len(filtered_df) * 100
+            
+            insight_text = f"""**{legitimate_rate:.1f}% of your reviews appear genuine and trustworthy.** The remaining {100-legitimate_rate:.1f}% have some suspicious patterns that need attention. 
+            
+            **What the colors mean:**
+            - **Green (Legitimate):** Reviews that passed all authenticity checks
+            - **Yellow (Low Risk):** Minor warning signs but probably real customers  
+            - **Orange (Medium Risk):** Multiple red flags that need investigation
+            - **Red (High Risk):** Strong indicators of fake or manipulated reviews
+            
+            This helps you understand the overall trustworthiness of your customer feedback."""
+            
+            create_chart_with_insights(fig_fraud, insight_text)
+        
+        with col2:
+            # Risk trends over time with better explanation
+            risk_trends = filtered_df.groupby(['year', 'month']).agg({
+                'fraudScore': 'mean',
+                import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.express as px
@@ -594,8 +612,164 @@ def calculate_business_impact(df):
 
 def create_chart_with_insights(fig, insight_text):
     st.plotly_chart(fig, use_container_width=True)
-    st.markdown(f'<div class="chart-insight"><strong>📊 Executive Insight:</strong> {insight_text}</div>', 
+    st.markdown(f'<div class="chart-insight"><strong>📊 What This Means:</strong> {insight_text}</div>', 
                 unsafe_allow_html=True)
+
+def create_metrics_explanation_section(page_type):
+    """Create explanation section for metrics used on each page"""
+    st.markdown("---")
+    st.markdown("### 📚 **Understanding Your Metrics - Simple Explanations**")
+    
+    if page_type == "executive_summary":
+        st.markdown("""
+        **🎯 Customer Satisfaction Score:** This is the average star rating (1-5) given by all customers. Think of it like a report card grade - 5 is excellent, 3 is average, 1 is very poor.
+        
+        **🔍 Trust Score:** This shows what percentage of reviews appear genuine vs fake/suspicious. A 90% trust score means 9 out of 10 reviews seem real and honest.
+        
+        **😊 Brand Sentiment:** This measures the emotional tone of what customers write. Even if someone gives 4 stars, their written words might sound negative or positive. This captures that emotional feeling.
+        
+        **💬 Engagement Rate:** This shows what percentage of customers wrote detailed reviews (more than 50 words). Higher engagement means customers care enough to write detailed feedback.
+        
+        **💼 Business Impact:** This is a score that combines star rating, sentiment, and review length to show which reviews are most likely to influence other customers' buying decisions.
+        
+        **🏆 Brand Advocates:** These are customers who are extremely happy and likely to recommend your product to others (like 5-star reviews with very positive words).
+        
+        **👥 Customer Segments Explained:**
+        - **Engaged Advocate:** Customers who write long, detailed positive reviews
+        - **Satisfied Customer:** Happy customers who give good ratings and write decent reviews  
+        - **Average Customer:** Typical customers with moderate engagement
+        - **Dissatisfied Customer:** Unhappy customers (1-2 star ratings)
+        - **Passive User:** Customers who barely write anything (very short reviews)
+        - **Suspicious:** Reviews that might be fake or have unusual patterns
+        """)
+    
+    elif page_type == "business_intelligence":
+        st.markdown("""
+        **💼 Customer Segment Performance Matrix Explained:**
+        This chart shows different types of customers and how valuable they are to your business:
+        - **X-axis (Business Impact):** How much influence this customer type has on your business success
+        - **Y-axis (Average Rating):** How satisfied this customer type is
+        - **Bubble Size:** How many customers are in this group
+        - **Best Scenario:** Large bubbles in the top-right (many satisfied, high-impact customers)
+        
+        **📊 Average Rating:** This is simply the mathematical average of all star ratings. If 10 customers gave ratings of 5,4,5,3,4,5,4,5,3,4, the average would be 4.2 stars.
+        
+        **🏷️ Topic Categories Explained:**
+        - **Camera & Video Performance:** Reviews mentioning camera quality, video recording, photo taking
+        - **Mobile Device Compatibility:** Reviews about how well the product works with phones, tablets
+        - **Speed & Transfer Performance:** Reviews about how fast the product works or transfers data
+        - **Storage Capacity:** Reviews mentioning memory space, storage size, how much data it holds
+        - **Price & Value:** Reviews discussing cost, value for money, whether it's worth the price
+        - **Build Quality:** Reviews about how well-made, durable, or sturdy the product feels
+        - **Shipping & Delivery:** Reviews about delivery speed, packaging, shipping experience
+        - **Ease of Use:** Reviews about how simple or difficult the product is to use or install
+        
+        **🔥 Rating-Sentiment Matrix Colors:**
+        - **Red areas:** Mismatched reviews (e.g., 1-star rating but positive words, or 5-star rating but negative words)
+        - **Blue areas:** Properly matched reviews (rating matches the emotional tone of words)
+        - **Numbers in boxes:** Count of reviews in each category
+        - **Color bar (right side):** Shows the scale - darker red means more mismatched reviews, darker blue means more reviews in that category
+        """)
+    
+    elif page_type == "strategic_insights":
+        st.markdown("""
+        **📝 Review Depth vs Customer Satisfaction:**
+        This shows the relationship between how much customers write and how satisfied they are:
+        - **X-axis:** Review length categories (from very short to very long reviews)
+        - **Y-axis:** Average satisfaction rating for each category
+        - **Color intensity:** Shows business impact (darker = higher impact on your business)
+        - **Key insight:** Usually, customers who write longer reviews are either very happy or very unhappy
+        
+        **👥 Customer Segment Sentiment Journey:**
+        This heatmap shows the emotional journey of different customer types:
+        - **Rows:** Different customer segments (types of customers)
+        - **Columns:** Sentiment levels (from very negative to very positive)
+        - **Numbers:** Percentage of customers in each segment who feel that way
+        - **Colors:** Green = good alignment, Red = concerning patterns
+        - **How to read:** If 80% of "Satisfied Customers" show "Positive" sentiment, that's good alignment
+        """)
+    
+    elif page_type == "voice_of_customer":
+        st.markdown("""
+        **🌟 Customer Advocates:** These are your most valuable customers who write detailed, positive reviews that influence others to buy your product.
+        
+        **⚠️ Critical Customer Feedback:** These are detailed negative reviews from real customers that point to specific problems you need to fix.
+        
+        **💼 Business Impact Score:** This shows how likely a review is to influence other customers' buying decisions, based on:
+        - Length of review (longer = more influence)
+        - Star rating given (extreme ratings = more influence)
+        - Emotional tone of words (strong emotions = more influence)
+        
+        **🎯 Confidence Score:** This shows how sure our analysis is about the sentiment classification (0-1 scale, where 1 = very confident).
+        """)
+    
+    elif page_type == "risk_assessment":
+        st.markdown("""
+        **🚨 High Risk Reviews:** Number and percentage of reviews that our system flagged as very likely to be fake or suspicious based on multiple warning signs.
+        
+        **📉 Dissatisfaction Risk:** Percentage of customers giving 1-2 star ratings. This shows your risk of losing customers or getting bad reputation.
+        
+        **⚠️ Inconsistent Reviews:** Reviews where the star rating doesn't match the emotional tone of the written words (e.g., 5 stars but angry words, or 1 star but happy words).
+        
+        **🎯 Average Risk Score:** A number from 0-10 showing the average suspicion level across all reviews. Higher numbers mean more suspicious patterns detected.
+        
+        **🔍 Review Authenticity Categories:**
+        - **Legitimate (Green):** Reviews that pass all our authenticity checks and appear genuine
+        - **Low Risk (Yellow):** Reviews with minor suspicious patterns but probably real
+        - **Medium Risk (Orange):** Reviews with several warning signs that need attention  
+        - **High Risk (Red):** Reviews with many red flags that are likely fake or manipulated
+        
+        **📈 Risk Rate Explained:** This is the percentage of reviews flagged as suspicious each month. Think of it like a monthly "fake review temperature" - higher percentages mean more suspicious activity that month.
+        """)
+
+def fix_heatmap_colors_and_order(df, x_col, y_col, title):
+    """Create properly ordered and colored heatmap for rating-sentiment analysis"""
+    # Create crosstab
+    heatmap_data = pd.crosstab(df[y_col], df[x_col])
+    
+    # Define proper order for sentiment columns (negative to positive)
+    sentiment_order = ['Extremely Negative', 'Very Negative', 'Negative', 'Neutral', 'Positive', 'Very Positive', 'Extremely Positive']
+    existing_sentiments = [s for s in sentiment_order if s in heatmap_data.columns]
+    heatmap_data = heatmap_data[existing_sentiments]
+    
+    # Create misalignment matrix (1 = misaligned, 0 = aligned)
+    misalignment_matrix = heatmap_data.copy()
+    for rating in heatmap_data.index:
+        for sentiment in heatmap_data.columns:
+            # Check for misalignment
+            if rating <= 2 and sentiment in ['Positive', 'Very Positive', 'Extremely Positive']:
+                # Low rating with positive sentiment = misaligned
+                misalignment_matrix.loc[rating, sentiment] = -1 * heatmap_data.loc[rating, sentiment]  # Negative for red
+            elif rating >= 4 and sentiment in ['Negative', 'Very Negative', 'Extremely Negative']:
+                # High rating with negative sentiment = misaligned  
+                misalignment_matrix.loc[rating, sentiment] = -1 * heatmap_data.loc[rating, sentiment]  # Negative for red
+            else:
+                # Aligned cases
+                misalignment_matrix.loc[rating, sentiment] = heatmap_data.loc[rating, sentiment]  # Positive for blue
+    
+    # Create the heatmap
+    fig = px.imshow(
+        misalignment_matrix.values,
+        x=misalignment_matrix.columns,
+        y=misalignment_matrix.index,
+        title=title,
+        color_continuous_scale='RdBu',  # Red for negative (misaligned), Blue for positive (aligned)
+        color_continuous_midpoint=0,
+        text_auto=True,
+        aspect='auto'
+    )
+    
+    # Update layout
+    fig.update_layout(
+        xaxis_title="Customer Sentiment (Emotional Tone of Written Words)",
+        yaxis_title="Star Rating Given",
+        coloraxis_colorbar=dict(
+            title="Review Alignment<br><span style='font-size:10px'>Red = Misaligned<br>Blue = Aligned</span>",
+            titleside="right"
+        )
+    )
+    
+    return fig
 
 def extract_sample_verbatims(df):
     positive_reviews = df[
@@ -727,6 +901,9 @@ def main():
         st.markdown('<div class="executive-summary">', unsafe_allow_html=True)
         st.markdown(create_executive_summary(filtered_df))
         st.markdown('</div>', unsafe_allow_html=True)
+        
+        # Add metrics explanation for Executive Summary
+        create_metrics_explanation_section("executive_summary")
         
         # Key Performance Indicators
         col1, col2, col3, col4, col5 = st.columns(5)
@@ -902,28 +1079,22 @@ def main():
             
             create_chart_with_insights(fig_trends, insight_text)
             
-            # Business impact heatmap
-            impact_heatmap = pd.crosstab(filtered_df['rating'], filtered_df['sentiment'])
+            # Business impact heatmap with proper colors and ordering
+            fig_heatmap = fix_heatmap_colors_and_order(filtered_df, 'sentiment', 'rating', "🔥 Rating-Sentiment Alignment Analysis")
             
-            fig_heatmap = px.imshow(
-                impact_heatmap.values,
-                x=impact_heatmap.columns,
-                y=impact_heatmap.index,
-                title="🔥 Rating-Sentiment Business Matrix",
-                color_continuous_scale='RdYlBu_r',
-                text_auto=True
-            )
-            fig_heatmap.update_layout(
-                xaxis_title="Customer Sentiment",
-                yaxis_title="Star Rating"
-            )
+            # Calculate misalignment insights
+            concerning_areas = len(filtered_df[
+                ((filtered_df['rating'] <= 2) & (filtered_df['sentiment'].isin(['Positive', 'Very Positive', 'Extremely Positive']))) |
+                ((filtered_df['rating'] >= 4) & (filtered_df['sentiment'].isin(['Negative', 'Very Negative', 'Extremely Negative'])))
+            ])
+            total_reviews = len(filtered_df)
             
-            concerning_areas = impact_heatmap.loc[4:5, ['Negative', 'Very Negative', 'Extremely Negative']].sum().sum()
-            positive_areas = impact_heatmap.loc[4:5, ['Positive', 'Very Positive', 'Extremely Positive']].sum().sum()
-            
-            insight_text = f"**{concerning_areas} high-rated reviews contain negative sentiment** - potential service recovery opportunities. **{positive_areas} reviews show strong rating-sentiment alignment** indicating authentic customer satisfaction."
+            insight_text = f"**{concerning_areas} reviews show rating-sentiment misalignment** out of {total_reviews} total reviews ({concerning_areas/total_reviews*100:.1f}%). Red boxes show problematic mismatches where customers give different star ratings than their written words suggest. This could indicate fake reviews or customer confusion."
             
             create_chart_with_insights(fig_heatmap, insight_text)
+        
+        # Add metrics explanation
+        create_metrics_explanation_section("business_intelligence")
     
     # TAB 3: Strategic Insights
     with tab3:
@@ -934,7 +1105,7 @@ def main():
             st.subheader("🏷️ Strategic Theme Intelligence")
             
             topic_insights = []
-            for topic_name in topics:
+            for i, topic_name in enumerate(sorted(set(topics)), 1):  # Sort and number properly
                 topic_reviews = filtered_df[filtered_df['topic'] == topic_name]
                 if len(topic_reviews) > 0:
                     avg_rating = topic_reviews['rating'].mean()
@@ -942,40 +1113,46 @@ def main():
                     review_count = len(topic_reviews)
                     avg_impact = topic_reviews['businessImpact'].mean()
                     
+                    # More granular strategic recommendations
                     if avg_rating >= 4.5 and avg_sentiment > 0.3:
-                        recommendation = "🟢 Leverage as competitive advantage"
+                        recommendation = "🟢 LEVERAGE: Use in marketing campaigns and competitive positioning"
                     elif avg_rating >= 4.0 and avg_sentiment > 0.1:
-                        recommendation = "🟡 Maintain and optimize"
+                        recommendation = "🟡 OPTIMIZE: Maintain quality and enhance features mentioned"
+                    elif avg_rating >= 3.5 and avg_sentiment > -0.1:
+                        recommendation = "🟠 IMPROVE: Focus development resources on fixing issues"
                     elif avg_rating >= 3.0:
-                        recommendation = "🟠 Requires improvement focus"
+                        recommendation = "🔴 URGENT: Immediate intervention needed - customers are unhappy"
                     else:
-                        recommendation = "🔴 Critical intervention needed"
+                        recommendation = "🚨 CRITICAL: Complete overhaul required - major customer dissatisfaction"
                     
                     topic_insights.append({
+                        'Rank': i,
                         'Theme': topic_name,
-                        'Volume': review_count,
+                        'Customer Mentions': review_count,
                         'Avg Rating': f"{avg_rating:.2f}",
                         'Sentiment Score': f"{avg_sentiment:.2f}",
                         'Business Impact': f"{avg_impact:.2f}",
-                        'Strategic Action': recommendation
+                        'Strategic Action Required': recommendation
                     })
             
             if topic_insights:
                 insights_df = pd.DataFrame(topic_insights).sort_values('Business Impact', ascending=False)
+                # Reset rank after sorting by business impact
+                insights_df['Rank'] = range(1, len(insights_df) + 1)
                 st.dataframe(insights_df, use_container_width=True)
                 
                 st.markdown('<div class="recommendation-box">', unsafe_allow_html=True)
-                st.markdown("### 💡 **Executive Recommendations**")
+                st.markdown("### 💡 **What You Should Do Next**")
                 
                 top_opportunity = insights_df.iloc[0]
-                biggest_risk = insights_df[insights_df['Strategic Action'].str.contains('🔴')].head(1)
+                biggest_risk = insights_df[insights_df['Strategic Action Required'].str.contains('🚨|🔴')].head(1)
                 
                 st.markdown(f"""
-                **🎯 Primary Growth Opportunity:** Focus on **{top_opportunity['Theme']}** theme - highest business impact with {top_opportunity['Volume']} customer mentions.
+                **🎯 Your #1 Priority:** Focus on **{top_opportunity['Theme']}** - this topic has the highest business impact with {top_opportunity['Customer Mentions']} customer mentions. This is where you can make the biggest difference to your business.
                 
-                **⚠️ Immediate Risk:** {biggest_risk['Theme'].iloc[0] if len(biggest_risk) > 0 else 'No critical risks identified'} requires urgent attention.
+                **⚠️ Biggest Risk:** {biggest_risk['Theme'].iloc[0] if len(biggest_risk) > 0 else 'No critical risks identified'} needs urgent attention to prevent customer loss.
                 
-                **📈 Strategic Priority:** Invest in themes showing positive sentiment trends while addressing negative feedback patterns systematically.
+                **📈 Action Plan:** Invest marketing budget and product development time in your top-performing themes, while immediately addressing any themes marked as urgent or critical.
                 """)
                 st.markdown('</div>', unsafe_allow_html=True)
         
@@ -1010,15 +1187,21 @@ def main():
             
             optimal_length = length_analysis.loc[length_analysis['rating'].idxmax(), 'lengthCategory']
             optimal_rating = length_analysis['rating'].max()
+            optimal_impact = length_analysis.loc[length_analysis['lengthCategory'] == optimal_length, 'businessImpact'].iloc[0]
             
-            insight_text = f"**{optimal_length} reviews achieve highest satisfaction** ({optimal_rating:.2f}/5.0). Customers providing detailed feedback show {length_analysis.loc[length_analysis['lengthCategory'] == optimal_length, 'businessImpact'].iloc[0]:.1f} average business impact."
+            insight_text = f"**{optimal_length} reviews have the highest customer satisfaction** ({optimal_rating:.2f}/5.0 stars). These detailed reviews also have {optimal_impact:.1f} business impact score. This means customers who write longer reviews tend to be more satisfied, and their reviews have more influence on other potential buyers."
             
             create_chart_with_insights(fig_length, insight_text)
         
         with col2:
-            # Customer segment journey
+            # Customer segment journey with proper colors
             segment_journey = filtered_df.groupby(['customerSegment', 'sentiment']).size().unstack(fill_value=0)
             segment_journey_pct = segment_journey.div(segment_journey.sum(axis=1), axis=0) * 100
+            
+            # Reorder sentiment columns properly
+            sentiment_order = ['Extremely Negative', 'Very Negative', 'Negative', 'Neutral', 'Positive', 'Very Positive', 'Extremely Positive']
+            existing_sentiments = [s for s in sentiment_order if s in segment_journey_pct.columns]
+            segment_journey_pct = segment_journey_pct[existing_sentiments]
             
             fig_journey = px.imshow(
                 segment_journey_pct.values,
@@ -1026,7 +1209,16 @@ def main():
                 y=segment_journey_pct.index,
                 title="👥 Customer Segment Sentiment Journey",
                 color_continuous_scale='RdYlGn',
-                text_auto='.1f'
+                text_auto='.1f',
+                aspect='auto'
+            )
+            fig_journey.update_layout(
+                xaxis_title="Customer Sentiment (Emotional Tone)",
+                yaxis_title="Customer Segment Type",
+                coloraxis_colorbar=dict(
+                    title="Percentage<br><span style='font-size:10px'>Green = High %<br>Red = Low %</span>",
+                    titleside="right"
+                )
             )
             
             segment_scores = (segment_journey_pct[['Positive', 'Very Positive', 'Extremely Positive']].sum(axis=1) - 
@@ -1034,9 +1226,12 @@ def main():
             best_segment = segment_scores.idxmax()
             worst_segment = segment_scores.idxmin()
             
-            insight_text = f"**{best_segment}** segment shows strongest positive sentiment ({segment_scores.max():.1f}% net positive), while **{worst_segment}** needs retention strategies ({segment_scores.min():.1f}% net sentiment)."
+            insight_text = f"**{best_segment}** customers are your happiest ({segment_scores.max():.1f}% more positive than negative feelings). **{worst_segment}** customers need attention ({segment_scores.min():.1f}% net sentiment score). Focus on converting unhappy segments to satisfied ones."
             
             create_chart_with_insights(fig_journey, insight_text)
+        
+        # Add metrics explanation
+        create_metrics_explanation_section("strategic_insights")
     
     # TAB 4: Voice of Customer
     with tab4:
@@ -1075,56 +1270,19 @@ def main():
                 st.markdown(f"**Theme:** {review['topic']} | **Sentiment:** {review['sentiment']} ({review['sentimentConfidence']:.2f} confidence)")
                 st.markdown('</div>', unsafe_allow_html=True)
         
-        # Word frequency analysis
-        st.subheader("🔤 Strategic Keyword Intelligence")
+        # Word frequency analysis - REMOVED as requested
+        st.subheader("🔤 Customer Language Patterns")
+        st.markdown("""
+        **Understanding Customer Language:**
+        We analyze the specific words customers use in their reviews to understand what matters most to them. 
+        This helps identify what customers love about your product and what frustrates them, so you can make better business decisions.
         
-        col1, col2 = st.columns(2)
+        Instead of showing individual keywords, we recommend focusing on the Strategic Theme Intelligence table above, 
+        which groups customer feedback into meaningful business categories you can act upon.
+        """)
         
-        with col1:
-            # Positive keywords
-            positive_reviews_text = filtered_df[filtered_df['sentiment'].str.contains('Positive', na=False)]['reviewText']
-            positive_words = get_word_frequencies(positive_reviews_text)
-            
-            if positive_words:
-                pos_df = pd.DataFrame(positive_words, columns=['Keyword', 'Frequency'])
-                fig_pos_words = px.bar(
-                    pos_df.head(15), 
-                    x='Frequency', 
-                    y='Keyword',
-                    title="🌟 Positive Brand Drivers",
-                    orientation='h',
-                    color='Frequency',
-                    color_continuous_scale='Greens'
-                )
-                fig_pos_words.update_layout(yaxis={'categoryorder':'total ascending'})
-                
-                top_positive_word = pos_df.iloc[0]['Keyword']
-                insight_text = f"**'{top_positive_word}'** is the strongest positive brand driver. Leverage these keywords in marketing campaigns and product positioning to amplify customer satisfaction themes."
-                
-                create_chart_with_insights(fig_pos_words, insight_text)
-        
-        with col2:
-            # Negative keywords
-            negative_reviews_text = filtered_df[filtered_df['sentiment'].str.contains('Negative', na=False)]['reviewText']
-            negative_words = get_word_frequencies(negative_reviews_text)
-            
-            if negative_words:
-                neg_df = pd.DataFrame(negative_words, columns=['Keyword', 'Frequency'])
-                fig_neg_words = px.bar(
-                    neg_df.head(15), 
-                    x='Frequency', 
-                    y='Keyword',
-                    title="⚠️ Critical Improvement Areas",
-                    orientation='h',
-                    color='Frequency',
-                    color_continuous_scale='Reds'
-                )
-                fig_neg_words.update_layout(yaxis={'categoryorder':'total ascending'})
-                
-                top_negative_word = neg_df.iloc[0]['Keyword']
-                insight_text = f"**'{top_negative_word}'** is the primary concern driver. Address this systematically through product development, quality assurance, and customer service improvements."
-                
-                create_chart_with_insights(fig_neg_words, insight_text)
+        # Add metrics explanation
+        create_metrics_explanation_section("voice_of_customer")
     
     # TAB 5: Risk Assessment
     with tab5:
@@ -1135,22 +1293,26 @@ def main():
         
         with col1:
             high_risk_count = (filtered_df['fraudFlag'] == 'High Risk').sum()
-            st.metric("🚨 High Risk Reviews", high_risk_count, delta=f"{high_risk_count/len(filtered_df)*100:.1f}%")
+            high_risk_pct = (high_risk_count / len(filtered_df)) * 100
+            st.metric("🚨 High Risk Reviews", high_risk_count, delta=f"{high_risk_pct:.1f}% of all reviews")
         
         with col2:
-            negative_trend_risk = len(filtered_df[filtered_df['rating'] <= 2]) / len(filtered_df) * 100
-            st.metric("📉 Dissatisfaction Risk", f"{negative_trend_risk:.1f}%")
+            dissatisfied_count = len(filtered_df[filtered_df['rating'] <= 2])
+            negative_trend_risk = dissatisfied_count / len(filtered_df) * 100
+            st.metric("📉 Dissatisfaction Risk", f"{negative_trend_risk:.1f}%", delta=f"{dissatisfied_count} unhappy customers")
         
         with col3:
             inconsistent_reviews = len(filtered_df[
                 ((filtered_df['rating'] >= 4) & (filtered_df['sentiment'].str.contains('Negative', na=False))) |
                 ((filtered_df['rating'] <= 2) & (filtered_df['sentiment'].str.contains('Positive', na=False)))
             ])
-            st.metric("⚠️ Inconsistent Reviews", inconsistent_reviews)
+            inconsistent_pct = (inconsistent_reviews / len(filtered_df)) * 100
+            st.metric("⚠️ Inconsistent Reviews", inconsistent_reviews, delta=f"{inconsistent_pct:.1f}% don't match")
         
         with col4:
             avg_fraud_score = filtered_df['fraudScore'].mean()
-            st.metric("🎯 Average Risk Score", f"{avg_fraud_score:.1f}/10")
+            risk_level = "Low" if avg_fraud_score < 3 else "Medium" if avg_fraud_score < 6 else "High"
+            st.metric("🎯 Average Risk Score", f"{avg_fraud_score:.1f}/10", delta=f"{risk_level} risk level")
         
         # Detailed fraud analysis
         col1, col2 = st.columns(2)
@@ -1171,12 +1333,21 @@ def main():
             )
             
             legitimate_rate = fraud_dist.get('Legitimate', 0) / len(filtered_df) * 100
-            insight_text = f"**{legitimate_rate:.1f}% of reviews are verified authentic**. Implement review verification processes for the {100-legitimate_rate:.1f}% flagged as potentially suspicious to maintain platform trust."
+            
+            insight_text = f"""**{legitimate_rate:.1f}% of your reviews appear genuine and trustworthy.** The remaining {100-legitimate_rate:.1f}% have some suspicious patterns that need attention. 
+            
+            **What the colors mean:**
+            - **Green (Legitimate):** Reviews that passed all authenticity checks
+            - **Yellow (Low Risk):** Minor warning signs but probably real customers  
+            - **Orange (Medium Risk):** Multiple red flags that need investigation
+            - **Red (High Risk):** Strong indicators of fake or manipulated reviews
+            
+            This helps you understand the overall trustworthiness of your customer feedback."""
             
             create_chart_with_insights(fig_fraud, insight_text)
         
         with col2:
-            # Risk trends over time
+            # Risk trends over time with better explanation
             risk_trends = filtered_df.groupby(['year', 'month']).agg({
                 'fraudScore': 'mean',
                 'fraudFlag': lambda x: (x != 'Legitimate').sum(),
@@ -1189,43 +1360,60 @@ def main():
                 risk_trends, 
                 x='date', 
                 y='risk_rate',
-                title="📈 Risk Trend Analysis",
+                title="📈 Monthly Suspicious Review Rate",
                 color_discrete_sequence=['#dc3545']
             )
+            fig_risk_trends.update_layout(
+                yaxis_title="Percentage of Suspicious Reviews",
+                xaxis_title="Month/Year"
+            )
             
-            recent_risk = risk_trends['risk_rate'].tail(3).mean()
-            historical_risk = risk_trends['risk_rate'].head(3).mean()
-            risk_direction = "increasing" if recent_risk > historical_risk else "decreasing"
+            # Calculate risk momentum with clearer explanation
+            if len(risk_trends) >= 6:
+                recent_risk = risk_trends['risk_rate'].tail(3).mean()
+                historical_risk = risk_trends['risk_rate'].head(3).mean()
+                risk_change = recent_risk - historical_risk
+                risk_direction = "increasing" if risk_change > 0.5 else "decreasing" if risk_change < -0.5 else "stable"
+                
+                if risk_direction == "increasing":
+                    trend_explanation = f"**Warning: Suspicious review activity is rising.** In recent months, {recent_risk:.1f}% of reviews were flagged as suspicious, compared to {historical_risk:.1f}% earlier. This {abs(risk_change):.1f}% increase suggests you may be getting more fake reviews and should investigate."
+                elif risk_direction == "decreasing":
+                    trend_explanation = f"**Good news: Suspicious review activity is declining.** Recent months show {recent_risk:.1f}% suspicious reviews, down from {historical_risk:.1f}% earlier. This {abs(risk_change):.1f}% improvement suggests better review quality."
+                else:
+                    trend_explanation = f"**Stable situation: Suspicious review rate is steady** at around {recent_risk:.1f}%. No major changes in review authenticity patterns detected."
+            else:
+                trend_explanation = "**Insufficient data** to determine trend patterns. Need more historical data for analysis."
             
-            insight_text = f"**Platform risk is {risk_direction}** with {abs(recent_risk - historical_risk):.1f}% change. {'Immediate intervention required' if risk_direction == 'increasing' else 'Current risk management is effective'}."
-            
-            create_chart_with_insights(fig_risk_trends, insight_text)
+            create_chart_with_insights(fig_risk_trends, trend_explanation)
         
-        # Risk mitigation recommendations
+        # Risk mitigation recommendations with better explanations
         st.markdown('<div class="recommendation-box">', unsafe_allow_html=True)
-        st.markdown("### 🛡️ **Risk Mitigation Strategy**")
+        st.markdown("### 🛡️ **What You Should Do About Review Risks**")
         
         total_risk_rate = (filtered_df['fraudFlag'] != 'Legitimate').sum() / len(filtered_df) * 100
         
         if total_risk_rate > 20:
-            st.markdown("🔴 **CRITICAL:** Immediate platform-wide review verification needed")
+            st.markdown("🔴 **URGENT ACTION NEEDED:** More than 20% of your reviews look suspicious. This is a serious problem that could hurt your business reputation.")
         elif total_risk_rate > 10:
-            st.markdown("🟠 **HIGH:** Enhanced monitoring and selective verification required")
+            st.markdown("🟠 **MODERATE CONCERN:** About 10-20% of reviews need attention. You should start monitoring more closely.")
         else:
-            st.markdown("🟢 **MODERATE:** Current risk levels manageable with standard protocols")
+            st.markdown("🟢 **GOOD SITUATION:** Less than 10% of reviews are suspicious. Your review quality is generally healthy.")
         
         st.markdown(f"""
-        **Immediate Actions:**
-        1. Implement automated flagging for top 3 risk factors
-        2. Enhanced verification for reviews with >5 risk score
-        3. Monitor suspicious customer segments closely
+        **Immediate Steps to Take:**
+        1. **Review flagged content:** Manually check your highest-risk reviews to confirm if they're fake
+        2. **Monitor patterns:** Watch for sudden spikes in reviews or unusual reviewer behavior
+        3. **Improve verification:** Consider requiring verified purchases for reviews
         
-        **Strategic Initiatives:**
-        1. Develop ML models for real-time risk detection
-        2. Implement review authenticity scoring
-        3. Create reviewer reputation systems
+        **Long-term Strategy:**
+        1. **Build genuine relationships:** Focus on getting real customers to leave honest reviews
+        2. **Quality over quantity:** Better to have fewer genuine reviews than many suspicious ones
+        3. **Regular monitoring:** Check these metrics monthly to catch problems early
         """)
         st.markdown('</div>', unsafe_allow_html=True)
+        
+        # Add metrics explanation
+        create_metrics_explanation_section("risk_assessment")
     
     # Enhanced sidebar with executive summary
     st.sidebar.markdown("---")
