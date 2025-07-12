@@ -119,51 +119,49 @@ st.markdown("""
     
     /* FIXED METRIC CARDS - SLEEK AND SMALLER */
     .metric-card {
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 15px;
-    padding: 1.2rem;
-    margin: 0.8rem 0;
-    text-align: center;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-    height: 130px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    color: #ffffff !important;
-}
-
-.metric-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-}
-
-.metric-card h3 {
-    font-size: 0.9rem !important;
-    font-weight: 700 !important;
-    margin-bottom: 0.5rem !important;
-    color: #e0eaff !important;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.metric-card h2 {
-    font-size: 2rem !important;
-    font-weight: 900 !important;
-    margin: 0.3rem 0 !important;
-    color: #ffffff !important;
-    line-height: 1.3;
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
-}
-
-.metric-card p {
-    font-size: 0.8rem !important;
-    margin: 0 !important;
-    color: #d0d0f0 !important;
-    font-weight: 500;
-}
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 15px;
+        padding: 1.2rem;
+        margin: 0.8rem 0;
+        text-align: center;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        height: 120px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    
+    .metric-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    }
+    
+    .metric-card h3 {
+        font-size: 0.8rem !important;
+        font-weight: 600 !important;
+        margin-bottom: 0.5rem !important;
+        color: #6c757d !important;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .metric-card h2 {
+        font-size: 1.8rem !important;
+        font-weight: 800 !important;
+        margin: 0.3rem 0 !important;
+        color: #2c3e50 !important;
+        line-height: 1.2;
+    }
+    
+    .metric-card p {
+        font-size: 0.75rem !important;
+        margin: 0 !important;
+        color: #495057 !important;
+        font-weight: 500;
+    }
     
     /* FIXED FILTER SIDEBAR */
     .filter-sidebar {
