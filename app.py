@@ -119,7 +119,7 @@ st.markdown("""
     
     /* FIXED METRIC CARDS - SLEEK AND SMALLER */
     .metric-card {
-        background: linear-gradient(135deg, #667eea, #764ba2);
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 249, 250, 0.95) 100%);
         backdrop-filter: blur(20px);
         border: 1px solid rgba(0, 0, 0, 0.1);
         border-radius: 15px;
