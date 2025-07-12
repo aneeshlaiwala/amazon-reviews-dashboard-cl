@@ -1758,7 +1758,7 @@ def main():
                         paper_bgcolor='rgba(0,0,0,0)',
                         font=dict(family="Inter, sans-serif"),
                         xaxis=dict(showgrid=True, gridcolor='rgba(128,128,128,0.2)'),
-                       // yaxis=dict(showgrid=False),
+                       # yaxis=dict(showgrid=False),
                     )
                     
                     # Add shadow effect to bars
