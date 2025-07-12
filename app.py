@@ -118,68 +118,79 @@ st.markdown("""
     }
     
     .metric-card {
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.1) 100%);
-        backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 20px;
-        padding: 2rem;
-        margin: 1rem 0;
-        text-align: center;
-        color: white;
-        box-shadow: 
-            0 20px 40px -10px rgba(0, 0, 0, 0.3),
-            0 0 0 1px rgba(255, 255, 255, 0.1),
-            inset 0 1px 0 rgba(255, 255, 255, 0.2);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .metric-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-        transition: left 0.5s;
-    }
-    
-    .metric-card:hover::before {
-        left: 100%;
-    }
-    
-    .metric-card:hover {
-        transform: translateY(-10px) scale(1.02);
-        box-shadow: 
-            0 30px 60px -15px rgba(0, 0, 0, 0.4),
-            0 0 0 1px rgba(255, 255, 255, 0.2),
-            inset 0 1px 0 rgba(255, 255, 255, 0.3);
-    }
-    
-    .metric-card h3 {
-        font-size: 1rem;
-        font-weight: 600;
-        margin-bottom: 1rem;
-        opacity: 0.9;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
-    
-    .metric-card h2 {
-        font-size: 2.5rem;
-        font-weight: 800;
-        margin: 0;
-        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-    }
-    
-    .metric-card p {
-        font-size: 0.9rem;
-        margin: 0.5rem 0 0 0;
-        opacity: 0.8;
-        font-weight: 500;
-    }
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.1) 100%);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 1.5rem; /* Reduced padding for better content fit */
+    margin: 1rem 0;
+    text-align: center;
+    color: white;
+    box-shadow: 
+        0 20px 40px -10px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    min-height: 150px; /* Added minimum height to prevent truncation */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.metric-card:hover::before {
+    left: 100%;
+}
+
+.metric-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 
+        0 30px 60px -15px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.metric-card h3 {
+    font-size: 0.9rem; /* Reduced font size for better fit */
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    opacity: 0.9;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    white-space: nowrap; /* Prevent text wrapping */
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.metric-card h2 {
+    font-size: 1.8rem; /* Reduced font size for better fit */
+    font-weight: 800;
+    margin: 0;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    line-height: 1.2; /* Adjusted line height for better spacing */
+}
+
+.metric-card p {
+    font-size: 0.8rem; /* Reduced font size for better fit */
+    margin: 0.3rem 0 0 0;
+    opacity: 0.8;
+    font-weight: 500;
+    white-space: nowrap; /* Prevent text wrapping */
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
     
     .chart-container {
         background: rgba(255, 255, 255, 0.95);
@@ -469,21 +480,25 @@ st.markdown("""
     }
     
     /* Mobile responsiveness */
-    @media (max-width: 768px) {
-        .executive-summary, .chart-container, .filter-sidebar {
-            padding: 1.5rem;
-            border-radius: 15px;
-        }
-        
-        .metric-card {
-            padding: 1.5rem;
-            margin: 0.5rem 0;
-        }
-        
-        .metric-card h2 {
-            font-size: 2rem;
-        }
+@media (max-width: 768px) {
+    .metric-card {
+        padding: 1rem; /* Further reduced padding for mobile */
+        margin: 0.5rem 0;
+        min-height: 120px; /* Adjusted minimum height for mobile */
     }
+    
+    .metric-card h2 {
+        font-size: 1.5rem; /* Further reduced font size for mobile */
+    }
+    
+    .metric-card h3 {
+        font-size: 0.8rem; /* Further reduced font size for mobile */
+    }
+    
+    .metric-card p {
+        font-size: 0.7rem; /* Further reduced font size for mobile */
+    }
+}
     
     /* Animation for page load */
     .main-content {
