@@ -116,13 +116,12 @@ st.markdown("""
         position: relative;
         z-index: 1;
     }
-    
     .metric-card {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.1) 100%);
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 20px;
-    padding: 1.5rem; /* Reduced padding for better content fit */
+    padding: 1rem; /* Further reduced padding for better content fit */
     margin: 1rem 0;
     text-align: center;
     color: white;
@@ -132,11 +131,13 @@ st.markdown("""
         inset 0 1px 0 rgba(255, 255, 255, 0.2);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
-    overflow: hidden;
-    min-height: 150px; /* Added minimum height to prevent truncation */
+    overflow: auto; /* Allow scrolling if content overflows */
+    min-height: 180px; /* Increased minimum height to accommodate more content */
+    max-height: 200px; /* Added maximum height with scrolling as fallback */
     display: flex;
     flex-direction: column;
     justify-content: center;
+    width: 100%; /* Ensure full width within columns */
 }
 
 .metric-card::before {
@@ -169,7 +170,7 @@ st.markdown("""
     opacity: 0.9;
     text-transform: uppercase;
     letter-spacing: 1px;
-    white-space: nowrap; /* Prevent text wrapping */
+    /* Removed white-space: nowrap to allow wrapping */
     overflow: hidden;
     text-overflow: ellipsis;
 }
@@ -179,7 +180,7 @@ st.markdown("""
     font-weight: 800;
     margin: 0;
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-    line-height: 1.2; /* Adjusted line height for better spacing */
+    line-height: 1.3; /* Slightly increased line height for better spacing */
 }
 
 .metric-card p {
@@ -187,10 +188,11 @@ st.markdown("""
     margin: 0.3rem 0 0 0;
     opacity: 0.8;
     font-weight: 500;
-    white-space: nowrap; /* Prevent text wrapping */
+    /* Removed white-space: nowrap to allow wrapping */
     overflow: hidden;
     text-overflow: ellipsis;
 }
+   
     
     .chart-container {
         background: rgba(255, 255, 255, 0.95);
@@ -482,24 +484,25 @@ st.markdown("""
     /* Mobile responsiveness */
 @media (max-width: 768px) {
     .metric-card {
-        padding: 1rem; /* Further reduced padding for mobile */
+        padding: 0.8rem; /* Further reduced padding for mobile */
         margin: 0.5rem 0;
-        min-height: 120px; /* Adjusted minimum height for mobile */
+        min-height: 140px; /* Adjusted minimum height for mobile */
+        max-height: 160px; /* Adjusted maximum height for mobile */
     }
     
     .metric-card h2 {
-        font-size: 1.5rem; /* Further reduced font size for mobile */
+        font-size: 1.4rem; /* Further reduced font size for mobile */
     }
     
     .metric-card h3 {
-        font-size: 0.8rem; /* Further reduced font size for mobile */
+        font-size: 0.7rem; /* Further reduced font size for mobile */
     }
     
     .metric-card p {
-        font-size: 0.7rem; /* Further reduced font size for mobile */
+        font-size: 0.6rem; /* Further reduced font size for mobile */
     }
 }
-    
+
     /* Animation for page load */
     .main-content {
         animation: fadeInUp 0.8s ease-out;
