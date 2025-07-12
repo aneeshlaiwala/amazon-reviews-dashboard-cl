@@ -902,48 +902,54 @@ def calculate_business_impact(df):
     """Calculate business impact score ranging from -5.0 to +5.0"""
     impact_scores = []
     for _, row in df.iterrows():
-        impact = 0
-        
-        # Rating contribution
-        if row['rating'] == 5:
-            impact += 3
-        elif row['rating'] == 4:
-            impact += 1
-        elif row['rating'] == 3:
-            impact += 0
-        elif row['rating'] == 2:
-            impact -= 2
-        elif row['rating'] == 1:
-            impact -= 3
-        
-        # Sentiment contribution
-        if 'Extremely Positive' in row['sentiment']:
-            impact += 2
-        elif 'Very Positive' in row['sentiment']:
-            impact += 1
-        elif 'Positive' in row['sentiment']:
-            impact += 0.5
-        elif 'Negative' in row['sentiment']:
-            impact -= 1
-        elif 'Very Negative' in row['sentiment'] or 'Extremely Negative' in row['sentiment']:
-            impact -= 2
-        
-        # Word count multiplier
-        if row['wordCount'] > 100:
-            impact = impact * 1.5
-        elif row['wordCount'] > 50:
-            impact = impact * 1.2
-        elif row['wordCount'] < 10:
-            impact = impact * 0.5
-        
-        # Trust factor
-        if row['fraudFlag'] == 'High Risk':
-            impact = impact * 0.3
-        elif row['fraudFlag'] == 'Medium Risk':
-            impact = impact * 0.7
-        
-        impact = max(-5.0, min(5.0, impact))
-        impact_scores.append(round(impact, 1))
+        try:
+            impact = 0
+            
+            # Rating contribution
+            if row['rating'] == 5:
+                impact += 3
+            elif row['rating'] == 4:
+                impact += 1
+            elif row['rating'] == 3:
+                impact += 0
+            elif row['rating'] == 2:
+                impact -= 2
+            elif row['rating'] == 1:
+                impact -= 3
+            
+            # Sentiment contribution
+            sentiment = str(row['sentiment'])
+            if 'Extremely Positive' in sentiment:
+                impact += 2
+            elif 'Very Positive' in sentiment:
+                impact += 1
+            elif 'Positive' in sentiment:
+                impact += 0.5
+            elif 'Negative' in sentiment:
+                impact -= 1
+            elif 'Very Negative' in sentiment or 'Extremely Negative' in sentiment:
+                impact -= 2
+            
+            # Word count multiplier
+            word_count = row.get('wordCount', 0)
+            if word_count > 100:
+                impact = impact * 1.5
+            elif word_count > 50:
+                impact = impact * 1.2
+            elif word_count < 10:
+                impact = impact * 0.5
+            
+            # Trust factor
+            fraud_flag = str(row.get('fraudFlag', 'Legitimate'))
+            if fraud_flag == 'High Risk':
+                impact = impact * 0.3
+            elif fraud_flag == 'Medium Risk':
+                impact = impact * 0.7
+            
+            impact = max(-5.0, min(5.0, impact))
+            impact_scores.append(round(impact, 1))
+        except Exception as e:
+            impact_scores.append(0.0)
     
     return impact_scores
 
@@ -1123,7 +1129,7 @@ def main():
                 with col_btn2:
                     if st.button("Reset All"):
                         st.session_state.apply_filters = False
-                        st.experimental_rerun()
+                        st.rerun()
                 
                 st.markdown('</div>', unsafe_allow_html=True)
                 
@@ -1377,13 +1383,15 @@ def main():
                 st.markdown("### 🔤 Customer Voice Analysis")
                 st.markdown('<div class="wordcloud-container">', unsafe_allow_html=True)
                 
+                # Initialize word_freq to avoid UnboundLocalError
+                word_freq = get_word_frequencies(filtered_df['reviewText'])
+                
                 if WORDCLOUD_AVAILABLE:
                     wordcloud_fig = generate_wordcloud(filtered_df)
                     if wordcloud_fig:
                         st.pyplot(wordcloud_fig)
                     else:
                         # Fallback to word frequency analysis
-                        word_freq = get_word_frequencies(filtered_df['reviewText'])
                         if word_freq:
                             freq_df = pd.DataFrame(word_freq[:15], columns=['Word', 'Frequency'])
                             fig_words = px.bar(freq_df, x='Frequency', y='Word', orientation='h',
@@ -1397,7 +1405,6 @@ def main():
                             )
                             st.plotly_chart(fig_words, use_container_width=True)
                 else:
-                    word_freq = get_word_frequencies(filtered_df['reviewText'])
                     if word_freq:
                         freq_df = pd.DataFrame(word_freq[:15], columns=['Word', 'Frequency'])
                         fig_words = px.bar(freq_df, x='Frequency', y='Word', orientation='h',
@@ -1418,6 +1425,13 @@ def main():
                     <div class="insight-box">
                         <div class="insight-title">📊 Word Analysis Insights</div>
                         <strong>Top customer priorities:</strong> {', '.join(top_words)}. These keywords represent your brand's core value propositions and customer focus areas. Consider leveraging these terms in marketing messaging and product development.
+                    </div>
+                    """, unsafe_allow_html=True)
+                else:
+                    st.markdown("""
+                    <div class="insight-box">
+                        <div class="insight-title">📊 Word Analysis</div>
+                        No sufficient text data available for word frequency analysis. Upload more reviews with detailed text content.
                     </div>
                     """, unsafe_allow_html=True)
                 
