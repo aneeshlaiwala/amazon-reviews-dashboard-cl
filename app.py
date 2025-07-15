@@ -1495,8 +1495,10 @@ def main():
                         filtered_df, x='rating', 
                         color_discrete_sequence=['#667eea'],
                         text_auto=True,
-                        category_orders={"rating": [1, 2, 3, 4, 5]}
+                        category_orders={"rating": [1, 2, 3, 4, 5]},
+                        title=None
                     )
+                    fig_rating.update_layout(title_text=None)
                     
                     # Enhanced 3D styling
                     fig_rating.update_layout(
@@ -1556,8 +1558,10 @@ def main():
                         values=sentiment_counts.values, 
                         names=sentiment_counts.index,
                         color=sentiment_counts.index,
-                        color_discrete_map=colors
+                        color_discrete_map=colors,
+                        title=None
                     )
+                    fig_sentiment.update_layout(title_text=None)
                     
                     # Enhanced 3D styling for pie chart
                     fig_sentiment.update_layout(
