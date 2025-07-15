@@ -35,6 +35,7 @@ except:
     NLTK_AVAILABLE = False
 
 import datetime
+import random
 
 # Ultra-modern CSS for C-level presentation
 st.markdown("""
@@ -532,6 +533,15 @@ st.markdown("""
         margin: 2rem 0;
         box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
         text-align: center;
+    }
+    
+    .sidebar-content {
+        background: linear-gradient(135deg, #f8fafc 0%, #e0e7ef 100%);
+        border-radius: 20px;
+        box-shadow: 0 4px 24px rgba(102,126,234,0.08);
+        padding: 2rem 1.5rem 1.5rem 1.5rem;
+        margin-bottom: 2rem;
+        border: 1px solid #e3e8f0;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -2116,7 +2126,8 @@ def main():
                 st.markdown("*Authentic customer feedback driving strategic decisions*")
                 
                 # Extract enhanced verbatims
-                positive_verbatims, negative_verbatims = extract_sample_verbatims(filtered_df)
+                positive_verbatims = st.session_state['sample_pos']
+                negative_verbatims = st.session_state['sample_neg']
                 
                 col1, col2 = st.columns(2)
                 
