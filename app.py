@@ -1351,7 +1351,7 @@ def main():
                 with col_btn2:
                     if st.button("Reset All"):
                         st.session_state.apply_filters = False
-                        st.experimental_rerun()
+                        st.rerun()
                 
         st.markdown('</div>', unsafe_allow_html=True)
     
