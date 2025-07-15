@@ -2589,7 +2589,8 @@ def main():
                 labels={'x': 'Business Impact Category', 'y': '% of Reviews'},
                 color=impact_labels,
                 color_discrete_sequence=px.colors.qualitative.Pastel,
-                title=None
+                title=None,
+                text_auto='.1f'
             )
             fig_impact.update_layout(
                 showlegend=False,
