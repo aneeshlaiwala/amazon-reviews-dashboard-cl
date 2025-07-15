@@ -1468,6 +1468,7 @@ def main():
                 
                 with col1:
                     st.markdown('<div class="chart-container">', unsafe_allow_html=True)
+                    st.markdown("<h3 style='text-align:center; margin-bottom:1rem;'>📊 Customer Rating Distribution</h3>", unsafe_allow_html=True)
                     
                     # 3D-enhanced rating distribution
                     fig_rating = px.histogram(
@@ -1523,6 +1524,7 @@ def main():
                 
                 with col2:
                     st.markdown('<div class="chart-container">', unsafe_allow_html=True)
+                    st.markdown("<h3 style='text-align:center; margin-bottom:1rem;'>🛡️ Customer Sentiment Analysis</h3>", unsafe_allow_html=True)
                     
                     # 3D-enhanced sentiment pie chart
                     sentiment_counts = filtered_df['sentiment'].value_counts()
@@ -1586,12 +1588,18 @@ def main():
                         word_freq = get_word_frequencies(filtered_df['reviewText'])
                         if word_freq:
                             top_words = [word for word, count in word_freq[:5]]
+                            # Executive-style summary
+                            summary_sentence = (
+                                f"The most discussed topics are <span style='color:#667eea;font-weight:bold'>{', '.join(top_words[:3])}</span>, "
+                                f"indicating that customers are primarily focused on these aspects. "
+                                f"Prioritize these areas for maximum impact on satisfaction and loyalty."
+                            )
                             st.markdown(
-                                f"<div class='insight-box'><div class='insight-title'>🔑 Key Insight</div> Customers most frequently mention <span style='color:#667eea;font-weight:bold'>{', '.join(top_words[:3])}</span>, highlighting top priorities and concerns.</div>",
+                                f"<div class='insight-box'><div class='insight-title'>🔑 Executive Insight</div> {summary_sentence}</div>",
                                 unsafe_allow_html=True
                             )
                         else:
-                            st.markdown("<div class='insight-box'><div class='insight-title'>🔑 Key Insight</div> No significant keywords found.</div>", unsafe_allow_html=True)
+                            st.markdown("<div class='insight-box'><div class='insight-title'>🔑 Executive Insight</div> No significant keywords found.</div>", unsafe_allow_html=True)
                     else:
                         st.info("Word cloud generation failed - using alternative word frequency analysis")
                         word_freq = get_word_frequencies(filtered_df['reviewText'])
@@ -1603,12 +1611,17 @@ def main():
                             fig_words.update_layout(height=400, yaxis={'categoryorder':'total ascending'})
                             st.plotly_chart(fig_words, use_container_width=True)
                             top_words = [word for word, count in word_freq[:5]]
+                            summary_sentence = (
+                                f"The most discussed topics are <span style='color:#667eea;font-weight:bold'>{', '.join(top_words[:3])}</span>, "
+                                f"indicating that customers are primarily focused on these aspects. "
+                                f"Prioritize these areas for maximum impact on satisfaction and loyalty."
+                            )
                             st.markdown(
-                                f"<div class='insight-box'><div class='insight-title'>🔑 Key Insight</div> Customers most frequently mention <span style='color:#667eea;font-weight:bold'>{', '.join(top_words[:3])}</span>, highlighting top priorities and concerns.</div>",
+                                f"<div class='insight-box'><div class='insight-title'>🔑 Executive Insight</div> {summary_sentence}</div>",
                                 unsafe_allow_html=True
                             )
                         else:
-                            st.markdown("<div class='insight-box'><div class='insight-title'>🔑 Key Insight</div> No significant keywords found.</div>", unsafe_allow_html=True)
+                            st.markdown("<div class='insight-box'><div class='insight-title'>🔑 Executive Insight</div> No significant keywords found.</div>", unsafe_allow_html=True)
                     st.markdown('</div>', unsafe_allow_html=True)
                 else:
                     st.markdown('<div class="wordcloud-container">', unsafe_allow_html=True)
@@ -1626,12 +1639,17 @@ def main():
                         )
                         st.plotly_chart(fig_words, use_container_width=True)
                         top_words = [word for word, count in word_freq[:5]]
+                        summary_sentence = (
+                            f"The most discussed topics are <span style='color:#667eea;font-weight:bold'>{', '.join(top_words[:3])}</span>, "
+                            f"indicating that customers are primarily focused on these aspects. "
+                            f"Prioritize these areas for maximum impact on satisfaction and loyalty."
+                        )
                         st.markdown(
-                            f"<div class='insight-box'><div class='insight-title'>🔑 Strategic Insight</div> These keywords represent your brand's core value propositions: <span style='color:#667eea;font-weight:bold'>{', '.join(top_words[:3])}</span>.</div>",
+                            f"<div class='insight-box'><div class='insight-title'>🔑 Executive Insight</div> {summary_sentence}</div>",
                             unsafe_allow_html=True
                         )
                     else:
-                        st.markdown("<div class='insight-box'><div class='insight-title'>🔑 Strategic Insight</div> No significant keywords found.</div>", unsafe_allow_html=True)
+                        st.markdown("<div class='insight-box'><div class='insight-title'>🔑 Executive Insight</div> No significant keywords found.</div>", unsafe_allow_html=True)
                     st.markdown('</div>', unsafe_allow_html=True)
                 
                 # Business Impact Explanation
