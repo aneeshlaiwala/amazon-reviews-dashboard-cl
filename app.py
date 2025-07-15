@@ -37,6 +37,15 @@ except:
 import datetime
 import random
 
+# --- Hugging Face Transformers Sentiment Analysis Integration ---
+try:
+    from transformers import pipeline
+    TRANSFORMERS_AVAILABLE = True
+    sentiment_pipeline = pipeline("sentiment-analysis", model="distilbert-base-uncased-finetuned-sst-2-english")
+except ImportError:
+    TRANSFORMERS_AVAILABLE = False
+    sentiment_pipeline = None
+
 # Ultra-modern CSS for C-level presentation
 st.markdown("""
 <style>
@@ -579,7 +588,7 @@ def load_and_process_data(uploaded_file):
     
     return df
 
-def advanced_sentiment_analysis_multilevel(text):
+def advanced_sentiment_analysis_multilevel(text, use_transformers=False):
     if not text or len(text.strip()) == 0:
         return {
             'sentiment': 'Neutral',
@@ -587,11 +596,36 @@ def advanced_sentiment_analysis_multilevel(text):
             'confidence': 0.5,
             'emotion': 'neutral'
         }
-    
+    # --- Use Transformers if available and selected ---
+    if use_transformers and TRANSFORMERS_AVAILABLE and sentiment_pipeline is not None:
+        try:
+            result = sentiment_pipeline(text[:512])[0]  # Truncate to 512 tokens for BERT
+            label = result['label']
+            score = result['score']
+            if label == 'POSITIVE':
+                sentiment = 'Positive'
+                emotion = 'pleased'
+                polarity = score
+            elif label == 'NEGATIVE':
+                sentiment = 'Negative'
+                emotion = 'disappointed'
+                polarity = -score
+            else:
+                sentiment = 'Neutral'
+                emotion = 'neutral'
+                polarity = 0
+            return {
+                'sentiment': sentiment,
+                'polarity': polarity,
+                'confidence': score,
+                'emotion': emotion
+            }
+        except Exception as e:
+            pass  # Fallback to TextBlob below
+    # --- Fallback: TextBlob + VADER ---
     blob = TextBlob(text)
     polarity = blob.sentiment.polarity
     subjectivity = blob.sentiment.subjectivity
-    
     if NLTK_AVAILABLE:
         try:
             sia = SentimentIntensityAnalyzer()
@@ -599,7 +633,6 @@ def advanced_sentiment_analysis_multilevel(text):
             polarity = vader_scores['compound']
         except:
             pass
-    
     if polarity > 0.5:
         sentiment = 'Extremely Positive'
         emotion = 'enthusiastic'
@@ -621,9 +654,7 @@ def advanced_sentiment_analysis_multilevel(text):
     else:
         sentiment = 'Extremely Negative'
         emotion = 'angry'
-    
     confidence = min(abs(polarity) + (1 - subjectivity) * 0.3 + len(text.split()) * 0.01, 1.0)
-    
     return {
         'sentiment': sentiment,
         'polarity': polarity,
@@ -1002,39 +1033,31 @@ def get_trust_score(risk_rate):
     else:
         return 4
 
-def process_data_with_advanced_ml(df):
+def process_data_with_advanced_ml(df, use_transformers=False):
     st.info("🤖 Analyzing reviews with advanced AI algorithms...")
-    
     sentiment_results = []
     progress_bar = st.progress(0)
-    
     for i, text in enumerate(df['reviewText']):
-        result = advanced_sentiment_analysis_multilevel(text)
+        result = advanced_sentiment_analysis_multilevel(text, use_transformers=use_transformers)
         sentiment_results.append(result)
         progress_bar.progress((i + 1) / len(df) * 0.4)
-    
     df['sentiment'] = [r['sentiment'] for r in sentiment_results]
     df['sentimentScore'] = [r['polarity'] for r in sentiment_results]
     df['sentimentConfidence'] = [r['confidence'] for r in sentiment_results]
     df['emotion'] = [r['emotion'] for r in sentiment_results]
-    
     fraud_flags, fraud_reasons, fraud_scores = sophisticated_fraud_detection(df)
     df['fraudFlag'] = fraud_flags
     df['fraudReason'] = fraud_reasons
     df['fraudScore'] = fraud_scores
     progress_bar.progress(0.7)
-    
     topics, topic_assignments = executive_topic_modeling(df['reviewText'].tolist())
     df['topic'] = topic_assignments
     progress_bar.progress(0.9)
-    
     df['reviewValue'] = calculate_review_value(df)
     df['customerSegment'] = segment_customers(df)
     df['businessImpact'] = calculate_business_impact(df)
-    
     progress_bar.progress(1.0)
     progress_bar.empty()
-    
     return df, topics
 
 def calculate_review_value(df):
@@ -1312,7 +1335,8 @@ def main():
                 with st.spinner('🤖 Processing with AI...'):
                     df = load_and_process_data(uploaded_file)
                     if df is not None:
-                        df, topics = process_data_with_advanced_ml(df)
+                        use_transformers = (sentiment_method == "Advanced (Transformers)")
+                        df, topics = process_data_with_advanced_ml(df, use_transformers=use_transformers)
                         st.session_state.processed_data = df
                         st.session_state.topics = topics
                         st.success("✅ Analysis Complete!")
@@ -1364,6 +1388,18 @@ def main():
                 st.markdown('<div class="filter-section">', unsafe_allow_html=True)
                 st.markdown('<span class="filter-label">🎯 Confidence Level</span>', unsafe_allow_html=True)
                 min_confidence = st.slider("", 0.0, 1.0, 0.0, 0.1, key="confidence_filter")
+                st.markdown('</div>', unsafe_allow_html=True)
+                
+                # Add sentiment analysis method toggle
+                st.markdown('<div class="filter-section">', unsafe_allow_html=True)
+                st.markdown('<span class="filter-label">🤖 Sentiment Analysis Engine</span>', unsafe_allow_html=True)
+                sentiment_method = st.radio(
+                    "Choose Sentiment Analysis Method:",
+                    options=["Standard", "Advanced (Transformers)"],
+                    index=0,
+                    key="sentiment_method",
+                    help="Advanced uses Hugging Face Transformers for context-aware sentiment (slower, more accurate)"
+                )
                 st.markdown('</div>', unsafe_allow_html=True)
                 
                 # Filter action buttons
