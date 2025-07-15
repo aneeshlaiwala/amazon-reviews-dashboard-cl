@@ -2079,10 +2079,7 @@ def main():
                     create_chart_with_insights(fig_engagement, insight_text)
                     
                     # Customer Sentiment Journey Map
-                    best_segment = engagement_analysis.loc[engagement_analysis['Avg Rating'].idxmax(), 'Engagement Level']
-                    worst_segment = engagement_analysis.loc[engagement_analysis['Business Impact'].idxmin(), 'Engagement Level']
-                    insight_text = f"**Champion Segment:** {best_segment} shows {engagement_analysis.loc[engagement_analysis['Avg Rating'].idxmax(), 'Avg Rating']:.1f}% net positive sentiment. **Priority Segment:** {worst_segment} needs immediate attention ({engagement_analysis.loc[engagement_analysis['Business Impact'].idxmin(), 'Avg Rating']:.1f}% net sentiment)."
-                    create_chart_with_insights(fig_engagement, insight_text)
+
                 
                 with col2:
                     st.markdown("<div class='chart-container'>", unsafe_allow_html=True)
