@@ -2126,6 +2126,12 @@ def main():
                 st.markdown("*Authentic customer feedback driving strategic decisions*")
                 
                 # Extract enhanced verbatims
+                if 'sample_pos' not in st.session_state or 'sample_neg' not in st.session_state:
+                    pos_reviews = filtered_df[(filtered_df['rating'] == 5) & (filtered_df['sentiment'].str.contains('Positive'))]
+                    neg_reviews = filtered_df[(filtered_df['rating'] == 1) & (filtered_df['sentiment'].str.contains('Negative'))]
+                    st.session_state['sample_pos'] = pos_reviews.sample(n=min(5, len(pos_reviews)), random_state=42)
+                    st.session_state['sample_neg'] = neg_reviews.sample(n=min(5, len(neg_reviews)), random_state=42)
+                
                 positive_verbatims = st.session_state['sample_pos']
                 negative_verbatims = st.session_state['sample_neg']
                 
