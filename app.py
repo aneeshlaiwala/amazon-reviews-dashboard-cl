@@ -118,14 +118,13 @@ st.markdown("""
     }
     .metric-card {
         background: linear-gradient(135deg, #232526 0%, #414345 100%);
-        /* Dark gradient background for contrast */
         backdrop-filter: blur(20px);
         border: 1px solid rgba(255, 255, 255, 0.2);
         border-radius: 20px;
         padding: 1rem;
         margin: 1rem 0;
         text-align: center;
-        color: #fff; /* White text for contrast */
+        color: #fff !important; /* White text for contrast */
         box-shadow: 
             0 20px 40px -10px rgba(0, 0, 0, 0.3),
             0 0 0 1px rgba(255, 255, 255, 0.1),
@@ -140,7 +139,10 @@ st.markdown("""
         justify-content: center;
         width: 100%;
     }
-
+    .metric-card * {
+        color: #fff !important;
+    }
+    
     .metric-card::before {
         content: '';
         position: absolute;
@@ -151,11 +153,11 @@ st.markdown("""
         background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
         transition: left 0.5s;
     }
-
+    
     .metric-card:hover::before {
         left: 100%;
     }
-
+    
     .metric-card:hover {
         transform: translateY(-10px) scale(1.02);
         box-shadow: 
@@ -163,7 +165,7 @@ st.markdown("""
             0 0 0 1px rgba(255, 255, 255, 0.2),
             inset 0 1px 0 rgba(255, 255, 255, 0.3);
     }
-
+    
     .metric-card h3 {
         font-size: 0.9rem;
         font-weight: 600;
@@ -174,7 +176,7 @@ st.markdown("""
         overflow: hidden;
         text-overflow: ellipsis;
     }
-
+    
     .metric-card h2 {
         font-size: 1.8rem;
         font-weight: 800;
@@ -182,7 +184,7 @@ st.markdown("""
         text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
         line-height: 1.3;
     }
-
+    
     .metric-card p {
         font-size: 0.8rem;
         margin: 0.3rem 0 0 0;
