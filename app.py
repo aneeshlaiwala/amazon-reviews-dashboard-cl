@@ -1316,6 +1316,18 @@ def main():
         st.markdown('<div class="filter-sidebar">', unsafe_allow_html=True)
         st.markdown('<div class="filter-header">🎛️ Smart Filters</div>', unsafe_allow_html=True)
         
+        # Add sentiment analysis method toggle (move to top, before file uploader)
+        st.markdown('<div class="filter-section">', unsafe_allow_html=True)
+        st.markdown('<span class="filter-label">🤖 Sentiment Analysis Engine</span>', unsafe_allow_html=True)
+        sentiment_method = st.radio(
+            "Choose Sentiment Analysis Method:",
+            options=["Standard", "Advanced (Transformers)"],
+            index=0,
+            key="sentiment_method",
+            help="Advanced uses Hugging Face Transformers for context-aware sentiment (slower, more accurate)"
+        )
+        st.markdown('</div>', unsafe_allow_html=True)
+        
         # File upload in sidebar
         uploaded_file = st.file_uploader("📁 Upload Dataset", type=['csv'], help="Upload your Amazon reviews CSV file")
         
@@ -1388,18 +1400,6 @@ def main():
                 st.markdown('<div class="filter-section">', unsafe_allow_html=True)
                 st.markdown('<span class="filter-label">🎯 Confidence Level</span>', unsafe_allow_html=True)
                 min_confidence = st.slider("", 0.0, 1.0, 0.0, 0.1, key="confidence_filter")
-                st.markdown('</div>', unsafe_allow_html=True)
-                
-                # Add sentiment analysis method toggle
-                st.markdown('<div class="filter-section">', unsafe_allow_html=True)
-                st.markdown('<span class="filter-label">🤖 Sentiment Analysis Engine</span>', unsafe_allow_html=True)
-                sentiment_method = st.radio(
-                    "Choose Sentiment Analysis Method:",
-                    options=["Standard", "Advanced (Transformers)"],
-                    index=0,
-                    key="sentiment_method",
-                    help="Advanced uses Hugging Face Transformers for context-aware sentiment (slower, more accurate)"
-                )
                 st.markdown('</div>', unsafe_allow_html=True)
                 
                 # Filter action buttons
