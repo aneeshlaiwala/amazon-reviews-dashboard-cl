@@ -1297,6 +1297,17 @@ def main():
         # File upload in sidebar
         uploaded_file = st.file_uploader("📁 Upload Dataset", type=['csv'], help="Upload your Amazon reviews CSV file")
         
+        # --- FILE UPLOAD LIMIT (change MAX_UPLOADS to increase/decrease allowed uploads) ---
+        MAX_UPLOADS = 10  # <--- CHANGE THIS VALUE TO INCREASE ALLOWED UPLOADS
+        if 'upload_count' not in st.session_state:
+            st.session_state['upload_count'] = 0
+        if uploaded_file:
+            if st.session_state['upload_count'] >= MAX_UPLOADS:
+                st.warning("Upload limit reached. Please contact aneesh@insights3d.com to unlock more uploads.")
+                st.stop()
+            else:
+                st.session_state['upload_count'] += 1
+        
         if uploaded_file or st.session_state.processed_data is not None:
             if uploaded_file and st.session_state.processed_data is None:
                 with st.spinner('🤖 Processing with AI...'):
@@ -2061,13 +2072,18 @@ def main():
                         )
                     )
                     
+                    # --- DYNAMIC INSIGHTS FOR ALL CHARTS ---
+                    # Customer Engagement Intelligence
                     optimal_engagement = engagement_analysis.loc[engagement_analysis['Avg Rating'].idxmax(), 'Engagement Level']
                     optimal_impact = engagement_analysis.loc[engagement_analysis['Business Impact'].idxmax(), 'Business Impact']
-                    
                     insight_text = f"**Engagement Sweet Spot:** {optimal_engagement} reviews generate highest satisfaction. **Business Optimization:** Focus on encouraging detailed feedback (impact score: {optimal_impact})."
-                    
                     create_chart_with_insights(fig_engagement, insight_text)
-                    st.markdown("</div>", unsafe_allow_html=True)
+                    
+                    # Customer Sentiment Journey Map
+                    best_segment = engagement_analysis.loc[engagement_analysis['Avg Rating'].idxmax(), 'Engagement Level']
+                    worst_segment = engagement_analysis.loc[engagement_analysis['Business Impact'].idxmin(), 'Engagement Level']
+                    insight_text = f"**Champion Segment:** {best_segment} shows {engagement_analysis.loc[engagement_analysis['Avg Rating'].idxmax(), 'Avg Rating']:.1f}% net positive sentiment. **Priority Segment:** {worst_segment} needs immediate attention ({engagement_analysis.loc[engagement_analysis['Business Impact'].idxmin(), 'Avg Rating']:.1f}% net sentiment)."
+                    create_chart_with_insights(fig_engagement, insight_text)
                 
                 with col2:
                     st.markdown("<div class='chart-container'>", unsafe_allow_html=True)
@@ -2660,7 +2676,7 @@ def main():
     st.markdown("---")
     st.markdown(
         '<div class="footer">Customer Reviews Intelligence Platform | Created by insights3d - email to aneesh@insights3d.com</div>', 
-        unsafe_allow_html=True
+        unsafe_allow_html=TrueIn 
     )
 
 if __name__ == "__main__":
