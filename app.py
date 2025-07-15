@@ -2576,7 +2576,7 @@ def main():
                 """)
                 st.markdown('</div>', unsafe_allow_html=True)
             
-            # After the 5 KPI metric cards in Executive Dashboard tab:
+            # Business Impact Score Penetration chart (moved here from after all tabs)
             impact_bins = [ -5, -3, -1.1, 1, 3, 5 ]
             impact_labels = [
                 'Crisis-level (-5 to -3)',
