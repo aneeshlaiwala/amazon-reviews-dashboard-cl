@@ -575,28 +575,11 @@ def advanced_sentiment_analysis_multilevel(text):
             'confidence': 0.5,
             'emotion': 'neutral'
         }
-
-    # Custom phrase-based positive overrides
-    positive_phrases = [
-        "no issues", "no problems", "no complaints", "no improvements needed",
-        "nothing bad", "nothing negative", "works as expected", "works perfectly",
-        "works fine", "works great", "all good", "everything is fine", "everything is good",
-        "nothing to complain", "nothing wrong", "no trouble", "no difficulties"
-    ]
-    text_lower = text.lower()
-    for phrase in positive_phrases:
-        if phrase in text_lower:
-            return {
-                'sentiment': 'Positive',
-                'polarity': 0.4,  # moderately positive
-                'confidence': 0.95,
-                'emotion': 'pleased'
-            }
-
+    
     blob = TextBlob(text)
     polarity = blob.sentiment.polarity
     subjectivity = blob.sentiment.subjectivity
-
+    
     if NLTK_AVAILABLE:
         try:
             sia = SentimentIntensityAnalyzer()
@@ -604,7 +587,7 @@ def advanced_sentiment_analysis_multilevel(text):
             polarity = vader_scores['compound']
         except:
             pass
-
+    
     if polarity > 0.5:
         sentiment = 'Extremely Positive'
         emotion = 'enthusiastic'
@@ -626,9 +609,9 @@ def advanced_sentiment_analysis_multilevel(text):
     else:
         sentiment = 'Extremely Negative'
         emotion = 'angry'
-
+    
     confidence = min(abs(polarity) + (1 - subjectivity) * 0.3 + len(text.split()) * 0.01, 1.0)
-
+    
     return {
         'sentiment': sentiment,
         'polarity': polarity,
@@ -960,7 +943,7 @@ def get_strategic_recommendations(avg_rating, total_risk_rate, engagement_rate, 
         recommendations.append("🎯 **Leverage Excellence**: Use positive reviews in marketing campaigns and case studies")
     elif avg_rating >= 4.0:
         recommendations.append("📈 **Optimize Performance**: Focus on converting 4-star to 5-star experiences")
-    elif avg_rating >= 3.5:
+    elif avg_rating >= 3.0:
         recommendations.append("🔧 **Quality Enhancement**: Address core product/service issues immediately")
     else:
         recommendations.append("🚨 **Crisis Management**: Implement emergency customer satisfaction protocols")
@@ -1239,6 +1222,50 @@ def generate_wordcloud(df):
     except:
         return None
 
+def generate_executive_summary_card(df):
+    total_reviews = len(df)
+    avg_rating = df['rating'].mean()
+    sentiment_dist = df['sentiment'].value_counts(normalize=True) * 100
+    high_risk_rate = (df['fraudFlag'] == 'High Risk').sum() / total_reviews * 100
+    medium_risk_rate = (df['fraudFlag'] == 'Medium Risk').sum() / total_reviews * 100
+    total_risk_rate = high_risk_rate + medium_risk_rate
+    recent_reviews = df[df['reviewDate'] > df['reviewDate'].max() - pd.Timedelta(days=90)]
+    recent_avg_rating = recent_reviews['rating'].mean() if len(recent_reviews) > 0 else avg_rating
+    rating_trend = "📈 Improving" if recent_avg_rating > avg_rating else "📉 Declining" if recent_avg_rating < avg_rating else "➡️ Stable"
+    detailed_reviews = df[df['wordCount'] > 50]
+    engagement_rate = len(detailed_reviews) / total_reviews * 100
+    brand_health_score = int((avg_rating / 5.0) * 40 + (sentiment_dist.get('Extremely Positive', 0) + sentiment_dist.get('Very Positive', 0) + sentiment_dist.get('Positive', 0)) * 0.4 + (100 - total_risk_rate) * 0.2)
+    top_topics = df['topic'].value_counts().head(3).index.tolist()
+    actionable_insight = (
+        f"Focus on <b>{top_topics[0]}</b> and <b>{top_topics[1]}</b> to maximize customer satisfaction. "
+        f"Monitor <b>{top_topics[2]}</b> for emerging issues. "
+        f"Engagement is {'excellent' if engagement_rate > 30 else 'good' if engagement_rate > 15 else 'needs improvement'}."
+    )
+    return f"""
+    <div style='
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 20px;
+        padding: 2.5rem 2.5rem 2rem 2.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    '>
+        <h2 style='font-size:2.2rem; font-weight:800; margin-bottom:0.5rem;'>🎯 Strategic Customer Intelligence Report</h2>
+        <div style='font-size:1.1rem; line-height:1.7;'>
+            <b>🗓️ Date:</b> {datetime.now().strftime('%B %d, %Y')}<br>
+            <b>🧮 Total Reviews:</b> {total_reviews:,}<br>
+            <b>⭐ Customer Satisfaction:</b> <span style='color:#ffeb3b;'>{avg_rating:.2f}/5.0</span> ({rating_trend})<br>
+            <b>💬 Engagement Quality:</b> <span style='color:#00bcd4;'>{engagement_rate:.1f}% detailed feedback</span><br>
+            <b>🏆 Brand Health Score:</b> <span style='color:#ff4081;'>{brand_health_score}/100</span><br>
+            <b>🟢 Brand Champions:</b> {sentiment_dist.get('Extremely Positive', 0) + sentiment_dist.get('Very Positive', 0) + sentiment_dist.get('Positive', 0):.1f}%<br>
+            <b>🔴 At-Risk Customers:</b> {sentiment_dist.get('Negative', 0) + sentiment_dist.get('Very Negative', 0) + sentiment_dist.get('Extremely Negative', 0):.1f}%<br>
+            <b>🛡️ Verified Reviews:</b> {100 - total_risk_rate:.1f}%<br>
+            <b>🏅 Top Priorities:</b> <span style='color:#ffd700;'>{', '.join(top_topics)}</span><br>
+            <b>💡 Actionable Insight:</b> {actionable_insight}
+        </div>
+    </div>
+    """
+
 def main():
     st.markdown('<div class="main-content"><h1 class="main-header">📊 Customer Reviews Intelligence Platform</h1></div>', unsafe_allow_html=True)
     st.markdown("*Transform customer feedback into strategic business intelligence for C-level decision making*")
@@ -1369,10 +1396,7 @@ def main():
             # TAB 1: Executive Dashboard
             with tab1:
                 # Enhanced Executive Summary
-                st.markdown('<div class="executive-summary">', unsafe_allow_html=True)
-                executive_summary = create_enhanced_executive_summary_with_topics(filtered_df)
-                st.markdown(executive_summary, unsafe_allow_html=True)
-                st.markdown('</div>', unsafe_allow_html=True)
+                st.markdown(generate_executive_summary_card(filtered_df), unsafe_allow_html=True)
                 
                 # Premium metric cards with 3D effects
                 st.markdown("### 📊 Key Performance Indicators")
@@ -1553,7 +1577,6 @@ def main():
                     wordcloud_fig = generate_wordcloud(filtered_df)
                     if wordcloud_fig:
                         st.pyplot(wordcloud_fig)
-                        # Dynamic key insight based on top words
                         word_freq = get_word_frequencies(filtered_df['reviewText'])
                         if word_freq:
                             top_words = [word for word, count in word_freq[:5]]
