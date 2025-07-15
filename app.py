@@ -1496,9 +1496,8 @@ def main():
                         color_discrete_sequence=['#667eea'],
                         text_auto=True,
                         category_orders={"rating": [1, 2, 3, 4, 5]},
-                        title=None
+                        title="Customer Rating Distribution"
                     )
-                    fig_rating.update_layout(title_text=None)
                     
                     # Enhanced 3D styling
                     fig_rating.update_layout(
@@ -1559,9 +1558,8 @@ def main():
                         names=sentiment_counts.index,
                         color=sentiment_counts.index,
                         color_discrete_map=colors,
-                        title=None
+                        title="Customer Sentiment Analysis"
                     )
-                    fig_sentiment.update_layout(title_text=None)
                     
                     # Enhanced 3D styling for pie chart
                     fig_sentiment.update_layout(
