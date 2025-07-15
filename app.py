@@ -2571,6 +2571,42 @@ def main():
                 - Develop customer trust restoration programs
                 """)
                 st.markdown('</div>', unsafe_allow_html=True)
+            
+            # After the 5 KPI metric cards in Executive Dashboard tab:
+            impact_bins = [ -5, -3, -1.1, 1, 3, 5 ]
+            impact_labels = [
+                'Crisis-level (-5 to -3)',
+                'Negative (-2.9 to -1.1)',
+                'Neutral (-1.0 to 0.9)',
+                'Positive (1.0 to 2.9)',
+                'Premium (3.0 to 5.0)'
+            ]
+            filtered_df['impact_category'] = pd.cut(filtered_df['businessImpact'], bins=impact_bins, labels=impact_labels, include_lowest=True)
+            impact_counts = filtered_df['impact_category'].value_counts(normalize=True).reindex(impact_labels, fill_value=0) * 100
+            fig_impact = px.bar(
+                x=impact_labels,
+                y=impact_counts.values,
+                labels={'x': 'Business Impact Category', 'y': '% of Reviews'},
+                color=impact_labels,
+                color_discrete_sequence=px.colors.qualitative.Pastel,
+                title=None
+            )
+            fig_impact.update_layout(
+                showlegend=False,
+                title_text=None,
+                xaxis_title='Business Impact Category',
+                yaxis_title='% of Reviews',
+                height=400,
+                plot_bgcolor='rgba(0,0,0,0)',
+                paper_bgcolor='rgba(0,0,0,0)'
+            )
+            st.markdown('<div class="chart-container">', unsafe_allow_html=True)
+            st.markdown("<h3 style='text-align:center; margin-bottom:1rem;'>📊 Business Impact Score Penetration</h3>", unsafe_allow_html=True)
+            st.plotly_chart(fig_impact, use_container_width=True)
+            top_cat = impact_labels[impact_counts.argmax()]
+            summary = f"Most reviews ({impact_counts.max():.1f}%) fall into the <b>{top_cat}</b> category. Focus on leveraging strengths and addressing weaknesses for optimal business outcomes."
+            st.markdown(f"<div class='insight-box'><div class='insight-title'>🔑 Executive Summary</div> {summary}</div>", unsafe_allow_html=True)
+            st.markdown('</div>', unsafe_allow_html=True)
         
         else:
             # Enhanced onboarding experience
