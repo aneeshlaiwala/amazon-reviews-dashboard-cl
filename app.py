@@ -960,7 +960,7 @@ def get_strategic_recommendations(avg_rating, total_risk_rate, engagement_rate, 
         recommendations.append("🎯 **Leverage Excellence**: Use positive reviews in marketing campaigns and case studies")
     elif avg_rating >= 4.0:
         recommendations.append("📈 **Optimize Performance**: Focus on converting 4-star to 5-star experiences")
-    elif avg_rating >= 3.0:
+    elif avg_rating >= 3.5:
         recommendations.append("🔧 **Quality Enhancement**: Address core product/service issues immediately")
     else:
         recommendations.append("🚨 **Crisis Management**: Implement emergency customer satisfaction protocols")
