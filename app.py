@@ -1297,7 +1297,7 @@ def main():
         uploaded_file = st.file_uploader("📁 Upload Dataset", type=['csv'], help="Upload your Amazon reviews CSV file")
         
         # --- FILE UPLOAD LIMIT (change MAX_UPLOADS to increase/decrease allowed uploads) ---
-        MAX_UPLOADS = 10  # <--- CHANGE THIS VALUE TO INCREASE ALLOWED UPLOADS
+        MAX_UPLOADS = 20  # Change this value to set the allowed number of uploads
         if 'upload_count' not in st.session_state:
             st.session_state['upload_count'] = 0
         if uploaded_file:
