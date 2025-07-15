@@ -116,83 +116,107 @@ st.markdown("""
         position: relative;
         z-index: 1;
     }
+    
     .metric-card {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.1) 100%);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 20px;
-    padding: 1rem; /* Further reduced padding for better content fit */
-    margin: 1rem 0;
-    text-align: center;
-    color: white;
-    box-shadow: 
-        0 20px 40px -10px rgba(0, 0, 0, 0.3),
-        0 0 0 1px rgba(255, 255, 255, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: auto; /* Allow scrolling if content overflows */
-    min-height: 180px; /* Increased minimum height to accommodate more content */
-    max-height: 200px; /* Added maximum height with scrolling as fallback */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    width: 100%; /* Ensure full width within columns */
-}
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.1) 100%);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 20px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+        text-align: center;
+        color: white;
+        box-shadow: 
+            0 20px 40px -10px rgba(0, 0, 0, 0.3),
+            0 0 0 1px rgba(255, 255, 255, 0.1),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        min-height: 200px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+    }
 
-.metric-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left 0.5s;
-}
+    .metric-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s;
+    }
 
-.metric-card:hover::before {
-    left: 100%;
-}
+    .metric-card:hover::before {
+        left: 100%;
+    }
 
-.metric-card:hover {
-    transform: translateY(-10px) scale(1.02);
-    box-shadow: 
-        0 30px 60px -15px rgba(0, 0, 0, 0.4),
-        0 0 0 1px rgba(255, 255, 255, 0.2),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3);
-}
+    .metric-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 
+            0 30px 60px -15px rgba(0, 0, 0, 0.4),
+            0 0 0 1px rgba(255, 255, 255, 0.2),
+            inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    }
 
-.metric-card h3 {
-    font-size: 0.9rem; /* Reduced font size for better fit */
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    opacity: 0.9;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    /* Removed white-space: nowrap to allow wrapping */
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
+    .metric-card h3 {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 0.8rem;
+        opacity: 0.9;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        line-height: 1.2;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        hyphens: auto;
+    }
 
-.metric-card h2 {
-    font-size: 1.8rem; /* Reduced font size for better fit */
-    font-weight: 800;
-    margin: 0;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-    line-height: 1.3; /* Slightly increased line height for better spacing */
-}
+    .metric-card h2 {
+        font-size: 2.2rem;
+        font-weight: 800;
+        margin: 0.5rem 0;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        line-height: 1.2;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
 
-.metric-card p {
-    font-size: 0.8rem; /* Reduced font size for better fit */
-    margin: 0.3rem 0 0 0;
-    opacity: 0.8;
-    font-weight: 500;
-    /* Removed white-space: nowrap to allow wrapping */
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-   
+    .metric-card p {
+        font-size: 0.9rem;
+        margin: 0.5rem 0 0 0;
+        opacity: 0.8;
+        font-weight: 500;
+        line-height: 1.3;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+
+    /* Mobile responsiveness for metric cards */
+    @media (max-width: 768px) {
+        .metric-card {
+            padding: 1.2rem;
+            margin: 0.8rem 0;
+            min-height: 180px;
+        }
+        
+        .metric-card h2 {
+            font-size: 1.8rem;
+        }
+        
+        .metric-card h3 {
+            font-size: 0.9rem;
+        }
+        
+        .metric-card p {
+            font-size: 0.8rem;
+        }
+    }
     
     .chart-container {
         background: rgba(255, 255, 255, 0.95);
@@ -481,28 +505,6 @@ st.markdown("""
         font-weight: 500;
     }
     
-    /* Mobile responsiveness */
-@media (max-width: 768px) {
-    .metric-card {
-        padding: 0.8rem; /* Further reduced padding for mobile */
-        margin: 0.5rem 0;
-        min-height: 140px; /* Adjusted minimum height for mobile */
-        max-height: 160px; /* Adjusted maximum height for mobile */
-    }
-    
-    .metric-card h2 {
-        font-size: 1.4rem; /* Further reduced font size for mobile */
-    }
-    
-    .metric-card h3 {
-        font-size: 0.7rem; /* Further reduced font size for mobile */
-    }
-    
-    .metric-card p {
-        font-size: 0.6rem; /* Further reduced font size for mobile */
-    }
-}
-
     /* Animation for page load */
     .main-content {
         animation: fadeInUp 0.8s ease-out;
@@ -1776,7 +1778,6 @@ def main():
                         paper_bgcolor='rgba(0,0,0,0)',
                         font=dict(family="Inter, sans-serif"),
                         xaxis=dict(showgrid=True, gridcolor='rgba(128,128,128,0.2)'),
-                       # yaxis=dict(showgrid=False),
                     )
                     
                     # Add shadow effect to bars
