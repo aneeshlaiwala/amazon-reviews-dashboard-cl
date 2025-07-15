@@ -34,6 +34,8 @@ try:
 except:
     NLTK_AVAILABLE = False
 
+import datetime
+
 # Ultra-modern CSS for C-level presentation
 st.markdown("""
 <style>
@@ -1252,7 +1254,7 @@ def generate_executive_summary_card(df):
     '>
         <h2 style='font-size:2.2rem; font-weight:800; margin-bottom:0.5rem;'>🎯 Strategic Customer Intelligence Report</h2>
         <div style='font-size:1.1rem; line-height:1.7;'>
-            <b>🗓️ Date:</b> {datetime.now().strftime('%B %d, %Y')}<br>
+            <b>🗓️ Date:</b> {datetime.datetime.now().strftime('%B %d, %Y')}<br>
             <b>🧮 Total Reviews:</b> {total_reviews:,}<br>
             <b>⭐ Customer Satisfaction:</b> <span style='color:#ffeb3b;'>{avg_rating:.2f}/5.0</span> ({rating_trend})<br>
             <b>💬 Engagement Quality:</b> <span style='color:#00bcd4;'>{engagement_rate:.1f}% detailed feedback</span><br>
