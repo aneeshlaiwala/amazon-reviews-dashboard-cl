@@ -575,11 +575,28 @@ def advanced_sentiment_analysis_multilevel(text):
             'confidence': 0.5,
             'emotion': 'neutral'
         }
-    
+
+    # Custom phrase-based positive overrides
+    positive_phrases = [
+        "no issues", "no problems", "no complaints", "no improvements needed",
+        "nothing bad", "nothing negative", "works as expected", "works perfectly",
+        "works fine", "works great", "all good", "everything is fine", "everything is good",
+        "nothing to complain", "nothing wrong", "no trouble", "no difficulties"
+    ]
+    text_lower = text.lower()
+    for phrase in positive_phrases:
+        if phrase in text_lower:
+            return {
+                'sentiment': 'Positive',
+                'polarity': 0.4,  # moderately positive
+                'confidence': 0.95,
+                'emotion': 'pleased'
+            }
+
     blob = TextBlob(text)
     polarity = blob.sentiment.polarity
     subjectivity = blob.sentiment.subjectivity
-    
+
     if NLTK_AVAILABLE:
         try:
             sia = SentimentIntensityAnalyzer()
@@ -587,7 +604,7 @@ def advanced_sentiment_analysis_multilevel(text):
             polarity = vader_scores['compound']
         except:
             pass
-    
+
     if polarity > 0.5:
         sentiment = 'Extremely Positive'
         emotion = 'enthusiastic'
@@ -609,9 +626,9 @@ def advanced_sentiment_analysis_multilevel(text):
     else:
         sentiment = 'Extremely Negative'
         emotion = 'angry'
-    
+
     confidence = min(abs(polarity) + (1 - subjectivity) * 0.3 + len(text.split()) * 0.01, 1.0)
-    
+
     return {
         'sentiment': sentiment,
         'polarity': polarity,
