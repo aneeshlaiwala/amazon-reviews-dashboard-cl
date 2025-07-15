@@ -1553,7 +1553,16 @@ def main():
                     wordcloud_fig = generate_wordcloud(filtered_df)
                     if wordcloud_fig:
                         st.pyplot(wordcloud_fig)
-                        st.markdown("**Key Insight:** Most frequently mentioned words reveal primary customer concerns and satisfaction drivers.")
+                        # Dynamic key insight based on top words
+                        word_freq = get_word_frequencies(filtered_df['reviewText'])
+                        if word_freq:
+                            top_words = [word for word, count in word_freq[:5]]
+                            st.markdown(
+                                f"<b>Key Insight:</b> Customers most frequently mention <span style='color:#667eea;font-weight:bold'>{', '.join(top_words[:3])}</span>, highlighting top priorities and concerns.",
+                                unsafe_allow_html=True
+                            )
+                        else:
+                            st.markdown("<b>Key Insight:</b> No significant keywords found.", unsafe_allow_html=True)
                     else:
                         st.info("Word cloud generation failed - using alternative word frequency analysis")
                         word_freq = get_word_frequencies(filtered_df['reviewText'])
@@ -1564,6 +1573,13 @@ def main():
                                              color='Frequency', color_continuous_scale='viridis')
                             fig_words.update_layout(height=400, yaxis={'categoryorder':'total ascending'})
                             st.plotly_chart(fig_words, use_container_width=True)
+                            top_words = [word for word, count in word_freq[:5]]
+                            st.markdown(
+                                f"<b>Key Insight:</b> Customers most frequently mention <span style='color:#667eea;font-weight:bold'>{', '.join(top_words[:3])}</span>, highlighting top priorities and concerns.",
+                                unsafe_allow_html=True
+                            )
+                        else:
+                            st.markdown("<b>Key Insight:</b> No significant keywords found.", unsafe_allow_html=True)
                     st.markdown('</div>', unsafe_allow_html=True)
                 else:
                     st.markdown('<div class="wordcloud-container">', unsafe_allow_html=True)
@@ -1580,7 +1596,13 @@ def main():
                             paper_bgcolor='rgba(0,0,0,0)'
                         )
                         st.plotly_chart(fig_words, use_container_width=True)
-                        st.markdown("**Strategic Insight:** These keywords represent your brand's core value propositions and customer priorities.")
+                        top_words = [word for word, count in word_freq[:5]]
+                        st.markdown(
+                            f"<b>Strategic Insight:</b> These keywords represent your brand's core value propositions: <span style='color:#667eea;font-weight:bold'>{', '.join(top_words[:3])}</span>.",
+                            unsafe_allow_html=True
+                        )
+                    else:
+                        st.markdown("<b>Strategic Insight:</b> No significant keywords found.", unsafe_allow_html=True)
                     st.markdown('</div>', unsafe_allow_html=True)
                 
                 # Business Impact Explanation
