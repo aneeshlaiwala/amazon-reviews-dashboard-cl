@@ -1269,8 +1269,12 @@ def generate_executive_summary_card(df):
     """
 
 def main():
-    st.markdown('<div class="main-content"><h1 class="main-header">📊 Customer Reviews Intelligence Platform</h1></div>', unsafe_allow_html=True)
-    st.markdown("*Transform customer feedback into strategic business intelligence for C-level decision making*")
+    st.markdown("""
+<div style='text-align:center; margin-bottom:2rem;'>
+    <h1 class="main-header" style="margin-bottom:0.5rem;">📊 Customer Reviews Intelligence Platform</h1>
+    <div style="font-style:italic; font-size:1.2rem; color:#444; margin-top:0;">Transform customer feedback into strategic business intelligence for C-level decision making</div>
+</div>
+""", unsafe_allow_html=True)
     
     # Create layout with sidebar for filters
     col1, col2 = st.columns([1, 4])
@@ -1583,11 +1587,11 @@ def main():
                         if word_freq:
                             top_words = [word for word, count in word_freq[:5]]
                             st.markdown(
-                                f"<b>Key Insight:</b> Customers most frequently mention <span style='color:#667eea;font-weight:bold'>{', '.join(top_words[:3])}</span>, highlighting top priorities and concerns.",
+                                f"<div class='insight-box'><div class='insight-title'>🔑 Key Insight</div> Customers most frequently mention <span style='color:#667eea;font-weight:bold'>{', '.join(top_words[:3])}</span>, highlighting top priorities and concerns.</div>",
                                 unsafe_allow_html=True
                             )
                         else:
-                            st.markdown("<b>Key Insight:</b> No significant keywords found.", unsafe_allow_html=True)
+                            st.markdown("<div class='insight-box'><div class='insight-title'>🔑 Key Insight</div> No significant keywords found.</div>", unsafe_allow_html=True)
                     else:
                         st.info("Word cloud generation failed - using alternative word frequency analysis")
                         word_freq = get_word_frequencies(filtered_df['reviewText'])
@@ -1600,11 +1604,11 @@ def main():
                             st.plotly_chart(fig_words, use_container_width=True)
                             top_words = [word for word, count in word_freq[:5]]
                             st.markdown(
-                                f"<b>Key Insight:</b> Customers most frequently mention <span style='color:#667eea;font-weight:bold'>{', '.join(top_words[:3])}</span>, highlighting top priorities and concerns.",
+                                f"<div class='insight-box'><div class='insight-title'>🔑 Key Insight</div> Customers most frequently mention <span style='color:#667eea;font-weight:bold'>{', '.join(top_words[:3])}</span>, highlighting top priorities and concerns.</div>",
                                 unsafe_allow_html=True
                             )
                         else:
-                            st.markdown("<b>Key Insight:</b> No significant keywords found.", unsafe_allow_html=True)
+                            st.markdown("<div class='insight-box'><div class='insight-title'>🔑 Key Insight</div> No significant keywords found.</div>", unsafe_allow_html=True)
                     st.markdown('</div>', unsafe_allow_html=True)
                 else:
                     st.markdown('<div class="wordcloud-container">', unsafe_allow_html=True)
@@ -1623,11 +1627,11 @@ def main():
                         st.plotly_chart(fig_words, use_container_width=True)
                         top_words = [word for word, count in word_freq[:5]]
                         st.markdown(
-                            f"<b>Strategic Insight:</b> These keywords represent your brand's core value propositions: <span style='color:#667eea;font-weight:bold'>{', '.join(top_words[:3])}</span>.",
+                            f"<div class='insight-box'><div class='insight-title'>🔑 Strategic Insight</div> These keywords represent your brand's core value propositions: <span style='color:#667eea;font-weight:bold'>{', '.join(top_words[:3])}</span>.</div>",
                             unsafe_allow_html=True
                         )
                     else:
-                        st.markdown("<b>Strategic Insight:</b> No significant keywords found.", unsafe_allow_html=True)
+                        st.markdown("<div class='insight-box'><div class='insight-title'>🔑 Strategic Insight</div> No significant keywords found.</div>", unsafe_allow_html=True)
                     st.markdown('</div>', unsafe_allow_html=True)
                 
                 # Business Impact Explanation
