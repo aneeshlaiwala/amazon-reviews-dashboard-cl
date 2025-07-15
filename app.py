@@ -2672,7 +2672,7 @@ def main():
     st.markdown("---")
     st.markdown(
         '<div class="footer">Customer Reviews Intelligence Platform | Created by insights3d - email to aneesh@insights3d.com</div>', 
-        unsafe_allow_html=TrueIn 
+        unsafe_allow_html=True
     )
 
 if __name__ == "__main__":
