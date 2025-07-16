@@ -41,10 +41,19 @@ import random
 try:
     from transformers import pipeline
     TRANSFORMERS_AVAILABLE = True
-    sentiment_pipeline = pipeline("sentiment-analysis", model="distilbert-base-uncased-finetuned-sst-2-english")
+    sentiment_pipeline_distilbert = pipeline("sentiment-analysis", model="distilbert-base-uncased-finetuned-sst-2-english")
+    sentiment_pipeline_roberta = pipeline("sentiment-analysis", model="cardiffnlp/twitter-roberta-base-sentiment-latest")
 except ImportError:
     TRANSFORMERS_AVAILABLE = False
-    sentiment_pipeline = None
+    sentiment_pipeline_distilbert = None
+    sentiment_pipeline_roberta = None
+
+# --- OpenAI ChatGPT Integration ---
+try:
+    import openai
+    OPENAI_AVAILABLE = True
+except ImportError:
+    OPENAI_AVAILABLE = False
 
 # Ultra-modern CSS for C-level presentation
 st.markdown("""
@@ -588,7 +597,7 @@ def load_and_process_data(uploaded_file):
     
     return df
 
-def advanced_sentiment_analysis_multilevel(text, use_transformers=False):
+def advanced_sentiment_analysis_multilevel(text, model_choice="DistilBERT (English)", openai_api_key=None):
     if not text or len(text.strip()) == 0:
         return {
             'sentiment': 'Neutral',
@@ -596,10 +605,62 @@ def advanced_sentiment_analysis_multilevel(text, use_transformers=False):
             'confidence': 0.5,
             'emotion': 'neutral'
         }
-    # --- Use Transformers if available and selected ---
-    if use_transformers and TRANSFORMERS_AVAILABLE and sentiment_pipeline is not None:
+    # --- ChatGPT API ---
+    if model_choice == "ChatGPT API" and OPENAI_AVAILABLE and openai_api_key:
         try:
-            result = sentiment_pipeline(text[:512])[0]  # Truncate to 512 tokens for BERT
+            openai.api_key = openai_api_key
+            prompt = f"Classify the sentiment of this review as one of: Extremely Positive, Very Positive, Positive, Neutral, Negative, Very Negative, Extremely Negative.\nReview: {text}\nSentiment:"
+            response = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=10,
+                temperature=0
+            )
+            label = response['choices'][0]['message']['content'].strip()
+            # Map to app's scheme
+            mapping = {
+                'Extremely Positive': ('Extremely Positive', 0.9, 'enthusiastic'),
+                'Very Positive': ('Very Positive', 0.7, 'satisfied'),
+                'Positive': ('Positive', 0.5, 'pleased'),
+                'Neutral': ('Neutral', 0.0, 'neutral'),
+                'Negative': ('Negative', -0.5, 'disappointed'),
+                'Very Negative': ('Very Negative', -0.7, 'frustrated'),
+                'Extremely Negative': ('Extremely Negative', -0.9, 'angry')
+            }
+            sentiment, polarity, emotion = mapping.get(label, ('Neutral', 0.0, 'neutral'))
+            return {
+                'sentiment': sentiment,
+                'polarity': polarity,
+                'confidence': 1.0,
+                'emotion': emotion
+            }
+        except Exception as e:
+            pass  # Fallback to transformers
+    # --- RoBERTa Multilingual ---
+    if model_choice == "RoBERTa (Multilingual)" and TRANSFORMERS_AVAILABLE and sentiment_pipeline_roberta is not None:
+        try:
+            result = sentiment_pipeline_roberta(text[:512])[0]
+            label = result['label']
+            score = result['score']
+            # RoBERTa labels: 'LABEL_0' (Negative), 'LABEL_1' (Neutral), 'LABEL_2' (Positive)
+            mapping = {
+                'LABEL_2': ('Positive', score, 'pleased'),
+                'LABEL_1': ('Neutral', 0.0, 'neutral'),
+                'LABEL_0': ('Negative', -score, 'disappointed')
+            }
+            sentiment, polarity, emotion = mapping.get(label, ('Neutral', 0.0, 'neutral'))
+            return {
+                'sentiment': sentiment,
+                'polarity': polarity,
+                'confidence': score,
+                'emotion': emotion
+            }
+        except Exception as e:
+            pass  # Fallback to DistilBERT
+    # --- DistilBERT English ---
+    if model_choice == "DistilBERT (English)" and TRANSFORMERS_AVAILABLE and sentiment_pipeline_distilbert is not None:
+        try:
+            result = sentiment_pipeline_distilbert(text[:512])[0]
             label = result['label']
             score = result['score']
             if label == 'POSITIVE':
@@ -621,7 +682,7 @@ def advanced_sentiment_analysis_multilevel(text, use_transformers=False):
                 'emotion': emotion
             }
         except Exception as e:
-            pass  # Fallback to TextBlob below
+            pass  # Fallback to TextBlob
     # --- Fallback: TextBlob + VADER ---
     blob = TextBlob(text)
     polarity = blob.sentiment.polarity
@@ -1033,12 +1094,12 @@ def get_trust_score(risk_rate):
     else:
         return 4
 
-def process_data_with_advanced_ml(df, use_transformers=False):
+def process_data_with_advanced_ml(df, model_choice="DistilBERT (English)", openai_api_key=None):
     st.info("🤖 Analyzing reviews with advanced AI algorithms...")
     sentiment_results = []
     progress_bar = st.progress(0)
     for i, text in enumerate(df['reviewText']):
-        result = advanced_sentiment_analysis_multilevel(text, use_transformers=use_transformers)
+        result = advanced_sentiment_analysis_multilevel(text, model_choice=model_choice, openai_api_key=openai_api_key)
         sentiment_results.append(result)
         progress_bar.progress((i + 1) / len(df) * 0.4)
     df['sentiment'] = [r['sentiment'] for r in sentiment_results]
@@ -1316,16 +1377,19 @@ def main():
         st.markdown('<div class="filter-sidebar">', unsafe_allow_html=True)
         st.markdown('<div class="filter-header">🎛️ Smart Filters</div>', unsafe_allow_html=True)
         
-        # Add sentiment analysis method toggle (move to top, before file uploader)
+        # Add sentiment model dropdown
         st.markdown('<div class="filter-section">', unsafe_allow_html=True)
-        st.markdown('<span class="filter-label">🤖 Sentiment Analysis Engine</span>', unsafe_allow_html=True)
-        sentiment_method = st.radio(
-            "Choose Sentiment Analysis Method:",
-            options=["Standard", "Advanced (Transformers)"],
+        st.markdown('<span class="filter-label">🤖 Sentiment Model</span>', unsafe_allow_html=True)
+        sentiment_model = st.selectbox(
+            "Choose Sentiment Model:",
+            options=["DistilBERT (English)", "RoBERTa (Multilingual)", "ChatGPT API"],
             index=0,
-            key="sentiment_method",
-            help="Advanced uses Hugging Face Transformers for context-aware sentiment (slower, more accurate)"
+            key="sentiment_model",
+            help="RoBERTa is more nuanced and multilingual. ChatGPT is most advanced but requires your OpenAI API key."
         )
+        openai_api_key = None
+        if sentiment_model == "ChatGPT API":
+            openai_api_key = st.text_input("Enter your OpenAI API Key:", type="password", key="openai_api_key")
         st.markdown('</div>', unsafe_allow_html=True)
         
         # File upload in sidebar
@@ -1347,8 +1411,7 @@ def main():
                 with st.spinner('🤖 Processing with AI...'):
                     df = load_and_process_data(uploaded_file)
                     if df is not None:
-                        use_transformers = (sentiment_method == "Advanced (Transformers)")
-                        df, topics = process_data_with_advanced_ml(df, use_transformers=use_transformers)
+                        df, topics = process_data_with_advanced_ml(df, model_choice=sentiment_model, openai_api_key=openai_api_key)
                         st.session_state.processed_data = df
                         st.session_state.topics = topics
                         st.success("✅ Analysis Complete!")
