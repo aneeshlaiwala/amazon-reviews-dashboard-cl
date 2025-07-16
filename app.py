@@ -1286,8 +1286,8 @@ def calculate_business_impact(df):
     
     return impact_scores
 
-def create_chart_with_insights(fig, insight_text):
-    st.plotly_chart(fig, use_container_width=True)
+def create_chart_with_insights(fig, insight_text, chart_key=None):
+    st.plotly_chart(fig, use_container_width=True, key=chart_key)
     st.markdown(f'<div class="insight-box"><div class="insight-title">📊 Key Insight</div> {insight_text}</div>', unsafe_allow_html=True)
 
 def extract_sample_verbatims(df):
