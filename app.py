@@ -2909,12 +2909,12 @@ def main():
                    (filtered_df['topic'] == topic) & (filtered_df['month'] == last_month) & (filtered_df['year'] == last_year)
                 ].shape[0]
                 total_last_month = filtered_df[
-                   (filtered_df['month'] == last_month) & (filtered_df['year'] == last_year)
-                 ].shape[0]
-                 penetration = topic_count / total_last_month * 100 if total_last_month > 0 else 0
-                 insight_text = (
-                     f"<b>{topic}</b> is the most discussed topic recently, covering {penetration:.1f}% of reviews. "
-                     "Monitor its trend for emerging priorities."
+                    (filtered_df['month'] == last_month) & (filtered_df['year'] == last_year)
+                ].shape[0]
+                penetration = topic_count / total_last_month * 100 if total_last_month > 0 else 0
+                insight_text = (
+                    f"<b>{topic}</b> is the most discussed topic recently, covering {penetration:.1f}% of reviews. "
+                    "Monitor its trend for emerging priorities."
                  )
             else:
                 insight_text = "Topic penetration is distributed. Watch for shifts indicating new customer priorities."
