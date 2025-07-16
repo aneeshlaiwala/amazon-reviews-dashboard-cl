@@ -1774,8 +1774,6 @@ def main():
                 with col1:
                     st.markdown('<div class="chart-container">', unsafe_allow_html=True)
                     st.markdown("<h3 style='text-align:center; margin-bottom:1rem;'>📊 Customer Rating Distribution</h3>", unsafe_allow_html=True)
-                    
-                    # 3D-enhanced rating distribution
                     fig_rating = px.histogram(
                         filtered_df, x='rating', 
                         color_discrete_sequence=['#667eea'],
@@ -1783,8 +1781,6 @@ def main():
                         category_orders={"rating": [1, 2, 3, 4, 5]},
                         title="Customer Rating Distribution"
                     )
-                    
-                    # Enhanced 3D styling
                     fig_rating.update_layout(
                         xaxis_title="Star Rating",
                         yaxis_title="Number of Reviews",
@@ -1812,19 +1808,22 @@ def main():
                             linecolor='rgb(204, 204, 204)'
                         )
                     )
-                    
-                    # Add shadow effect
                     fig_rating.update_traces(
                         marker=dict(
                             line=dict(width=2, color='rgba(102, 126, 234, 0.8)'),
                             opacity=0.8
                         )
                     )
-                    
-                    high_satisfaction = (filtered_df['rating'] >= 4).sum() / len(filtered_df) * 100
-                    insight_text = f"**{high_satisfaction:.1f}% customer satisfaction rate** indicates strong market position. Focus on converting 4-star experiences to 5-star loyalty."
-                    
-                    create_chart_with_insights(fig_rating, insight_text)
+                    high_satisfaction = (filtered_df['rating'] >= 4).sum() / len(filtered_df) * 100 if len(filtered_df) > 0 else 0
+                    if high_satisfaction > 70:
+                        insight_text = f"**{high_satisfaction:.1f}% customer satisfaction rate**. Outstanding market position."
+                    elif high_satisfaction > 40:
+                        insight_text = f"**{high_satisfaction:.1f}% customer satisfaction rate**. Good, but there is room for improvement."
+                    elif high_satisfaction > 0:
+                        insight_text = f"**{high_satisfaction:.1f}% customer satisfaction rate**. Customer satisfaction is low—immediate action required."
+                    else:
+                        insight_text = "No satisfied customers in the current view. Investigate root causes urgently."
+                    create_chart_with_insights(fig_rating, insight_text, sentiment_model=sentiment_model, fallback_info=getattr(st.session_state, 'fallback_info', None))
                     st.markdown('</div>', unsafe_allow_html=True)
                 
                 with col2:
