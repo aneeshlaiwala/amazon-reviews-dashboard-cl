@@ -42,17 +42,12 @@ try:
     from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassification
     TRANSFORMERS_AVAILABLE = True
     sentiment_pipeline_distilbert = pipeline("sentiment-analysis", model="distilbert-base-uncased-finetuned-sst-2-english", device=-1)
-    roberta_model_name = "cardiffnlp/twitter-roberta-base-sentiment-latest"
-    tokenizer_roberta = AutoTokenizer.from_pretrained(roberta_model_name)
-    model_roberta = AutoModelForSequenceClassification.from_pretrained(roberta_model_name)
-    sentiment_pipeline_roberta = pipeline("sentiment-analysis", model=model_roberta, tokenizer=tokenizer_roberta, device=-1)
     # BERT Multilingual Reviews
     bert_model_name = "nlptown/bert-base-multilingual-uncased-sentiment"
     sentiment_pipeline_bert = pipeline("sentiment-analysis", model=bert_model_name, device=-1)
 except ImportError:
     TRANSFORMERS_AVAILABLE = False
     sentiment_pipeline_distilbert = None
-    sentiment_pipeline_roberta = None
     sentiment_pipeline_bert = None
 
 # --- OpenAI ChatGPT Integration ---
@@ -731,28 +726,6 @@ def advanced_sentiment_analysis_multilevel(text, model_choice="DistilBERT (Engli
                 fallback_info['used'] = True
                 fallback_info['model'] = 'BERT (Multilingual Reviews)'
             pass  # Fallback to next model
-    # --- RoBERTa Multilingual ---
-    if model_choice == "RoBERTa (Multilingual)" and TRANSFORMERS_AVAILABLE and sentiment_pipeline_roberta is not None:
-        try:
-            # Lowercase the input text for RoBERTa
-            result = sentiment_pipeline_roberta(text.lower()[:512])[0]
-            label = result['label']
-            score = result['score']
-            # RoBERTa labels: 'LABEL_0' (Negative), 'LABEL_1' (Neutral), 'LABEL_2' (Positive)
-            mapping = {
-                'LABEL_2': ('Positive', score, 'pleased'),
-                'LABEL_1': ('Neutral', 0.0, 'neutral'),
-                'LABEL_0': ('Negative', -score, 'disappointed')
-            }
-            sentiment, polarity, emotion = mapping.get(label, ('Neutral', 0.0, 'neutral'))
-            return {
-                'sentiment': sentiment,
-                'polarity': polarity,
-                'confidence': score,
-                'emotion': emotion
-            }
-        except Exception as e:
-            pass  # Fallback to DistilBERT
     # --- DistilBERT English ---
     if model_choice == "DistilBERT (English)" and TRANSFORMERS_AVAILABLE and sentiment_pipeline_distilbert is not None:
         try:
@@ -1479,10 +1452,10 @@ def main():
         st.markdown('<span class="filter-label">🤖 Sentiment Model</span>', unsafe_allow_html=True)
         sentiment_model = st.selectbox(
             "Choose Sentiment Model:",
-            options=["DistilBERT (English)", "RoBERTa (Multilingual)", "BERT (Multilingual Reviews)", "ChatGPT API", "Google Natural Language API"],
+            options=["DistilBERT (English)", "BERT (Multilingual Reviews)", "ChatGPT API", "Google Natural Language API"],
             index=0,
             key="sentiment_model",
-            help="RoBERTa is more nuanced and multilingual. ChatGPT/Google are most advanced but require your API key. BERT is trained on reviews."
+            help="ChatGPT/Google are most advanced but require your API key. BERT is trained on reviews."
         )
         openai_api_key = None
         google_api_key = None
@@ -1623,6 +1596,106 @@ def main():
             with tab1:
                 # Enhanced Executive Summary
                 st.markdown(generate_executive_summary_card(filtered_df), unsafe_allow_html=True)
+
+                # --- Business Impact Score Penetration Trend (Time Series) ---
+                st.markdown("<h3 style='text-align:center; margin-bottom:1rem;'>📈 Business Impact Score Penetration Trend</h3>", unsafe_allow_html=True)
+                impact_bins = [ -5, -3, -1.1, 1, 3, 5 ]
+                impact_labels = [
+                    'Crisis-level (-5 to -3)',
+                    'Negative (-2.9 to -1.1)',
+                    'Neutral (-1.0 to 0.9)',
+                    'Positive (1.0 to 2.9)',
+                    'Premium (3.0 to 5.0)'
+                ]
+                filtered_df['impact_category'] = pd.cut(filtered_df['businessImpact'], bins=impact_bins, labels=impact_labels, include_lowest=True)
+                # Group by month and impact category
+                impact_trend = filtered_df.groupby(['year', 'month', 'impact_category']).size().reset_index(name='count')
+                total_by_month = filtered_df.groupby(['year', 'month']).size().reset_index(name='total')
+                impact_trend = impact_trend.merge(total_by_month, on=['year', 'month'])
+                impact_trend['pct'] = impact_trend['count'] / impact_trend['total'] * 100
+                impact_trend['date'] = pd.to_datetime(impact_trend[['year', 'month']].assign(day=1))
+                import plotly.express as px
+                fig_impact_trend = px.bar(
+                    impact_trend,
+                    x='date',
+                    y='pct',
+                    color='impact_category',
+                    category_orders={'impact_category': impact_labels},
+                    labels={'pct': '% of Reviews', 'date': 'Month'},
+                    title=None,
+                    barmode='stack',
+                    color_discrete_sequence=px.colors.qualitative.Pastel
+                )
+                fig_impact_trend.update_layout(
+                    height=350,
+                    xaxis_title='Month',
+                    yaxis_title='% of Reviews',
+                    legend_title='Impact Category',
+                    plot_bgcolor='rgba(0,0,0,0)',
+                    paper_bgcolor='rgba(0,0,0,0)'
+                )
+                st.plotly_chart(fig_impact_trend, use_container_width=True)
+
+                # --- Sentiment Trend Chart (Time Series) ---
+                st.markdown("<h3 style='text-align:center; margin-bottom:1rem;'>📈 Sentiment Trend Over Time</h3>", unsafe_allow_html=True)
+                sentiment_trend = filtered_df.groupby(['year', 'month', 'sentiment']).size().reset_index(name='count')
+                total_by_month_sent = filtered_df.groupby(['year', 'month']).size().reset_index(name='total')
+                sentiment_trend = sentiment_trend.merge(total_by_month_sent, on=['year', 'month'])
+                sentiment_trend['pct'] = sentiment_trend['count'] / sentiment_trend['total'] * 100
+                sentiment_trend['date'] = pd.to_datetime(sentiment_trend[['year', 'month']].assign(day=1))
+                sentiment_order = ['Extremely Negative', 'Very Negative', 'Negative', 'Neutral', 'Positive', 'Very Positive', 'Extremely Positive']
+                fig_sentiment_trend = px.area(
+                    sentiment_trend,
+                    x='date',
+                    y='pct',
+                    color='sentiment',
+                    category_orders={'sentiment': sentiment_order},
+                    labels={'pct': '% of Reviews', 'date': 'Month'},
+                    title=None,
+                    groupnorm='percent',
+                    color_discrete_sequence=px.colors.qualitative.Set2
+                )
+                fig_sentiment_trend.update_layout(
+                    height=350,
+                    xaxis_title='Month',
+                    yaxis_title='% of Reviews',
+                    legend_title='Sentiment',
+                    plot_bgcolor='rgba(0,0,0,0)',
+                    paper_bgcolor='rgba(0,0,0,0)'
+                )
+                st.plotly_chart(fig_sentiment_trend, use_container_width=True)
+
+                # --- Topic Trend Chart (Time Series) ---
+                st.markdown("<h3 style='text-align:center; margin-bottom:1rem;'>🏷️ Topic Penetration Trend</h3>", unsafe_allow_html=True)
+                # Get top 5 topics overall (excluding 'Mixed Themes' and 'General Discussion')
+                topic_counts = filtered_df['topic'].value_counts()
+                topic_counts = topic_counts[~topic_counts.index.isin(['Mixed Themes', 'General Discussion'])]
+                top_topics = topic_counts.head(5).index.tolist()
+                # Group by month and topic
+                topic_trend = filtered_df[filtered_df['topic'].isin(top_topics)].groupby(['year', 'month', 'topic']).size().reset_index(name='count')
+                total_by_month_topic = filtered_df.groupby(['year', 'month']).size().reset_index(name='total')
+                topic_trend = topic_trend.merge(total_by_month_topic, on=['year', 'month'])
+                topic_trend['pct'] = topic_trend['count'] / topic_trend['total'] * 100
+                topic_trend['date'] = pd.to_datetime(topic_trend[['year', 'month']].assign(day=1))
+                fig_topic_trend = px.area(
+                    topic_trend,
+                    x='date',
+                    y='pct',
+                    color='topic',
+                    labels={'pct': '% of Reviews', 'date': 'Month', 'topic': 'Topic'},
+                    title=None,
+                    groupnorm='percent',
+                    color_discrete_sequence=px.colors.qualitative.Pastel
+                )
+                fig_topic_trend.update_layout(
+                    height=350,
+                    xaxis_title='Month',
+                    yaxis_title='% of Reviews',
+                    legend_title='Topic',
+                    plot_bgcolor='rgba(0,0,0,0)',
+                    paper_bgcolor='rgba(0,0,0,0)'
+                )
+                st.plotly_chart(fig_topic_trend, use_container_width=True)
                 
                 # Premium metric cards with 3D effects
                 st.markdown("### 📊 Key Performance Indicators")
@@ -2375,15 +2448,11 @@ def main():
                 st.markdown("<h2 class='subheader'>💬 Customer Voice Intelligence</h2>", unsafe_allow_html=True)
                 st.markdown("*Authentic customer feedback driving strategic decisions*")
                 
-                # Extract enhanced verbatims
-                if 'sample_pos' not in st.session_state or 'sample_neg' not in st.session_state:
-                    pos_reviews = filtered_df[(filtered_df['rating'] == 5) & (filtered_df['sentiment'].str.contains('Positive'))]
-                    neg_reviews = filtered_df[(filtered_df['rating'] == 1) & (filtered_df['sentiment'].str.contains('Negative'))]
-                    st.session_state['sample_pos'] = pos_reviews.sample(n=min(5, len(pos_reviews)), random_state=42)
-                    st.session_state['sample_neg'] = neg_reviews.sample(n=min(5, len(neg_reviews)), random_state=42)
-                
-                positive_verbatims = st.session_state['sample_pos']
-                negative_verbatims = st.session_state['sample_neg']
+                # Always dynamically select top 5 positive and negative verbatims from filtered_df
+                positive_verbatims = filtered_df[(filtered_df['rating'] == 5) & (filtered_df['sentiment'].str.contains('Positive'))]
+                positive_verbatims = positive_verbatims.nlargest(5, 'businessImpact') if len(positive_verbatims) > 0 else pd.DataFrame()
+                negative_verbatims = filtered_df[(filtered_df['rating'] == 1) & (filtered_df['sentiment'].str.contains('Negative'))]
+                negative_verbatims = negative_verbatims.nsmallest(5, 'businessImpact') if len(negative_verbatims) > 0 else pd.DataFrame()
                 
                 col1, col2 = st.columns(2)
                 
@@ -2480,11 +2549,12 @@ def main():
                     
                     topic_summary = filtered_df['topic'].value_counts().head(9)
                     topic_sentiment = filtered_df.groupby('topic')['businessImpact'].mean().round(2)
-                    
+                    total_reviews = len(filtered_df)
+                    st.markdown("<div style='font-size:0.95rem; color:#764ba2; margin-bottom:0.5rem;'><b>Note:</b> Penetration % can sum to more than 100% because reviews may be tagged with multiple topics.</div>", unsafe_allow_html=True)
                     for idx, (topic, count) in enumerate(topic_summary.items()):
                         col_idx = idx % 3
                         impact = topic_sentiment.get(topic, 0)
-                        
+                        penetration_pct = count / total_reviews * 100
                         # Determine priority level
                         if impact > 2:
                             priority = "🟢 Strategic Strength"
@@ -2498,12 +2568,12 @@ def main():
                         else:
                             priority = "🔴 Critical Issue"
                             action = "Immediate intervention"
-                        
                         if col_idx == 0:
                             with col1:
                                 st.markdown(f"""
                                 **{idx+1}. {topic}**
-                                - **Volume:** {count:,} mentions ({count/len(filtered_df)*100:.1f}%)
+                                - **Mentions:** {count:,}
+                                - **Penetration:** {penetration_pct:.1f}% of reviews
                                 - **Impact:** {impact:.1f}/5.0
                                 - **Status:** {priority}
                                 - **Action:** {action}
@@ -2512,7 +2582,8 @@ def main():
                             with col2:
                                 st.markdown(f"""
                                 **{idx+1}. {topic}**
-                                - **Volume:** {count:,} mentions ({count/len(filtered_df)*100:.1f}%)
+                                - **Mentions:** {count:,}
+                                - **Penetration:** {penetration_pct:.1f}% of reviews
                                 - **Impact:** {impact:.1f}/5.0
                                 - **Status:** {priority}
                                 - **Action:** {action}
@@ -2521,7 +2592,8 @@ def main():
                             with col3:
                                 st.markdown(f"""
                                 **{idx+1}. {topic}**
-                                - **Volume:** {count:,} mentions ({count/len(filtered_df)*100:.1f}%)
+                                - **Mentions:** {count:,}
+                                - **Penetration:** {penetration_pct:.1f}% of reviews
                                 - **Impact:** {impact:.1f}/5.0
                                 - **Status:** {priority}
                                 - **Action:** {action}
