@@ -2822,8 +2822,8 @@ def main():
                 st.markdown(f'<div class="insight-box"><div class="insight-title">🔑 Executive Insight</div> {insight_text}</div>', unsafe_allow_html=True)
 
                 # --- Risk Management: Suspicious Data Download ---
-                # ... existing code ...
-                # After suspicious_df is created and shown, add download button
+                # Define suspicious_df before using it
+                suspicious_df = filtered_df[filtered_df['fraudFlag'].isin(['High Risk', 'Medium Risk'])]
                 if not suspicious_df.empty:
                     suspicious_csv = suspicious_df.to_csv(index=False)
                     st.download_button(
