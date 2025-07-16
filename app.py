@@ -2727,10 +2727,8 @@ def main():
                     
                     # 3D-enhanced dual axis chart
                     fig_risk = make_subplots(
-                        specs=[[{"secondary_y": True}]],
-                        subplot_titles=["Risk Rate vs Business Impact Correlation"]
+                        specs=[[{"secondary_y": True}]]
                     )
-                    
                     # Risk rate line
                     fig_risk.add_trace(
                         go.Scatter(
@@ -2738,14 +2736,14 @@ def main():
                             y=risk_trends['risk_rate'],
                             mode='lines+markers',
                             name='Suspicious Review Rate (%)',
-                            line=dict(color='#dc3545', width=4, shape='spline'),
+                            line=dict(color='#dc3545', width=4, shape='spline', dash='dot'),
                             marker=dict(size=8, line=dict(width=2, color='white')),
                             fill='tonexty',
-                            fillcolor='rgba(220, 53, 69, 0.1)'
+                            fillcolor='rgba(220, 53, 69, 0.1)',
+                            hovertemplate='Suspicious Review Rate: %{y:.0f}%<br>Date: %{x|%b %Y}'
                         ),
                         secondary_y=False
                     )
-                    
                     # Business impact line
                     fig_risk.add_trace(
                         go.Scatter(
@@ -2756,23 +2754,21 @@ def main():
                             line=dict(color='#28a745', width=4, shape='spline'),
                             marker=dict(size=8, line=dict(width=2, color='white')),
                             fill='tonexty',
-                            fillcolor='rgba(40, 167, 69, 0.1)'
+                            fillcolor='rgba(40, 167, 69, 0.1)',
+                            hovertemplate='Business Impact Score: %{y:.1f}<br>Date: %{x|%b %Y}'
                         ),
                         secondary_y=True
                     )
-                    
-                    # Enhanced styling
                     fig_risk.update_layout(
                         height=450,
                         plot_bgcolor='rgba(0,0,0,0)',
                         paper_bgcolor='rgba(0,0,0,0)',
                         font=dict(family="Inter, sans-serif"),
-                        title_x=0.5,
                         showlegend=True,
-                        legend=dict(x=0, y=1.1, orientation="h"),
-                        xaxis=dict(showgrid=True, gridcolor='rgba(128,128,128,0.2)')
+                        legend=dict(x=0, y=1.15, orientation="h", font=dict(size=13)),
+                        margin=dict(t=30, b=30, l=0, r=0),
+                        title=None
                     )
-                    
                     fig_risk.update_yaxes(
                         title_text="Suspicious Review Rate (%)",
                         secondary_y=False,
@@ -2784,16 +2780,244 @@ def main():
                         secondary_y=True,
                         showgrid=False
                     )
-                    
                     # Calculate risk trajectory
                     recent_risk = risk_trends['risk_rate'].tail(3).mean()
                     historical_risk = risk_trends['risk_rate'].head(3).mean()
                     risk_direction = "increasing" if recent_risk > historical_risk else "decreasing"
                     risk_change = abs(recent_risk - historical_risk)
+                    insight_text = f"**Risk Trajectory:** Suspicious activity is {risk_direction} by {risk_change:.0f}%. {'Negative correlation detected - higher risk = lower business value' if risk_trends['risk_rate'].corr(risk_trends['businessImpact']) < -0.3 else 'Monitor for emerging patterns.'}"
+                    st.plotly_chart(fig_risk, use_container_width=True)
+                    st.markdown(f'<div class="insight-box"><div class="insight-title">🔑 Executive Insight</div> {insight_text}</div>', unsafe_allow_html=True)
+                    st.markdown("</div>", unsafe_allow_html=True)
+
+                # --- Topic Trend Chart (Time Series) ---
+                st.markdown("<h3 style='text-align:center; margin-bottom:1rem;'>🏷️ Topic Penetration Trend</h3>", unsafe_allow_html=True)
+                # Get top 5 topics overall (excluding 'Mixed Themes' and 'General Discussion')
+                topic_counts = filtered_df['topic'].value_counts()
+                topic_counts = topic_counts[~topic_counts.index.isin(['Mixed Themes', 'General Discussion'])]
+                top_topics = topic_counts.head(5).index.tolist()
+                # Group by month and topic
+                topic_trend = filtered_df[filtered_df['topic'].isin(top_topics)].groupby(['year', 'month', 'topic']).size().reset_index(name='count')
+                total_by_month_topic = filtered_df.groupby(['year', 'month']).size().reset_index(name='total')
+                topic_trend = topic_trend.merge(total_by_month_topic, on=['year', 'month'])
+                topic_trend['pct'] = (topic_trend['count'] / topic_trend['total'] * 100).round(0)
+                topic_trend['date'] = pd.to_datetime(topic_trend[['year', 'month']].assign(day=1))
+                fig_topic_trend = px.bar(
+                    topic_trend,
+                    x='date',
+                    y='pct',
+                    color='topic',
+                    labels={'pct': '% of Reviews', 'date': 'Month', 'topic': 'Topic'},
+                    title=None,
+                    barmode='stack',
+                    color_discrete_sequence=px.colors.qualitative.Pastel,
+                    hover_data={"pct":":.0f"}
+                )
+                fig_topic_trend.update_traces(hovertemplate='%{y:.0f}% of Reviews<br>Topic: %{customdata[0]}<br>Date: %{x|%b %Y}')
+                fig_topic_trend.update_layout(
+                    height=350,
+                    xaxis_title='Month',
+                    yaxis_title='% of Reviews',
+                    legend_title='Topic',
+                    plot_bgcolor='rgba(0,0,0,0)',
+                    paper_bgcolor='rgba(0,0,0,0)',
+                    margin=dict(t=30, b=30, l=0, r=0)
+                )
+                st.plotly_chart(fig_topic_trend, use_container_width=True)
+                # Executive summary/insight for topic trend
+                top_topic = topic_counts.index[0] if len(topic_counts) > 0 else "N/A"
+                insight_text = f"<b>{top_topic}</b> is the most discussed topic in recent months. Monitor shifts in topic penetration to identify emerging customer priorities."
+                st.markdown(f'<div class="insight-box"><div class="insight-title">🔑 Executive Insight</div> {insight_text}</div>', unsafe_allow_html=True)
+            
+            # TAB 5: Risk Management
+            with tab5:
+                st.markdown("<h2 class='subheader'>🚨 Enterprise Risk Management</h2>", unsafe_allow_html=True)
+                st.markdown("*Advanced threat detection and business continuity analytics*")
+                
+                # Enhanced risk metrics with executive KPIs
+                col1, col2, col3, col4 = st.columns(4)
+                
+                with col1:
+                    high_risk_count = (filtered_df['fraudFlag'] == 'High Risk').sum()
+                    risk_trend = "📈" if high_risk_count > len(filtered_df) * 0.1 else "📊" if high_risk_count > len(filtered_df) * 0.05 else "📉"
+                    st.markdown(f"""
+                    <div class='metric-card'>
+                        <h3>🚨 Critical Threats</h3>
+                        <h2>{high_risk_count}</h2>
+                        <p>{high_risk_count/len(filtered_df)*100:.1f}% {risk_trend}</p>
+                    </div>
+                    """, unsafe_allow_html=True)
+                
+                with col2:
+                    reputation_risk = len(filtered_df[filtered_df['rating'] <= 2]) / len(filtered_df) * 100
+                    rep_status = "🟢 Stable" if reputation_risk < 10 else "🟡 Monitor" if reputation_risk < 20 else "🔴 Alert"
+                    st.markdown(f"""
+                    <div class='metric-card'>
+                        <h3>📉 Reputation Risk</h3>
+                        <h2>{reputation_risk:.1f}%</h2>
+                        <p>{rep_status}</p>
+                    </div>
+                    """, unsafe_allow_html=True)
+                
+                with col3:
+                    data_integrity = len(filtered_df[filtered_df['fraudFlag'] == 'Legitimate']) / len(filtered_df) * 100
+                    integrity_grade = "A+" if data_integrity > 90 else "A" if data_integrity > 80 else "B" if data_integrity > 70 else "C"
+                    st.markdown(f"""
+                    <div class='metric-card'>
+                        <h3>🛡️ Data Integrity</h3>
+                        <h2>{data_integrity:.1f}%</h2>
+                        <p>Grade: {integrity_grade}</p>
+                    </div>
+                    """, unsafe_allow_html=True)
+                
+                with col4:
+                    avg_fraud_score = filtered_df['fraudScore'].mean()
+                    risk_level = "Low" if avg_fraud_score < 2 else "Medium" if avg_fraud_score < 4 else "High"
+                    st.markdown(f"""
+                    <div class='metric-card'>
+                        <h3>⚖️ Risk Index</h3>
+                        <h2>{avg_fraud_score:.1f}/10</h2>
+                        <p>{risk_level} Risk</p>
+                    </div>
+                    """, unsafe_allow_html=True)
+                
+                # Advanced risk analytics
+                col1, col2 = st.columns(2)
+                
+                with col1:
+                    st.markdown("<div class='chart-container'>", unsafe_allow_html=True)
                     
-                    insight_text = f"**Risk Trajectory:** Suspicious activity is {risk_direction} by {risk_change:.1f}%. **Correlation Impact:** {'Negative correlation detected - higher risk = lower business value' if risk_trends['risk_rate'].corr(risk_trends['businessImpact']) < -0.3 else 'Monitor for emerging patterns'}."
+                    # Enhanced fraud detection dashboard
+                    fraud_dist = filtered_df['fraudFlag'].value_counts()
                     
-                    create_chart_with_insights(fig_risk, insight_text)
+                    # 3D-enhanced donut chart
+                    fig_fraud = px.pie(
+                        values=fraud_dist.values,
+                        names=fraud_dist.index,
+                        title="🔍 Review Authenticity Intelligence",
+                        color_discrete_map={
+                            'Legitimate': '#28a745',
+                            'Low Risk': '#ffc107', 
+                            'Medium Risk': '#fd7e14',
+                            'High Risk': '#dc3545'
+                        },
+                        hole=0.4
+                    )
+                    
+                    # Enhanced styling
+                    fig_fraud.update_layout(
+                        height=450,
+                        plot_bgcolor='rgba(0,0,0,0)',
+                        paper_bgcolor='rgba(0,0,0,0)',
+                        font=dict(family="Inter, sans-serif"),
+                        showlegend=True,
+                        legend=dict(
+                            orientation="v",
+                            yanchor="middle",
+                            y=0.5,
+                            xanchor="left",
+                            x=1.05
+                        )
+                    )
+                    
+                    # Add 3D effect with pull and shadow
+                    fig_fraud.update_traces(
+                        textposition='inside',
+                        textinfo='percent+label',
+                        marker=dict(
+                            line=dict(color='#FFFFFF', width=3)
+                        ),
+                        pull=[0.1 if 'High Risk' in name else 0.05 if 'Medium Risk' in name else 0 for name in fraud_dist.index]
+                    )
+                    
+                    legitimate_rate = fraud_dist.get('Legitimate', 0) / len(filtered_df) * 100
+                    total_risk = 100 - legitimate_rate
+                    
+                    insight_text = f"**Data Integrity Status:** {legitimate_rate:.1f}% verified authentic reviews. **Risk Exposure:** {total_risk:.1f}% requires monitoring. {'Implement enhanced verification protocols.' if total_risk > 15 else 'Maintain current security standards.'}"
+                    
+                    create_chart_with_insights(fig_fraud, insight_text)
+                    st.markdown("</div>", unsafe_allow_html=True)
+                
+                with col2:
+                    st.markdown("<div class='chart-container'>", unsafe_allow_html=True)
+                    
+                    # Risk trend analysis
+                    st.markdown("### 📈 Risk Evolution Timeline")
+                    
+                    risk_trends = filtered_df.groupby(['year', 'month']).agg({
+                        'fraudScore': 'mean',
+                        'fraudFlag': lambda x: (x != 'Legitimate').sum(),
+                        'reviewId': 'count',
+                        'businessImpact': 'mean'
+                    }).reset_index()
+                    
+                    risk_trends['risk_rate'] = risk_trends['fraudFlag'] / risk_trends['reviewId'] * 100
+                    risk_trends['date'] = pd.to_datetime(risk_trends[['year', 'month']].assign(day=1))
+                    risk_trends = risk_trends.sort_values('date')
+                    
+                    # 3D-enhanced dual axis chart
+                    fig_risk = make_subplots(
+                        specs=[[{"secondary_y": True}]]
+                    )
+                    # Risk rate line
+                    fig_risk.add_trace(
+                        go.Scatter(
+                            x=risk_trends['date'], 
+                            y=risk_trends['risk_rate'],
+                            mode='lines+markers',
+                            name='Suspicious Review Rate (%)',
+                            line=dict(color='#dc3545', width=4, shape='spline', dash='dot'),
+                            marker=dict(size=8, line=dict(width=2, color='white')),
+                            fill='tonexty',
+                            fillcolor='rgba(220, 53, 69, 0.1)',
+                            hovertemplate='Suspicious Review Rate: %{y:.0f}%<br>Date: %{x|%b %Y}'
+                        ),
+                        secondary_y=False
+                    )
+                    # Business impact line
+                    fig_risk.add_trace(
+                        go.Scatter(
+                            x=risk_trends['date'], 
+                            y=risk_trends['businessImpact'],
+                            mode='lines+markers',
+                            name='Business Impact Score',
+                            line=dict(color='#28a745', width=4, shape='spline'),
+                            marker=dict(size=8, line=dict(width=2, color='white')),
+                            fill='tonexty',
+                            fillcolor='rgba(40, 167, 69, 0.1)',
+                            hovertemplate='Business Impact Score: %{y:.1f}<br>Date: %{x|%b %Y}'
+                        ),
+                        secondary_y=True
+                    )
+                    fig_risk.update_layout(
+                        height=450,
+                        plot_bgcolor='rgba(0,0,0,0)',
+                        paper_bgcolor='rgba(0,0,0,0)',
+                        font=dict(family="Inter, sans-serif"),
+                        showlegend=True,
+                        legend=dict(x=0, y=1.15, orientation="h", font=dict(size=13)),
+                        margin=dict(t=30, b=30, l=0, r=0),
+                        title=None
+                    )
+                    fig_risk.update_yaxes(
+                        title_text="Suspicious Review Rate (%)",
+                        secondary_y=False,
+                        showgrid=True,
+                        gridcolor='rgba(128,128,128,0.2)'
+                    )
+                    fig_risk.update_yaxes(
+                        title_text="Business Impact Score",
+                        secondary_y=True,
+                        showgrid=False
+                    )
+                    # Calculate risk trajectory
+                    recent_risk = risk_trends['risk_rate'].tail(3).mean()
+                    historical_risk = risk_trends['risk_rate'].head(3).mean()
+                    risk_direction = "increasing" if recent_risk > historical_risk else "decreasing"
+                    risk_change = abs(recent_risk - historical_risk)
+                    insight_text = f"**Risk Trajectory:** Suspicious activity is {risk_direction} by {risk_change:.0f}%. {'Negative correlation detected - higher risk = lower business value' if risk_trends['risk_rate'].corr(risk_trends['businessImpact']) < -0.3 else 'Monitor for emerging patterns.'}"
+                    st.plotly_chart(fig_risk, use_container_width=True)
+                    st.markdown(f'<div class="insight-box"><div class="insight-title">🔑 Executive Insight</div> {insight_text}</div>', unsafe_allow_html=True)
                     st.markdown("</div>", unsafe_allow_html=True)
                 
                 # Detailed fraud detection results
