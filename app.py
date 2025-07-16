@@ -41,14 +41,14 @@ import random
 try:
     from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassification
     TRANSFORMERS_AVAILABLE = True
-    sentiment_pipeline_distilbert = pipeline("sentiment-analysis", model="distilbert-base-uncased-finetuned-sst-2-english")
+    sentiment_pipeline_distilbert = pipeline("sentiment-analysis", model="distilbert-base-uncased-finetuned-sst-2-english", device=-1)
     roberta_model_name = "cardiffnlp/twitter-roberta-base-sentiment-latest"
     tokenizer_roberta = AutoTokenizer.from_pretrained(roberta_model_name)
     model_roberta = AutoModelForSequenceClassification.from_pretrained(roberta_model_name)
-    sentiment_pipeline_roberta = pipeline("sentiment-analysis", model=model_roberta, tokenizer=tokenizer_roberta)
+    sentiment_pipeline_roberta = pipeline("sentiment-analysis", model=model_roberta, tokenizer=tokenizer_roberta, device=-1)
     # BERT Multilingual Reviews
     bert_model_name = "nlptown/bert-base-multilingual-uncased-sentiment"
-    sentiment_pipeline_bert = pipeline("sentiment-analysis", model=bert_model_name)
+    sentiment_pipeline_bert = pipeline("sentiment-analysis", model=bert_model_name, device=-1)
 except ImportError:
     TRANSFORMERS_AVAILABLE = False
     sentiment_pipeline_distilbert = None
