@@ -1286,9 +1286,21 @@ def calculate_business_impact(df):
     
     return impact_scores
 
-def create_chart_with_insights(fig, insight_text):
+# Add a helper to get the sentiment model display name
+
+def get_sentiment_model_display(fallback_info, selected_model):
+    if fallback_info and fallback_info.get('used', False):
+        return f"Fallback used: {fallback_info.get('model', 'Unknown')} (original: {selected_model})"
+    return selected_model
+
+# Update create_chart_with_insights to accept model info and fallback
+
+def create_chart_with_insights(fig, insight_text, sentiment_model=None, fallback_info=None):
     st.plotly_chart(fig, use_container_width=True)
-    st.markdown(f'<div class="insight-box"><div class="insight-title">📊 Key Insight</div> {insight_text}</div>', unsafe_allow_html=True)
+    model_info = ""
+    if sentiment_model:
+        model_info = f"<br><span style='font-size:0.95em;color:#888;'>Sentiment Model Used: <b>{get_sentiment_model_display(fallback_info, sentiment_model)}</b></span>"
+    st.markdown(f'<div class="insight-box"><div class="insight-title">📊 Key Insight</div> {insight_text}{model_info}</div>', unsafe_allow_html=True)
 
 def extract_sample_verbatims(df):
     positive_reviews = df[
@@ -1818,14 +1830,12 @@ def main():
                 with col2:
                     st.markdown('<div class="chart-container">', unsafe_allow_html=True)
                     st.markdown("<h3 style='text-align:center; margin-bottom:1rem;'>🛡️ Customer Sentiment Analysis</h3>", unsafe_allow_html=True)
-                    
                     # 3D-enhanced sentiment pie chart
                     sentiment_counts = filtered_df['sentiment'].value_counts()
                     colors = {
                         'Extremely Positive': '#0d7377', 'Very Positive': '#14a085', 'Positive': '#2ca02c',
                         'Neutral': '#ffbb33', 'Negative': '#ff6b6b', 'Very Negative': '#d62728', 'Extremely Negative': '#8b0000'
                     }
-                    
                     fig_sentiment = px.pie(
                         values=sentiment_counts.values, 
                         names=sentiment_counts.index,
@@ -1833,8 +1843,6 @@ def main():
                         color_discrete_map=colors,
                         title="Customer Sentiment Analysis"
                     )
-                    
-                    # Enhanced 3D styling for pie chart
                     fig_sentiment.update_layout(
                         height=450,
                         plot_bgcolor='rgba(0,0,0,0)',
@@ -1851,8 +1859,6 @@ def main():
                             x=1.05
                         )
                     )
-                    
-                    # Add 3D effect to pie slices
                     fig_sentiment.update_traces(
                         textposition='inside',
                         textinfo='percent+label',
@@ -1861,14 +1867,19 @@ def main():
                         ),
                         pull=[0.1 if 'Positive' in name else 0 for name in sentiment_counts.index]
                     )
-                    
                     brand_advocates = sentiment_counts.get('Extremely Positive', 0) + sentiment_counts.get('Very Positive', 0)
                     detractors = sentiment_counts.get('Very Negative', 0) + sentiment_counts.get('Extremely Negative', 0)
-                    nps_proxy = (brand_advocates - detractors) / len(filtered_df) * 100
-                    
-                    insight_text = f"**Net Promoter Score: {nps_proxy:.1f}%** - {brand_advocates:,} brand advocates vs {detractors:,} detractors. Excellent customer loyalty foundation."
-                    
-                    create_chart_with_insights(fig_sentiment, insight_text)
+                    nps_proxy = (brand_advocates - detractors) / len(filtered_df) * 100 if len(filtered_df) > 0 else 0
+                    # Dynamic insight text
+                    if nps_proxy > 50:
+                        insight_text = f"**Net Promoter Score: {nps_proxy:.1f}%** - {brand_advocates:,} brand advocates vs {detractors:,} detractors. Outstanding customer loyalty."
+                    elif nps_proxy > 0:
+                        insight_text = f"**Net Promoter Score: {nps_proxy:.1f}%** - {brand_advocates:,} brand advocates vs {detractors:,} detractors. Customer loyalty is positive, but there is room for improvement."
+                    elif nps_proxy == 0:
+                        insight_text = f"**Net Promoter Score: {nps_proxy:.1f}%** - {brand_advocates:,} brand advocates vs {detractors:,} detractors. Customer loyalty is neutral. Monitor for shifts."
+                    else:
+                        insight_text = f"**Net Promoter Score: {nps_proxy:.1f}%** - {brand_advocates:,} brand advocates vs {detractors:,} detractors. Customer loyalty is at risk. Immediate action is required to address negative feedback."
+                    create_chart_with_insights(fig_sentiment, insight_text, sentiment_model=sentiment_model, fallback_info=getattr(st.session_state, 'fallback_info', None))
                     st.markdown('</div>', unsafe_allow_html=True)
                 
                 # Word Cloud Section
