@@ -2921,22 +2921,22 @@ def main():
             st.markdown(f'<div class="insight-box"><div class="insight-title">🔑 Executive Insight</div> {insight_text}</div>', unsafe_allow_html=True)    
 
                 
-                # --- Risk Management: Suspicious Data Download ---
-                # Define suspicious_df before using it
-                suspicious_df = filtered_df[filtered_df['fraudFlag'].isin(['High Risk', 'Medium Risk'])]
-                if not suspicious_df.empty:
-                    suspicious_csv = suspicious_df.to_csv(index=False)
-                    st.download_button(
-                        label="📥 Download Suspicious Reviews",
-                        data=suspicious_csv,
-                        file_name="suspicious_reviews.csv",
-                        mime="text/csv",
-                        help="Download all suspicious reviews identified by the risk engine."
-                    )
+            # --- Risk Management: Suspicious Data Download ---
+            # Define suspicious_df before using it
+            suspicious_df = filtered_df[filtered_df['fraudFlag'].isin(['High Risk', 'Medium Risk'])]
+            if not suspicious_df.empty:
+                suspicious_csv = suspicious_df.to_csv(index=False)
+                st.download_button(
+                    label="📥 Download Suspicious Reviews",
+                    data=suspicious_csv,
+                    file_name="suspicious_reviews.csv",
+                    mime="text/csv",
+                    help="Download all suspicious reviews identified by the risk engine."
+                )
             
         #added the new code
 
-                        # Show onboarding experience if no data is loaded
+        # Show onboarding experience if no data is loaded
         if st.session_state.processed_data is None:
             st.markdown('<div class="chart-container">', unsafe_allow_html=True)
             st.markdown("""
