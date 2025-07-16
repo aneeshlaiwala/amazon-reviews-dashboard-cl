@@ -2247,27 +2247,27 @@ def main():
                         marker=dict(
                             line=dict(width=1, color='rgba(255,255,255,0.6)'),
                             opacity=0.9
-                        )
                     )
-                    
-                    
-                if not top_topics_perf.empty:
-                    best_topic = top_topics_perf.iloc[0]['Topic']
-                    worst_topic = topic_performance.nsmallest(1, 'Business Impact').iloc[0]['Topic']
-                    insight_text = (
-                        f"'{best_topic}' drives highest customer value; leverage in marketing. "
-                        f"'{worst_topic}' needs strategic intervention."
-                    )
-                else:
-                    insight_text = "No topic performance data available."
-                create_chart_with_insights(fig_topics, insight_text)
+                )
+                
+                
+            if not top_topics_perf.empty:
+                best_topic = top_topics_perf.iloc[0]['Topic']
+                worst_topic = topic_performance.nsmallest(1, 'Business Impact').iloc[0]['Topic']
+                insight_text = (
+                    f"'{best_topic}' drives highest customer value; leverage in marketing. "
+                    f"'{worst_topic}' needs strategic intervention."
+                )
+            else:
+                insight_text = "No topic performance data available."
+            create_chart_with_insights(fig_topics, insight_text)
 
 
-                    st.markdown("</div>", unsafe_allow_html=True)
-                    st.markdown("<div class='chart-container' style='margin-top:1.5rem;'>", unsafe_allow_html=True)
-                    for idx, row in top_topics_perf.iterrows():
-                        topic = row['Topic']
-                        avg_rating = row['Avg Rating']
+                st.markdown("</div>", unsafe_allow_html=True)
+                st.markdown("<div class='chart-container' style='margin-top:1.5rem;'>", unsafe_allow_html=True)
+                for idx, row in top_topics_perf.iterrows():
+                    topic = row['Topic']
+                    avg_rating = row['Avg Rating']
                         business_impact = row['Business Impact']
                         sentiment_score = row['Sentiment Score']
                         volume = row['Volume']
