@@ -39,10 +39,13 @@ import random
 
 # --- Hugging Face Transformers Sentiment Analysis Integration ---
 try:
-    from transformers import pipeline
+    from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassification
     TRANSFORMERS_AVAILABLE = True
     sentiment_pipeline_distilbert = pipeline("sentiment-analysis", model="distilbert-base-uncased-finetuned-sst-2-english")
-    sentiment_pipeline_roberta = pipeline("sentiment-analysis", model="cardiffnlp/twitter-roberta-base-sentiment-latest")
+    roberta_model_name = "cardiffnlp/twitter-roberta-base-sentiment-latest"
+    tokenizer_roberta = AutoTokenizer.from_pretrained(roberta_model_name)
+    model_roberta = AutoModelForSequenceClassification.from_pretrained(roberta_model_name)
+    sentiment_pipeline_roberta = pipeline("sentiment-analysis", model=model_roberta, tokenizer=tokenizer_roberta)
 except ImportError:
     TRANSFORMERS_AVAILABLE = False
     sentiment_pipeline_distilbert = None
@@ -639,7 +642,8 @@ def advanced_sentiment_analysis_multilevel(text, model_choice="DistilBERT (Engli
     # --- RoBERTa Multilingual ---
     if model_choice == "RoBERTa (Multilingual)" and TRANSFORMERS_AVAILABLE and sentiment_pipeline_roberta is not None:
         try:
-            result = sentiment_pipeline_roberta(text[:512])[0]
+            # Lowercase the input text for RoBERTa
+            result = sentiment_pipeline_roberta(text.lower()[:512])[0]
             label = result['label']
             score = result['score']
             # RoBERTa labels: 'LABEL_0' (Negative), 'LABEL_1' (Neutral), 'LABEL_2' (Positive)
