@@ -1286,11 +1286,8 @@ def calculate_business_impact(df):
     
     return impact_scores
 
-def create_chart_with_insights(fig, insight_text, chart_key=None):
-    import uuid
-    if chart_key is None:
-        chart_key = str(uuid.uuid4())  # generate unique key
-    st.plotly_chart(fig, use_container_width=True, key=chart_key)
+def create_chart_with_insights(fig, insight_text):
+    st.plotly_chart(fig, use_container_width=True)
     st.markdown(f'<div class="insight-box"><div class="insight-title">📊 Key Insight</div> {insight_text}</div>', unsafe_allow_html=True)
 
 def extract_sample_verbatims(df):
@@ -1812,17 +1809,10 @@ def main():
                         )
                     )
                     
-                    avg_rating = filtered_df['rating'].mean()
                     high_satisfaction = (filtered_df['rating'] >= 4).sum() / len(filtered_df) * 100
-                    low_satisfaction = (filtered_df['rating'] <= 2).sum() / len(filtered_df) * 100
-                    trend = "increasing" if avg_rating > 3.5 else "declining" if avg_rating < 3.0 else "stable"
-                    insight_text = (
-                        f"Average rating is <b>{avg_rating:.2f}/5</b>. "
-                        f"<b>{high_satisfaction:.1f}%</b> gave 4★ or above ({trend} satisfaction trend). "
-                        f"{low_satisfaction:.1f}% gave 1★ or 2★, highlighting risk areas."
-                    )
+                    insight_text = f"**{high_satisfaction:.1f}% customer satisfaction rate** indicates strong market position. Focus on converting 4-star experiences to 5-star loyalty."
+                    
                     create_chart_with_insights(fig_rating, insight_text)
-
                     st.markdown('</div>', unsafe_allow_html=True)
                 
                 with col2:
@@ -1872,20 +1862,13 @@ def main():
                         pull=[0.1 if 'Positive' in name else 0 for name in sentiment_counts.index]
                     )
                     
-                    sentiment_counts = filtered_df['sentiment'].value_counts()
-                    total = len(filtered_df)
-                    promoters = sentiment_counts.get('Extremely Positive', 0) + sentiment_counts.get('Very Positive', 0)
+                    brand_advocates = sentiment_counts.get('Extremely Positive', 0) + sentiment_counts.get('Very Positive', 0)
                     detractors = sentiment_counts.get('Very Negative', 0) + sentiment_counts.get('Extremely Negative', 0)
-                    nps_proxy = (promoters - detractors) / total * 100
-                    top_sentiment = sentiment_counts.idxmax()
-                    insight_text = (
-                      f"Net Promoter proxy: <b>{nps_proxy:.1f}%</b>. "
-                      f"Most frequent sentiment: <b>{top_sentiment}</b>. "
-                      f"Promoters: {promoters}, Detractors: {detractors}. "
-                      f"Reduce negative sentiment for stronger loyalty."
-                    )
-                    create_chart_with_insights(fig_sentiment, insight_text)
+                    nps_proxy = (brand_advocates - detractors) / len(filtered_df) * 100
                     
+                    insight_text = f"**Net Promoter Score: {nps_proxy:.1f}%** - {brand_advocates:,} brand advocates vs {detractors:,} detractors. Excellent customer loyalty foundation."
+                    
+                    create_chart_with_insights(fig_sentiment, insight_text)
                     st.markdown('</div>', unsafe_allow_html=True)
                 
                 # Word Cloud Section
@@ -1899,21 +1882,15 @@ def main():
                         if word_freq:
                             top_words = [word for word, count in word_freq[:5]]
                             # Executive-style summary
-
-                            word_freq = get_word_frequencies(filtered_df['reviewText'])
-                            if word_freq:
-                                top_words = [word for word, count in word_freq[:5]]
-                                insight_text = (
-                                    f"Top discussed topics: <span style='color:#667eea;font-weight:bold'>{', '.join(top_words[:3])}</span>. "
-                                    "Prioritize these for customer satisfaction and loyalty."
-                                )
-                            else:
-                                insight_text = "No significant keywords found."
+                            summary_sentence = (
+                                f"The most discussed topics are <span style='color:#667eea;font-weight:bold'>{', '.join(top_words[:3])}</span>, "
+                                f"indicating that customers are primarily focused on these aspects. "
+                                f"Prioritize these areas for maximum impact on satisfaction and loyalty."
+                            )
                             st.markdown(
-                                f"<div class='insight-box'><div class='insight-title'>🔑 Executive Insight</div> {insight_text}</div>",
+                                f"<div class='insight-box'><div class='insight-title'>🔑 Executive Insight</div> {summary_sentence}</div>",
                                 unsafe_allow_html=True
                             )
-
                         else:
                             st.markdown("<div class='insight-box'><div class='insight-title'>🔑 Executive Insight</div> No significant keywords found.</div>", unsafe_allow_html=True)
                     else:
@@ -2023,27 +2000,9 @@ def main():
                 st.markdown('<div class="chart-container">', unsafe_allow_html=True)
                 st.markdown("<h3 style='text-align:center; margin-bottom:1rem;'>📊 Business Impact Score Penetration</h3>", unsafe_allow_html=True)
                 st.plotly_chart(fig_impact, use_container_width=True)
-
-                impact_bins = [ -5, -3, -1.1, 1, 3, 5 ]
-                impact_labels = [
-                    'Crisis-level (-5 to -3)',
-                    'Negative (-2.9 to -1.1)',
-                    'Neutral (-1.0 to 0.9)',
-                    'Positive (1.0 to 2.9)',
-                    'Premium (3.0 to 5.0)'
-                ]
-                filtered_df['impact_category'] = pd.cut(filtered_df['businessImpact'], bins=impact_bins, labels=impact_labels, include_lowest=True)
-                impact_counts = filtered_df['impact_category'].value_counts(normalize=True).reindex(impact_labels, fill_value=0) * 100
                 top_cat = impact_labels[impact_counts.argmax()]
-                pct = impact_counts.max()
-                insight_text = (
-                    f"Most reviews ({pct:.1f}%) are <b>{top_cat}</b>. "
-                    "Leverage strengths, address weaknesses for business outcomes."
-                )
-                create_chart_with_insights(fig_impact, insight_text)
-
-                st.markdown(f"<div class='insight-box'><div class='insight-title'>🔑 Executive Summary</div> {insight_text}</div>", unsafe_allow_html=True)
-                
+                summary = f"Most reviews ({impact_counts.max():.1f}%) fall into the <b>{top_cat}</b> category. Focus on leveraging strengths and addressing weaknesses for optimal business outcomes."
+                st.markdown(f"<div class='insight-box'><div class='insight-title'>🔑 Executive Summary</div> {summary}</div>", unsafe_allow_html=True)
                 st.markdown('</div>', unsafe_allow_html=True)
             
             # TAB 2: Strategic Analytics
@@ -2114,10 +2073,7 @@ def main():
                     best_segment = segment_analysis.loc[segment_analysis['Business Impact'].idxmax(), 'Customer Segment']
                     largest_segment = segment_analysis.loc[segment_analysis['Volume'].idxmax(), 'Customer Segment']
                     
-                    insight_text = (
-                        f"<b>{best_segment}</b> segment delivers greatest business value. "
-                        f"<b>{largest_segment}</b> is the largest customer base."
-                    )
+                    insight_text = f"**Strategic Priority:** {best_segment} delivers highest business value. **Scale Focus:** {largest_segment} represents your largest customer base."
                     
                     create_chart_with_insights(fig_segments, insight_text)
                     st.markdown("</div>", unsafe_allow_html=True)
@@ -2190,21 +2146,15 @@ def main():
                     )
                     
                     # Calculate trend direction
-
-                if not monthly_trends.empty:
                     recent_rating = monthly_trends['rating'].tail(3).mean()
                     historical_rating = monthly_trends['rating'].head(3).mean()
                     trend_direction = "improving" if recent_rating > historical_rating else "declining"
                     trend_magnitude = abs(recent_rating - historical_rating)
-                    insight_text = (
-                        f"Customer satisfaction is <b>{trend_direction}</b> by {trend_magnitude:.2f} points. "
-                        f"{'Maintain momentum.' if trend_direction == 'improving' else 'Investigate root causes.'}"
-                    )
-                else:
-                    insight_text = "Insufficient data to show trend."
-                create_chart_with_insights(fig_trends, insight_text)
                     
-                st.markdown("</div>", unsafe_allow_html=True)
+                    insight_text = f"**Trend Analysis:** Customer satisfaction is {trend_direction} with {trend_magnitude:.2f} point change. {'Maintain momentum with current strategies.' if trend_direction == 'improving' else 'Implement corrective measures immediately.'}"
+                    
+                    create_chart_with_insights(fig_trends, insight_text)
+                    st.markdown("</div>", unsafe_allow_html=True)
                 
                 # Topic performance analysis
                 if topics:
@@ -2250,52 +2200,44 @@ def main():
                         marker=dict(
                             line=dict(width=1, color='rgba(255,255,255,0.6)'),
                             opacity=0.9
+                        )
                     )
-                )
-                
-                
-            if not top_topics_perf.empty:
-                best_topic = top_topics_perf.iloc[0]['Topic']
-                worst_topic = topic_performance.nsmallest(1, 'Business Impact').iloc[0]['Topic']
-                insight_text = (
-                    f"'{best_topic}' drives highest customer value; leverage in marketing. "
-                    f"'{worst_topic}' needs strategic intervention."
-                )
-            else:
-                insight_text = "No topic performance data available."
-                create_chart_with_insights(fig_topics, insight_text)
-
-
-                st.markdown("</div>", unsafe_allow_html=True)
-                st.markdown("<div class='chart-container' style='margin-top:1.5rem;'>", unsafe_allow_html=True)
-            
-                for idx, row in top_topics_perf.iterrows():
-                    topic = row['Topic']
-                    avg_rating = row['Avg Rating']
-                    business_impact = row['Business Impact']
-                    sentiment_score = row['Sentiment Score']
-                    volume = row['Volume']
-                    # Placeholder for topic description (could be replaced with a lookup or ML summary)
-                    topic_desc = f"<b>{topic}</b>: This topic covers customer feedback related to {topic.lower()}."
-                    # Generate a summary and actionable recommendation
-                    summary = f"<b>Summary:</b> {volume} reviews, Avg Rating: {avg_rating:.2f}, Impact: {business_impact:.2f}, Sentiment Score: {sentiment_score:.2f}."
-                    if avg_rating >= 4.5:
-                        recommendation = "Maintain excellence and leverage this topic in marketing."
-                    elif avg_rating >= 4.0:
-                        recommendation = "Solid performance, but monitor for emerging issues."
-                    elif avg_rating >= 3.5:
-                        recommendation = "Opportunity for improvement; address minor pain points."
-                    else:
-                        recommendation = "Critical area: prioritize improvements and customer outreach."
-                    st.markdown(f"""
+                    
+                    best_topic = top_topics_perf.iloc[0]['Topic']
+                    worst_topic = topic_performance.nsmallest(1, 'Business Impact').iloc[0]['Topic']
+                    
+                    insight_text = f"**Market Opportunity:** '{best_topic}' drives highest customer value - leverage in marketing. **Risk Area:** '{worst_topic}' needs strategic intervention."
+                    
+                    create_chart_with_insights(fig_topics, insight_text)
+                    st.markdown("</div>", unsafe_allow_html=True)
+                    st.markdown("<div class='chart-container' style='margin-top:1.5rem;'>", unsafe_allow_html=True)
+                    for idx, row in top_topics_perf.iterrows():
+                        topic = row['Topic']
+                        avg_rating = row['Avg Rating']
+                        business_impact = row['Business Impact']
+                        sentiment_score = row['Sentiment Score']
+                        volume = row['Volume']
+                        # Placeholder for topic description (could be replaced with a lookup or ML summary)
+                        topic_desc = f"<b>{topic}</b>: This topic covers customer feedback related to {topic.lower()}."
+                        # Generate a summary and actionable recommendation
+                        summary = f"<b>Summary:</b> {volume} reviews, Avg Rating: {avg_rating:.2f}, Impact: {business_impact:.2f}, Sentiment Score: {sentiment_score:.2f}."
+                        if avg_rating >= 4.5:
+                            recommendation = "Maintain excellence and leverage this topic in marketing."
+                        elif avg_rating >= 4.0:
+                            recommendation = "Solid performance, but monitor for emerging issues."
+                        elif avg_rating >= 3.5:
+                            recommendation = "Opportunity for improvement; address minor pain points."
+                        else:
+                            recommendation = "Critical area: prioritize improvements and customer outreach."
+                        st.markdown(f"""
                         <div style='background:linear-gradient(135deg,#f8fafc 0%,#e0e7ef 100%);border-radius:15px;padding:1.2rem 1.5rem;margin-bottom:1rem;box-shadow:0 2px 8px rgba(102,126,234,0.08);'>
-                        <div style='font-size:1.1rem;margin-bottom:0.3rem;'>{topic_desc}</div>
-                        <div style='margin-bottom:0.2rem;'>{summary}</div>
-                        <div style='color:#764ba2;font-weight:600;'>Action: {recommendation}</div>
+                            <div style='font-size:1.1rem;margin-bottom:0.3rem;'>{topic_desc}</div>
+                            <div style='margin-bottom:0.2rem;'>{summary}</div>
+                            <div style='color:#764ba2;font-weight:600;'>Action: {recommendation}</div>
                         </div>
                         """, unsafe_allow_html=True)
-                st.markdown("</div>", unsafe_allow_html=True)
-        
+                    st.markdown("</div>", unsafe_allow_html=True)
+            
             # TAB 3: Deep Intelligence
             with tab3:
                 st.markdown("<h2 class='subheader'>🔍 Deep Customer Intelligence</h2>", unsafe_allow_html=True)
@@ -2442,20 +2384,11 @@ def main():
                     
                     # --- DYNAMIC INSIGHTS FOR ALL CHARTS ---
                     # Customer Engagement Intelligence
-                    
-                    if not engagement_analysis.empty:
-                        optimal_engagement = engagement_analysis.loc[engagement_analysis['Avg Rating'].idxmax(), 'Engagement Level']
-                        optimal_impact = engagement_analysis.loc[engagement_analysis['Business Impact'].idxmax(), 'Business Impact']
-                        insight_text = (
-                            f"'{optimal_engagement}' reviews yield highest satisfaction. "
-                            f"Encourage detailed feedback (impact score: {optimal_impact})."
-                        )
-                    else:
-                        insight_text = "No engagement data available."
+                    optimal_engagement = engagement_analysis.loc[engagement_analysis['Avg Rating'].idxmax(), 'Engagement Level']
+                    optimal_impact = engagement_analysis.loc[engagement_analysis['Business Impact'].idxmax(), 'Business Impact']
+                    insight_text = f"**Engagement Sweet Spot:** {optimal_engagement} reviews generate highest satisfaction. **Business Optimization:** Focus on encouraging detailed feedback (impact score: {optimal_impact})."
                     create_chart_with_insights(fig_engagement, insight_text)
                     
-
-
                     # Customer Sentiment Journey Map
 
                 
@@ -2500,20 +2433,15 @@ def main():
                     )
                     
                     # Calculate segment scores
-                if not segment_journey_pct.empty:
-                    segment_scores = (segment_journey_pct[['Positive', 'Very Positive', 'Extremely Positive']].sum(axis=1) -
-                                      segment_journey_pct[['Negative', 'Very Negative', 'Extremely Negative']].sum(axis=1))
+                    segment_scores = (segment_journey_pct[['Positive', 'Very Positive', 'Extremely Positive']].sum(axis=1) - 
+                                    segment_journey_pct[['Negative', 'Very Negative', 'Extremely Negative']].sum(axis=1))
                     best_segment = segment_scores.idxmax()
                     worst_segment = segment_scores.idxmin()
-                    insight_text = (
-                        f"<b>{best_segment}</b> has {segment_scores.max():.1f}% net positive sentiment. "
-                        f"<b>{worst_segment}</b> needs attention ({segment_scores.min():.1f}%)."
-                    )
-                else:
-                    insight_text = "No segment sentiment data available."
-                create_chart_with_insights(fig_journey, insight_text)    
                     
-                st.markdown("</div>", unsafe_allow_html=True)
+                    insight_text = f"**Champion Segment:** {best_segment} shows {segment_scores.max():.1f}% net positive sentiment. **Priority Segment:** {worst_segment} needs immediate attention ({segment_scores.min():.1f}% net sentiment)."
+                    
+                    create_chart_with_insights(fig_journey, insight_text)
+                    st.markdown("</div>", unsafe_allow_html=True)
             
             # TAB 4: Customer Voices
             with tab4:
@@ -2775,13 +2703,9 @@ def main():
                     legitimate_rate = fraud_dist.get('Legitimate', 0) / len(filtered_df) * 100
                     total_risk = 100 - legitimate_rate
                     
-                    insight_text = (
-                        f"{legitimate_rate:.1f}% reviews are verified authentic. "
-                        f"{total_risk:.1f}% require monitoring. "
-                        f"{'Implement enhanced verification.' if total_risk > 10 else 'Data integrity is high.'}"
-                    )
-                    create_chart_with_insights(fig_fraud, insight_text)
+                    insight_text = f"**Data Integrity Status:** {legitimate_rate:.1f}% verified authentic reviews. **Risk Exposure:** {total_risk:.1f}% requires monitoring. {'Implement enhanced verification protocols.' if total_risk > 15 else 'Maintain current security standards.'}"
                     
+                    create_chart_with_insights(fig_fraud, insight_text)
                     st.markdown("</div>", unsafe_allow_html=True)
                 
                 with col2:
@@ -2852,24 +2776,14 @@ def main():
                         secondary_y=True,
                         showgrid=False
                     )
-
-
-                if not risk_trends.empty:
                     recent_risk = risk_trends['risk_rate'].tail(3).mean()
                     historical_risk = risk_trends['risk_rate'].head(3).mean()
                     risk_direction = "increasing" if recent_risk > historical_risk else "decreasing"
                     risk_change = abs(recent_risk - historical_risk)
-                    insight_text = (
-                        f"Suspicious activity is <b>{risk_direction}</b> by {risk_change:.0f}%. "
-                        f"{'Higher risk correlates with lower business value.' if risk_direction == 'increasing' else 'Risk mitigation efforts are working.'}"
-                    )
-                else:
-                    insight_text = "No risk trend data available."    
-                    
-                st.plotly_chart(fig_risk, use_container_width=True)
-                st.markdown(f'<div class="insight-box"><div class="insight-title">🔑 Executive Insight</div> {insight_text}</div>', unsafe_allow_html=True)
-                
-                st.markdown("</div>", unsafe_allow_html=True)
+                    insight_text = f"**Risk Trajectory:** Suspicious activity is {risk_direction} by {risk_change:.0f}%. {'Negative correlation detected - higher risk = lower business value' if risk_trends['risk_rate'].corr(risk_trends['businessImpact']) < -0.3 else 'Monitor for emerging patterns.'}"
+                    st.plotly_chart(fig_risk, use_container_width=True)
+                    st.markdown(f'<div class="insight-box"><div class="insight-title">🔑 Executive Insight</div> {insight_text}</div>', unsafe_allow_html=True)
+                    st.markdown("</div>", unsafe_allow_html=True)
 
                 # --- Topic Penetration Trend (Stacked Bar) ---
                 st.markdown("<h3 style='text-align:center; margin-bottom:1rem;'>🏷️ Topic Penetration Trend</h3>", unsafe_allow_html=True)
@@ -2903,43 +2817,26 @@ def main():
                     margin=dict(t=30, b=30, l=0, r=0)
                 )
                 st.plotly_chart(fig_topic_trend, use_container_width=True)
+                top_topic = topic_counts.index[0] if len(topic_counts) > 0 else "N/A"
+                insight_text = f"<b>{top_topic}</b> is the most discussed topic in recent months. Monitor shifts in topic penetration to identify emerging customer priorities."
+                st.markdown(f'<div class="insight-box"><div class="insight-title">🔑 Executive Insight</div> {insight_text}</div>', unsafe_allow_html=True)
 
-            if len(top_topics) > 0:
-                topic = top_topics[0]
-                last_month = filtered_df['month'].max()
-                last_year = filtered_df['year'].max()
-                topic_count = filtered_df[
-                   (filtered_df['topic'] == topic) & (filtered_df['month'] == last_month) & (filtered_df['year'] == last_year)
-                ].shape[0]
-                total_last_month = filtered_df[
-                    (filtered_df['month'] == last_month) & (filtered_df['year'] == last_year)
-                ].shape[0]
-                penetration = topic_count / total_last_month * 100 if total_last_month > 0 else 0
-                insight_text = (
-                    f"<b>{topic}</b> is the most discussed topic recently, covering {penetration:.1f}% of reviews. "
-                    "Monitor its trend for emerging priorities."
-                 )
-            else:
-                insight_text = "Topic penetration is distributed. Watch for shifts indicating new customer priorities."
-            st.markdown(f'<div class="insight-box"><div class="insight-title">🔑 Executive Insight</div> {insight_text}</div>', unsafe_allow_html=True)    
-
-                
-            # --- Risk Management: Suspicious Data Download ---
-            # Define suspicious_df before using it
-            suspicious_df = filtered_df[filtered_df['fraudFlag'].isin(['High Risk', 'Medium Risk'])]
-            if not suspicious_df.empty:
-                suspicious_csv = suspicious_df.to_csv(index=False)
-                st.download_button(
-                    label="📥 Download Suspicious Reviews",
-                    data=suspicious_csv,
-                    file_name="suspicious_reviews.csv",
-                    mime="text/csv",
-                    help="Download all suspicious reviews identified by the risk engine."
-                )
+                # --- Risk Management: Suspicious Data Download ---
+                # Define suspicious_df before using it
+                suspicious_df = filtered_df[filtered_df['fraudFlag'].isin(['High Risk', 'Medium Risk'])]
+                if not suspicious_df.empty:
+                    suspicious_csv = suspicious_df.to_csv(index=False)
+                    st.download_button(
+                        label="📥 Download Suspicious Reviews",
+                        data=suspicious_csv,
+                        file_name="suspicious_reviews.csv",
+                        mime="text/csv",
+                        help="Download all suspicious reviews identified by the risk engine."
+                    )
             
         #added the new code
 
-        # Show onboarding experience if no data is loaded
+                        # Show onboarding experience if no data is loaded
         if st.session_state.processed_data is None:
             st.markdown('<div class="chart-container">', unsafe_allow_html=True)
             st.markdown("""
