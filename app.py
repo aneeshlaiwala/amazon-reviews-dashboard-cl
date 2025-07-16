@@ -46,10 +46,14 @@ try:
     tokenizer_roberta = AutoTokenizer.from_pretrained(roberta_model_name)
     model_roberta = AutoModelForSequenceClassification.from_pretrained(roberta_model_name)
     sentiment_pipeline_roberta = pipeline("sentiment-analysis", model=model_roberta, tokenizer=tokenizer_roberta)
+    # BERT Multilingual Reviews
+    bert_model_name = "nlptown/bert-base-multilingual-uncased-sentiment"
+    sentiment_pipeline_bert = pipeline("sentiment-analysis", model=bert_model_name)
 except ImportError:
     TRANSFORMERS_AVAILABLE = False
     sentiment_pipeline_distilbert = None
     sentiment_pipeline_roberta = None
+    sentiment_pipeline_bert = None
 
 # --- OpenAI ChatGPT Integration ---
 try:
@@ -57,6 +61,13 @@ try:
     OPENAI_AVAILABLE = True
 except ImportError:
     OPENAI_AVAILABLE = False
+
+# --- Google Cloud Natural Language API Integration ---
+try:
+    from google.cloud import language_v1
+    GOOGLE_NL_AVAILABLE = True
+except ImportError:
+    GOOGLE_NL_AVAILABLE = False
 
 # Ultra-modern CSS for C-level presentation
 st.markdown("""
@@ -600,8 +611,11 @@ def load_and_process_data(uploaded_file):
     
     return df
 
-def advanced_sentiment_analysis_multilevel(text, model_choice="DistilBERT (English)", openai_api_key=None):
+def advanced_sentiment_analysis_multilevel(text, model_choice="DistilBERT (English)", openai_api_key=None, google_api_key=None, fallback_info=None):
     if not text or len(text.strip()) == 0:
+        if fallback_info is not None:
+            fallback_info['used'] = False
+            fallback_info['model'] = model_choice
         return {
             'sentiment': 'Neutral',
             'polarity': 0,
@@ -611,6 +625,7 @@ def advanced_sentiment_analysis_multilevel(text, model_choice="DistilBERT (Engli
     # --- ChatGPT API ---
     if model_choice == "ChatGPT API" and OPENAI_AVAILABLE and openai_api_key:
         try:
+            import openai
             openai.api_key = openai_api_key
             prompt = f"Classify the sentiment of this review as one of: Extremely Positive, Very Positive, Positive, Neutral, Negative, Very Negative, Extremely Negative.\nReview: {text}\nSentiment:"
             response = openai.ChatCompletion.create(
@@ -620,7 +635,6 @@ def advanced_sentiment_analysis_multilevel(text, model_choice="DistilBERT (Engli
                 temperature=0
             )
             label = response['choices'][0]['message']['content'].strip()
-            # Map to app's scheme
             mapping = {
                 'Extremely Positive': ('Extremely Positive', 0.9, 'enthusiastic'),
                 'Very Positive': ('Very Positive', 0.7, 'satisfied'),
@@ -631,6 +645,9 @@ def advanced_sentiment_analysis_multilevel(text, model_choice="DistilBERT (Engli
                 'Extremely Negative': ('Extremely Negative', -0.9, 'angry')
             }
             sentiment, polarity, emotion = mapping.get(label, ('Neutral', 0.0, 'neutral'))
+            if fallback_info is not None:
+                fallback_info['used'] = False
+                fallback_info['model'] = 'ChatGPT API'
             return {
                 'sentiment': sentiment,
                 'polarity': polarity,
@@ -638,7 +655,82 @@ def advanced_sentiment_analysis_multilevel(text, model_choice="DistilBERT (Engli
                 'emotion': emotion
             }
         except Exception as e:
-            pass  # Fallback to transformers
+            if fallback_info is not None:
+                fallback_info['used'] = True
+                fallback_info['model'] = 'ChatGPT API'
+            pass  # Fallback to next model
+    # --- Google Natural Language API ---
+    if model_choice == "Google Natural Language API" and GOOGLE_NL_AVAILABLE and google_api_key:
+        try:
+            import os
+            os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = google_api_key
+            client = language_v1.LanguageServiceClient()
+            document = language_v1.Document(content=text, type_=language_v1.Document.Type.PLAIN_TEXT)
+            sentiment = client.analyze_sentiment(request={'document': document}).document_sentiment
+            score = sentiment.score
+            # Map score to sentiment
+            if score > 0.5:
+                sent = 'Extremely Positive'
+                emotion = 'enthusiastic'
+            elif score > 0.2:
+                sent = 'Positive'
+                emotion = 'pleased'
+            elif score > -0.2:
+                sent = 'Neutral'
+                emotion = 'neutral'
+            elif score > -0.5:
+                sent = 'Negative'
+                emotion = 'disappointed'
+            else:
+                sent = 'Extremely Negative'
+                emotion = 'angry'
+            if fallback_info is not None:
+                fallback_info['used'] = False
+                fallback_info['model'] = 'Google Natural Language API'
+            return {
+                'sentiment': sent,
+                'polarity': score,
+                'confidence': abs(score),
+                'emotion': emotion
+            }
+        except Exception as e:
+            if fallback_info is not None:
+                fallback_info['used'] = True
+                fallback_info['model'] = 'Google Natural Language API'
+            pass  # Fallback to next model
+    # --- BERT Multilingual Reviews ---
+    if model_choice == "BERT (Multilingual Reviews)" and TRANSFORMERS_AVAILABLE and sentiment_pipeline_bert is not None:
+        try:
+            result = sentiment_pipeline_bert(text[:512])[0]
+            label = result['label']
+            score = result['score']
+            # label is '1 star', '2 stars', ...
+            if '1' in label or '2' in label:
+                sent = 'Negative'
+                polarity = -score
+                emotion = 'disappointed'
+            elif '3' in label:
+                sent = 'Neutral'
+                polarity = 0.0
+                emotion = 'neutral'
+            else:
+                sent = 'Positive'
+                polarity = score
+                emotion = 'pleased'
+            if fallback_info is not None:
+                fallback_info['used'] = False
+                fallback_info['model'] = 'BERT (Multilingual Reviews)'
+            return {
+                'sentiment': sent,
+                'polarity': polarity,
+                'confidence': score,
+                'emotion': emotion
+            }
+        except Exception as e:
+            if fallback_info is not None:
+                fallback_info['used'] = True
+                fallback_info['model'] = 'BERT (Multilingual Reviews)'
+            pass  # Fallback to next model
     # --- RoBERTa Multilingual ---
     if model_choice == "RoBERTa (Multilingual)" and TRANSFORMERS_AVAILABLE and sentiment_pipeline_roberta is not None:
         try:
@@ -1098,12 +1190,13 @@ def get_trust_score(risk_rate):
     else:
         return 4
 
-def process_data_with_advanced_ml(df, model_choice="DistilBERT (English)", openai_api_key=None):
+def process_data_with_advanced_ml(df, model_choice="DistilBERT (English)", openai_api_key=None, google_api_key=None):
     st.info("🤖 Analyzing reviews with advanced AI algorithms...")
     sentiment_results = []
     progress_bar = st.progress(0)
+    fallback_info = {'used': False, 'model': model_choice}
     for i, text in enumerate(df['reviewText']):
-        result = advanced_sentiment_analysis_multilevel(text, model_choice=model_choice, openai_api_key=openai_api_key)
+        result = advanced_sentiment_analysis_multilevel(text, model_choice=model_choice, openai_api_key=openai_api_key, google_api_key=google_api_key, fallback_info=fallback_info)
         sentiment_results.append(result)
         progress_bar.progress((i + 1) / len(df) * 0.4)
     df['sentiment'] = [r['sentiment'] for r in sentiment_results]
@@ -1123,7 +1216,7 @@ def process_data_with_advanced_ml(df, model_choice="DistilBERT (English)", opena
     df['businessImpact'] = calculate_business_impact(df)
     progress_bar.progress(1.0)
     progress_bar.empty()
-    return df, topics
+    return df, topics, fallback_info
 
 def calculate_review_value(df):
     value_scores = []
@@ -1359,7 +1452,7 @@ def generate_executive_summary_card(df):
             <b>🟢 Brand Champions:</b> {sentiment_dist.get('Extremely Positive', 0) + sentiment_dist.get('Very Positive', 0) + sentiment_dist.get('Positive', 0):.1f}%<br>
             <b>🔴 At-Risk Customers:</b> {sentiment_dist.get('Negative', 0) + sentiment_dist.get('Very Negative', 0) + sentiment_dist.get('Extremely Negative', 0):.1f}%<br>
             <b>🛡️ Verified Reviews:</b> {100 - total_risk_rate:.1f}%<br>
-            <b>🏅 Top Priorities:</b> <span style='color:#ffd700;'>{', '.join(top_topics)}</span><br>
+            <b>�� Top Priorities:</b> <span style='color:#ffd700;'>{', '.join(top_topics)}</span><br>
             <b>💡 Actionable Insight:</b> {actionable_insight}
         </div>
     </div>
@@ -1386,14 +1479,17 @@ def main():
         st.markdown('<span class="filter-label">🤖 Sentiment Model</span>', unsafe_allow_html=True)
         sentiment_model = st.selectbox(
             "Choose Sentiment Model:",
-            options=["DistilBERT (English)", "RoBERTa (Multilingual)", "ChatGPT API"],
+            options=["DistilBERT (English)", "RoBERTa (Multilingual)", "BERT (Multilingual Reviews)", "ChatGPT API", "Google Natural Language API"],
             index=0,
             key="sentiment_model",
-            help="RoBERTa is more nuanced and multilingual. ChatGPT is most advanced but requires your OpenAI API key."
+            help="RoBERTa is more nuanced and multilingual. ChatGPT/Google are most advanced but require your API key. BERT is trained on reviews."
         )
         openai_api_key = None
+        google_api_key = None
         if sentiment_model == "ChatGPT API":
             openai_api_key = st.text_input("Enter your OpenAI API Key:", type="password", key="openai_api_key")
+        if sentiment_model == "Google Natural Language API":
+            google_api_key = st.text_input("Enter your Google Cloud API Key (JSON path):", type="password", key="google_api_key")
         st.markdown('</div>', unsafe_allow_html=True)
         
         # File upload in sidebar
@@ -1415,9 +1511,10 @@ def main():
                 with st.spinner('🤖 Processing with AI...'):
                     df = load_and_process_data(uploaded_file)
                     if df is not None:
-                        df, topics = process_data_with_advanced_ml(df, model_choice=sentiment_model, openai_api_key=openai_api_key)
+                        df, topics, fallback_info = process_data_with_advanced_ml(df, model_choice=sentiment_model, openai_api_key=openai_api_key, google_api_key=google_api_key)
                         st.session_state.processed_data = df
                         st.session_state.topics = topics
+                        st.session_state.fallback_info = fallback_info
                         st.success("✅ Analysis Complete!")
             
             if st.session_state.processed_data is not None:
