@@ -2011,8 +2011,14 @@ def main():
                 st.markdown("<h3 style='text-align:center; margin-bottom:1rem;'>📊 Business Impact Score Penetration</h3>", unsafe_allow_html=True)
                 st.plotly_chart(fig_impact, use_container_width=True)
                 top_cat = impact_labels[impact_counts.argmax()]
-                summary = f"Most reviews ({impact_counts.max():.1f}%) fall into the <b>{top_cat}</b> category. Focus on leveraging strengths and addressing weaknesses for optimal business outcomes."
-                st.markdown(f"<div class='insight-box'><div class='insight-title'>🔑 Executive Summary</div> {summary}</div>", unsafe_allow_html=True)
+                if impact_counts.max() > 50:
+                    summary = f"Majority of reviews ({impact_counts.max():.1f}%) are <b>{top_cat}</b>. Strong business impact in this category."
+                elif impact_counts.max() > 20:
+                    summary = f"Significant portion ({impact_counts.max():.1f}%) are <b>{top_cat}</b>. Monitor for shifts in impact."
+                else:
+                    summary = f"Impact is distributed. No dominant category. Monitor for emerging trends."
+                model_info = f"<br><span style='font-size:0.95em;color:#888;'>Sentiment Model Used: <b>{get_sentiment_model_display(getattr(st.session_state, 'fallback_info', None), sentiment_model)}</b></span>"
+                st.markdown(f"<div class='insight-box'><div class='insight-title'>🔑 Executive Summary</div> {summary}{model_info}</div>", unsafe_allow_html=True)
                 st.markdown('</div>', unsafe_allow_html=True)
             
             # TAB 2: Strategic Analytics
@@ -2459,9 +2465,9 @@ def main():
                 st.markdown("*Authentic customer feedback driving strategic decisions*")
                 
                 # Always dynamically select top 5 positive and negative verbatims from filtered_df
-                positive_verbatims = filtered_df[(filtered_df['rating'] == 5) & (filtered_df['sentiment'].str.contains('Positive'))]
+                positive_verbatims = filtered_df[(filtered_df['sentiment'].str.contains('Positive')) & (filtered_df['fraudFlag'] == 'Legitimate')]
                 positive_verbatims = positive_verbatims.nlargest(5, 'businessImpact') if len(positive_verbatims) > 0 else pd.DataFrame()
-                negative_verbatims = filtered_df[(filtered_df['rating'] == 1) & (filtered_df['sentiment'].str.contains('Negative'))]
+                negative_verbatims = filtered_df[(filtered_df['sentiment'].str.contains('Negative')) & (filtered_df['fraudFlag'] == 'Legitimate')]
                 negative_verbatims = negative_verbatims.nsmallest(5, 'businessImpact') if len(negative_verbatims) > 0 else pd.DataFrame()
                 
                 col1, col2 = st.columns(2)
