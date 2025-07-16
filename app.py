@@ -2726,13 +2726,10 @@ def main():
                     risk_trends = risk_trends.sort_values('date')
                     
                     # 3D-enhanced dual axis chart
-                    fig_risk = make_subplots(
-                        specs=[[{"secondary_y": True}]]
-                    )
-                    # Risk rate line
+                    fig_risk = make_subplots(specs=[[{"secondary_y": True}]])
                     fig_risk.add_trace(
                         go.Scatter(
-                            x=risk_trends['date'], 
+                            x=risk_trends['date'],
                             y=risk_trends['risk_rate'],
                             mode='lines+markers',
                             name='Suspicious Review Rate (%)',
@@ -2744,10 +2741,9 @@ def main():
                         ),
                         secondary_y=False
                     )
-                    # Business impact line
                     fig_risk.add_trace(
                         go.Scatter(
-                            x=risk_trends['date'], 
+                            x=risk_trends['date'],
                             y=risk_trends['businessImpact'],
                             mode='lines+markers',
                             name='Business Impact Score',
@@ -2767,7 +2763,7 @@ def main():
                         showlegend=True,
                         legend=dict(x=0, y=1.15, orientation="h", font=dict(size=13)),
                         margin=dict(t=30, b=30, l=0, r=0),
-                        title=None
+                        title_text=None
                     )
                     fig_risk.update_yaxes(
                         title_text="Suspicious Review Rate (%)",
@@ -2780,7 +2776,6 @@ def main():
                         secondary_y=True,
                         showgrid=False
                     )
-                    # Calculate risk trajectory
                     recent_risk = risk_trends['risk_rate'].tail(3).mean()
                     historical_risk = risk_trends['risk_rate'].head(3).mean()
                     risk_direction = "increasing" if recent_risk > historical_risk else "decreasing"
@@ -2790,13 +2785,11 @@ def main():
                     st.markdown(f'<div class="insight-box"><div class="insight-title">🔑 Executive Insight</div> {insight_text}</div>', unsafe_allow_html=True)
                     st.markdown("</div>", unsafe_allow_html=True)
 
-                # --- Topic Trend Chart (Time Series) ---
+                # --- Topic Penetration Trend (Stacked Bar) ---
                 st.markdown("<h3 style='text-align:center; margin-bottom:1rem;'>🏷️ Topic Penetration Trend</h3>", unsafe_allow_html=True)
-                # Get top 5 topics overall (excluding 'Mixed Themes' and 'General Discussion')
                 topic_counts = filtered_df['topic'].value_counts()
                 topic_counts = topic_counts[~topic_counts.index.isin(['Mixed Themes', 'General Discussion'])]
                 top_topics = topic_counts.head(5).index.tolist()
-                # Group by month and topic
                 topic_trend = filtered_df[filtered_df['topic'].isin(top_topics)].groupby(['year', 'month', 'topic']).size().reset_index(name='count')
                 total_by_month_topic = filtered_df.groupby(['year', 'month']).size().reset_index(name='total')
                 topic_trend = topic_trend.merge(total_by_month_topic, on=['year', 'month'])
@@ -2824,390 +2817,125 @@ def main():
                     margin=dict(t=30, b=30, l=0, r=0)
                 )
                 st.plotly_chart(fig_topic_trend, use_container_width=True)
-                # Executive summary/insight for topic trend
                 top_topic = topic_counts.index[0] if len(topic_counts) > 0 else "N/A"
                 insight_text = f"<b>{top_topic}</b> is the most discussed topic in recent months. Monitor shifts in topic penetration to identify emerging customer priorities."
                 st.markdown(f'<div class="insight-box"><div class="insight-title">🔑 Executive Insight</div> {insight_text}</div>', unsafe_allow_html=True)
-            
-            # TAB 5: Risk Management
-            with tab5:
-                st.markdown("<h2 class='subheader'>🚨 Enterprise Risk Management</h2>", unsafe_allow_html=True)
-                st.markdown("*Advanced threat detection and business continuity analytics*")
-                
-                # Enhanced risk metrics with executive KPIs
-                col1, col2, col3, col4 = st.columns(4)
-                
-                with col1:
-                    high_risk_count = (filtered_df['fraudFlag'] == 'High Risk').sum()
-                    risk_trend = "📈" if high_risk_count > len(filtered_df) * 0.1 else "📊" if high_risk_count > len(filtered_df) * 0.05 else "📉"
-                    st.markdown(f"""
-                    <div class='metric-card'>
-                        <h3>🚨 Critical Threats</h3>
-                        <h2>{high_risk_count}</h2>
-                        <p>{high_risk_count/len(filtered_df)*100:.1f}% {risk_trend}</p>
-                    </div>
-                    """, unsafe_allow_html=True)
-                
-                with col2:
-                    reputation_risk = len(filtered_df[filtered_df['rating'] <= 2]) / len(filtered_df) * 100
-                    rep_status = "🟢 Stable" if reputation_risk < 10 else "🟡 Monitor" if reputation_risk < 20 else "🔴 Alert"
-                    st.markdown(f"""
-                    <div class='metric-card'>
-                        <h3>📉 Reputation Risk</h3>
-                        <h2>{reputation_risk:.1f}%</h2>
-                        <p>{rep_status}</p>
-                    </div>
-                    """, unsafe_allow_html=True)
-                
-                with col3:
-                    data_integrity = len(filtered_df[filtered_df['fraudFlag'] == 'Legitimate']) / len(filtered_df) * 100
-                    integrity_grade = "A+" if data_integrity > 90 else "A" if data_integrity > 80 else "B" if data_integrity > 70 else "C"
-                    st.markdown(f"""
-                    <div class='metric-card'>
-                        <h3>🛡️ Data Integrity</h3>
-                        <h2>{data_integrity:.1f}%</h2>
-                        <p>Grade: {integrity_grade}</p>
-                    </div>
-                    """, unsafe_allow_html=True)
-                
-                with col4:
-                    avg_fraud_score = filtered_df['fraudScore'].mean()
-                    risk_level = "Low" if avg_fraud_score < 2 else "Medium" if avg_fraud_score < 4 else "High"
-                    st.markdown(f"""
-                    <div class='metric-card'>
-                        <h3>⚖️ Risk Index</h3>
-                        <h2>{avg_fraud_score:.1f}/10</h2>
-                        <p>{risk_level} Risk</p>
-                    </div>
-                    """, unsafe_allow_html=True)
-                
-                # Advanced risk analytics
-                col1, col2 = st.columns(2)
-                
-                with col1:
-                    st.markdown("<div class='chart-container'>", unsafe_allow_html=True)
-                    
-                    # Enhanced fraud detection dashboard
-                    fraud_dist = filtered_df['fraudFlag'].value_counts()
-                    
-                    # 3D-enhanced donut chart
-                    fig_fraud = px.pie(
-                        values=fraud_dist.values,
-                        names=fraud_dist.index,
-                        title="🔍 Review Authenticity Intelligence",
-                        color_discrete_map={
-                            'Legitimate': '#28a745',
-                            'Low Risk': '#ffc107', 
-                            'Medium Risk': '#fd7e14',
-                            'High Risk': '#dc3545'
-                        },
-                        hole=0.4
-                    )
-                    
-                    # Enhanced styling
-                    fig_fraud.update_layout(
-                        height=450,
-                        plot_bgcolor='rgba(0,0,0,0)',
-                        paper_bgcolor='rgba(0,0,0,0)',
-                        font=dict(family="Inter, sans-serif"),
-                        showlegend=True,
-                        legend=dict(
-                            orientation="v",
-                            yanchor="middle",
-                            y=0.5,
-                            xanchor="left",
-                            x=1.05
-                        )
-                    )
-                    
-                    # Add 3D effect with pull and shadow
-                    fig_fraud.update_traces(
-                        textposition='inside',
-                        textinfo='percent+label',
-                        marker=dict(
-                            line=dict(color='#FFFFFF', width=3)
-                        ),
-                        pull=[0.1 if 'High Risk' in name else 0.05 if 'Medium Risk' in name else 0 for name in fraud_dist.index]
-                    )
-                    
-                    legitimate_rate = fraud_dist.get('Legitimate', 0) / len(filtered_df) * 100
-                    total_risk = 100 - legitimate_rate
-                    
-                    insight_text = f"**Data Integrity Status:** {legitimate_rate:.1f}% verified authentic reviews. **Risk Exposure:** {total_risk:.1f}% requires monitoring. {'Implement enhanced verification protocols.' if total_risk > 15 else 'Maintain current security standards.'}"
-                    
-                    create_chart_with_insights(fig_fraud, insight_text)
-                    st.markdown("</div>", unsafe_allow_html=True)
-                
-                with col2:
-                    st.markdown("<div class='chart-container'>", unsafe_allow_html=True)
-                    
-                    # Risk trend analysis
-                    st.markdown("### 📈 Risk Evolution Timeline")
-                    
-                    risk_trends = filtered_df.groupby(['year', 'month']).agg({
-                        'fraudScore': 'mean',
-                        'fraudFlag': lambda x: (x != 'Legitimate').sum(),
-                        'reviewId': 'count',
-                        'businessImpact': 'mean'
-                    }).reset_index()
-                    
-                    risk_trends['risk_rate'] = risk_trends['fraudFlag'] / risk_trends['reviewId'] * 100
-                    risk_trends['date'] = pd.to_datetime(risk_trends[['year', 'month']].assign(day=1))
-                    risk_trends = risk_trends.sort_values('date')
-                    
-                    # 3D-enhanced dual axis chart
-                    fig_risk = make_subplots(
-                        specs=[[{"secondary_y": True}]]
-                    )
-                    # Risk rate line
-                    fig_risk.add_trace(
-                        go.Scatter(
-                            x=risk_trends['date'], 
-                            y=risk_trends['risk_rate'],
-                            mode='lines+markers',
-                            name='Suspicious Review Rate (%)',
-                            line=dict(color='#dc3545', width=4, shape='spline', dash='dot'),
-                            marker=dict(size=8, line=dict(width=2, color='white')),
-                            fill='tonexty',
-                            fillcolor='rgba(220, 53, 69, 0.1)',
-                            hovertemplate='Suspicious Review Rate: %{y:.0f}%<br>Date: %{x|%b %Y}'
-                        ),
-                        secondary_y=False
-                    )
-                    # Business impact line
-                    fig_risk.add_trace(
-                        go.Scatter(
-                            x=risk_trends['date'], 
-                            y=risk_trends['businessImpact'],
-                            mode='lines+markers',
-                            name='Business Impact Score',
-                            line=dict(color='#28a745', width=4, shape='spline'),
-                            marker=dict(size=8, line=dict(width=2, color='white')),
-                            fill='tonexty',
-                            fillcolor='rgba(40, 167, 69, 0.1)',
-                            hovertemplate='Business Impact Score: %{y:.1f}<br>Date: %{x|%b %Y}'
-                        ),
-                        secondary_y=True
-                    )
-                    fig_risk.update_layout(
-                        height=450,
-                        plot_bgcolor='rgba(0,0,0,0)',
-                        paper_bgcolor='rgba(0,0,0,0)',
-                        font=dict(family="Inter, sans-serif"),
-                        showlegend=True,
-                        legend=dict(x=0, y=1.15, orientation="h", font=dict(size=13)),
-                        margin=dict(t=30, b=30, l=0, r=0),
-                        title=None
-                    )
-                    fig_risk.update_yaxes(
-                        title_text="Suspicious Review Rate (%)",
-                        secondary_y=False,
-                        showgrid=True,
-                        gridcolor='rgba(128,128,128,0.2)'
-                    )
-                    fig_risk.update_yaxes(
-                        title_text="Business Impact Score",
-                        secondary_y=True,
-                        showgrid=False
-                    )
-                    # Calculate risk trajectory
-                    recent_risk = risk_trends['risk_rate'].tail(3).mean()
-                    historical_risk = risk_trends['risk_rate'].head(3).mean()
-                    risk_direction = "increasing" if recent_risk > historical_risk else "decreasing"
-                    risk_change = abs(recent_risk - historical_risk)
-                    insight_text = f"**Risk Trajectory:** Suspicious activity is {risk_direction} by {risk_change:.0f}%. {'Negative correlation detected - higher risk = lower business value' if risk_trends['risk_rate'].corr(risk_trends['businessImpact']) < -0.3 else 'Monitor for emerging patterns.'}"
-                    st.plotly_chart(fig_risk, use_container_width=True)
-                    st.markdown(f'<div class="insight-box"><div class="insight-title">🔑 Executive Insight</div> {insight_text}</div>', unsafe_allow_html=True)
-                    st.markdown("</div>", unsafe_allow_html=True)
-                
-                # Detailed fraud detection results
-                st.markdown("### 🕵️ **Advanced Threat Detection Results**")
-                suspicious_df = filtered_df[filtered_df['fraudFlag'].isin(['High Risk', 'Medium Risk'])]
-                
+
+                # --- Risk Management: Suspicious Data Download ---
+                # ... existing code ...
+                # After suspicious_df is created and shown, add download button
                 if not suspicious_df.empty:
-                    st.markdown(f"**🚨 Security Alert:** {len(suspicious_df)} suspicious reviews detected requiring investigation")
-                    
-                    # Enhanced suspicious review analysis
-                    fraud_analysis = suspicious_df.groupby(['fraudFlag', 'fraudReason']).size().reset_index(name='Count')
-                    fraud_analysis = fraud_analysis.sort_values('Count', ascending=False)
-                    
-                    st.markdown("#### **Threat Pattern Analysis**")
-                    for _, row in fraud_analysis.head(10).iterrows():
-                        threat_level = "🔴 Critical" if row['fraudFlag'] == 'High Risk' else "🟡 Moderate"
-                        st.markdown(f"- **{threat_level}**: {row['fraudReason']} ({row['Count']} instances)")
-                    
-                    # Sample suspicious reviews table
-                    st.markdown("#### **High-Risk Review Samples**")
-                    display_cols = ['reviewId', 'reviewText', 'rating', 'fraudFlag', 'fraudReason', 'fraudScore']
-                    sample_suspicious = suspicious_df.nlargest(5, 'fraudScore')[display_cols]
-                    
-                    st.dataframe(
-                        sample_suspicious, 
-                        use_container_width=True,
-                        hide_index=True,
-                        column_config={
-                            "reviewText": st.column_config.TextColumn("Review Text", width="large"),
-                            "fraudReason": st.column_config.TextColumn("Risk Factors", width="medium")
-                        }
+                    suspicious_csv = suspicious_df.to_csv(index=False)
+                    st.download_button(
+                        label="📥 Download Suspicious Reviews",
+                        data=suspicious_csv,
+                        file_name="suspicious_reviews.csv",
+                        mime="text/csv",
+                        help="Download all suspicious reviews identified by the risk engine."
                     )
-                    
-                else:
-                    st.success("✅ **All Clear:** No suspicious reviews detected in current filter selection")
+            
+            else:
+                # Enhanced onboarding experience
+                st.markdown('<div class="chart-container">', unsafe_allow_html=True)
+                st.markdown("""
+                ### 🚀 **Welcome to Your C-Level Customer Intelligence Platform**
                 
-                # Executive risk management recommendations
-                st.markdown('<div class="recommendation-box">', unsafe_allow_html=True)
-                st.markdown("### 🛡️ **Executive Risk Management Strategy**")
+                **Transform Raw Reviews into Strategic Business Intelligence**
                 
-                total_risk_rate = (filtered_df['fraudFlag'] != 'Legitimate').sum() / len(filtered_df) * 100
-                high_impact_negative = len(filtered_df[(filtered_df['businessImpact'] < -2) & (filtered_df['rating'] <= 2)])
+                This enterprise-grade dashboard converts customer feedback into actionable insights for executive decision making.
                 
-                # Dynamic risk assessment
-                if total_risk_rate > 20:
-                    risk_status = "🔴 **CRISIS LEVEL**"
-                    action_urgency = "Immediate C-suite intervention required"
-                elif total_risk_rate > 10:
-                    risk_status = "🟠 **ELEVATED RISK**"
-                    action_urgency = "Deploy enhanced monitoring protocols"
-                elif total_risk_rate > 5:
-                    risk_status = "🟡 **MODERATE RISK**"
-                    action_urgency = "Implement preventive measures"
-                else:
-                    risk_status = "🟢 **LOW RISK**"
-                    action_urgency = "Maintain current security posture"
+                #### **🎯 What You'll Discover:**
+                - **📊 Executive KPIs:** Customer satisfaction, business impact, and market position metrics
+                - **🧠 AI-Powered Analytics:** Advanced sentiment analysis and topic modeling
+                - **🔍 Fraud Detection:** Sophisticated algorithms to identify suspicious reviews
+                - **💬 Customer Voices:** Strategic verbatims driving business decisions
+                - **🚨 Risk Management:** Enterprise-level threat detection and mitigation
+                - **📈 Competitive Intelligence:** Market positioning and performance benchmarks
                 
-                st.markdown(f"""
-                **Current Threat Level:** {risk_status}
-                **Immediate Action Required:** {action_urgency}
-                **High-Impact Negative Reviews:** {high_impact_negative} requiring crisis management
+                #### **📋 Required Data Format:**
+                Upload a CSV file containing Amazon reviews with these columns:
+                - Review ID, Reviewer Name, Review Text, Rating (1-5)
+                - Summary, Helpful Votes, Total Votes, Review Date, Year
                 
-                **Strategic Risk Mitigation Framework:**
+                #### **🎨 Advanced Features:**
+                - **3D-Enhanced Visualizations** for premium presentation quality
+                - **Interactive Filtering** with smart controls in the left sidebar
+                - **Word Cloud Analysis** showing customer priority keywords
+                - **Strategic Recommendations** with C-level action items
+                - **Export Capabilities** for board presentations and reports
                 
-                **🚨 Immediate Actions (0-7 days):**
-                - Investigate all high-risk flagged reviews for authenticity
-                - Implement emergency response for reviews with business impact < -3.0
-                - Deploy advanced AI detection for similar pattern recognition
-                
-                **🛡️ Short-term Fortification (1-4 weeks):**
-                - Establish review verification protocols with multiple validation layers
-                - Create customer feedback authentication system
-                - Launch proactive customer satisfaction intervention programs
-                
-                **📊 Long-term Strategic Defense (1-6 months):**
-                - Build predictive analytics for early threat detection
-                - Implement blockchain-based review authenticity verification
-                - Develop customer advocacy programs to increase authentic positive reviews
-                - Create competitor analysis to identify market manipulation attempts
-                
-                **💼 Business Continuity Measures:**
-                - Monitor brand reputation metrics across all channels
-                - Establish crisis communication protocols for reputation management
-                - Create legal framework for fraudulent review prosecution
-                - Develop customer trust restoration programs
+                **Ready to unlock your customer intelligence? Upload your dataset to begin the analysis.**
                 """)
                 st.markdown('</div>', unsafe_allow_html=True)
         
-        else:
-            # Enhanced onboarding experience
-            st.markdown('<div class="chart-container">', unsafe_allow_html=True)
-            st.markdown("""
-            ### 🚀 **Welcome to Your C-Level Customer Intelligence Platform**
-            
-            **Transform Raw Reviews into Strategic Business Intelligence**
-            
-            This enterprise-grade dashboard converts customer feedback into actionable insights for executive decision making.
-            
-            #### **🎯 What You'll Discover:**
-            - **📊 Executive KPIs:** Customer satisfaction, business impact, and market position metrics
-            - **🧠 AI-Powered Analytics:** Advanced sentiment analysis and topic modeling
-            - **🔍 Fraud Detection:** Sophisticated algorithms to identify suspicious reviews
-            - **💬 Customer Voices:** Strategic verbatims driving business decisions
-            - **🚨 Risk Management:** Enterprise-level threat detection and mitigation
-            - **📈 Competitive Intelligence:** Market positioning and performance benchmarks
-            
-            #### **📋 Required Data Format:**
-            Upload a CSV file containing Amazon reviews with these columns:
-            - Review ID, Reviewer Name, Review Text, Rating (1-5)
-            - Summary, Helpful Votes, Total Votes, Review Date, Year
-            
-            #### **🎨 Advanced Features:**
-            - **3D-Enhanced Visualizations** for premium presentation quality
-            - **Interactive Filtering** with smart controls in the left sidebar
-            - **Word Cloud Analysis** showing customer priority keywords
-            - **Strategic Recommendations** with C-level action items
-            - **Export Capabilities** for board presentations and reports
-            
-            **Ready to unlock your customer intelligence? Upload your dataset to begin the analysis.**
-            """)
-            st.markdown('</div>', unsafe_allow_html=True)
-    
-    # Enhanced sidebar with quick analytics
-    if st.session_state.processed_data is not None:
-        with st.sidebar:
-            st.markdown("---")
-            st.subheader("📊 **Executive Summary**")
-            
-            df = st.session_state.processed_data
-            filtered_for_sidebar = df if not st.session_state.apply_filters else filtered_df
-            
-            # Key metrics with trend indicators
-            avg_rating = filtered_for_sidebar['rating'].mean()
-            rating_grade = "🟢" if avg_rating >= 4.0 else "🟡" if avg_rating >= 3.0 else "🔴"
-            st.metric("⭐ Customer Satisfaction", f"{avg_rating:.2f}/5.0", 
-                     delta=f"{rating_grade} {get_satisfaction_grade(avg_rating)}")
-            
-            positive_pct = (filtered_for_sidebar['sentiment'].str.contains('Positive', na=False)).sum()/len(filtered_for_sidebar)*100
-            sentiment_trend = "🟢" if positive_pct >= 70 else "🟡" if positive_pct >= 50 else "🔴"
-            st.metric("😊 Brand Sentiment", f"{positive_pct:.1f}%", 
-                     delta=f"{sentiment_trend} Customer Love")
-            
-            trust_pct = (filtered_for_sidebar['fraudFlag'] == 'Legitimate').sum()/len(filtered_for_sidebar)*100
-            trust_grade = "🟢" if trust_pct >= 85 else "🟡" if trust_pct >= 70 else "🔴"
-            st.metric("🔍 Data Integrity", f"{trust_pct:.1f}%", 
-                     delta=f"{trust_grade} Trust Level")
-            
-            business_impact = filtered_for_sidebar['businessImpact'].mean()
-            impact_trend = "🟢" if business_impact >= 1.0 else "🟡" if business_impact >= 0 else "🔴"
-            st.metric("💼 Business Impact", f"{business_impact:.2f}/5.0", 
-                     delta=f"{impact_trend} Revenue Effect")
-            
-            # Data export options
-            st.markdown("---")
-            st.subheader("📥 **Export Options**")
-            
-            # Prepare enhanced export data
-            export_df = filtered_for_sidebar[[
-                'reviewId', 'reviewerName', 'reviewText', 'rating', 'reviewDate',
-                'sentiment', 'sentimentScore', 'sentimentConfidence', 'emotion',
-                'fraudFlag', 'fraudReason', 'fraudScore',
-                'topic', 'customerSegment', 'businessImpact', 'reviewValue',
-                'wordCount', 'reviewLength'
-            ]].copy()
-            
-            csv_data = export_df.to_csv(index=False)
-            st.download_button(
-                label="📄 Complete Dataset",
-                data=csv_data,
-                file_name=f"customer_intelligence_{pd.Timestamp.now().strftime('%Y%m%d_%H%M')}.csv",
-                mime="text/csv",
-                help="Download complete analyzed dataset with all AI insights"
-            )
-            
-            # Executive summary export
-            executive_summary = create_enhanced_executive_summary_with_topics(filtered_for_sidebar)
-            st.download_button(
-                label="📋 Executive Report",
-                data=executive_summary,
-                file_name=f"executive_summary_{pd.Timestamp.now().strftime('%Y%m%d_%H%M')}.md",
-                mime="text/markdown",
-                help="Download C-level summary report for board presentations"
-            )
-    
-    # Enhanced footer
-    st.markdown("---")
-    st.markdown(
-        '<div class="footer">Customer Reviews Intelligence Platform | Created by insights3d - email to aneesh@insights3d.com</div>', 
-        unsafe_allow_html=True
-    )
+        # Enhanced sidebar with quick analytics
+        if st.session_state.processed_data is not None:
+            with st.sidebar:
+                st.markdown("---")
+                st.subheader("📊 **Executive Summary**")
+                
+                df = st.session_state.processed_data
+                filtered_for_sidebar = df if not st.session_state.apply_filters else filtered_df
+                
+                # Key metrics with trend indicators
+                avg_rating = filtered_for_sidebar['rating'].mean()
+                rating_grade = "🟢" if avg_rating >= 4.0 else "🟡" if avg_rating >= 3.0 else "🔴"
+                st.metric("⭐ Customer Satisfaction", f"{avg_rating:.2f}/5.0", 
+                         delta=f"{rating_grade} {get_satisfaction_grade(avg_rating)}")
+                
+                positive_pct = (filtered_for_sidebar['sentiment'].str.contains('Positive', na=False)).sum()/len(filtered_for_sidebar)*100
+                sentiment_trend = "🟢" if positive_pct >= 70 else "🟡" if positive_pct >= 50 else "🔴"
+                st.metric("😊 Brand Sentiment", f"{positive_pct:.1f}%", 
+                         delta=f"{sentiment_trend} Customer Love")
+                
+                trust_pct = (filtered_for_sidebar['fraudFlag'] == 'Legitimate').sum()/len(filtered_for_sidebar)*100
+                trust_grade = "��" if trust_pct >= 85 else "🟡" if trust_pct >= 70 else "🔴"
+                st.metric("🔍 Data Integrity", f"{trust_pct:.1f}%", 
+                         delta=f"{trust_grade} Trust Level")
+                
+                business_impact = filtered_for_sidebar['businessImpact'].mean()
+                impact_trend = "🟢" if business_impact >= 1.0 else "🟡" if business_impact >= 0 else "🔴"
+                st.metric("💼 Business Impact", f"{business_impact:.2f}/5.0", 
+                         delta=f"{impact_trend} Revenue Effect")
+                
+                # Data export options
+                st.markdown("---")
+                st.subheader("📥 **Export Options**")
+                
+                # Prepare enhanced export data
+                export_df = filtered_for_sidebar[[
+                    'reviewId', 'reviewerName', 'reviewText', 'rating', 'reviewDate',
+                    'sentiment', 'sentimentScore', 'sentimentConfidence', 'emotion',
+                    'fraudFlag', 'fraudReason', 'fraudScore',
+                    'topic', 'customerSegment', 'businessImpact', 'reviewValue',
+                    'wordCount', 'reviewLength'
+                ]].copy()
+                
+                csv_data = export_df.to_csv(index=False)
+                st.download_button(
+                    label="📄 Complete Dataset",
+                    data=csv_data,
+                    file_name=f"customer_intelligence_{pd.Timestamp.now().strftime('%Y%m%d_%H%M')}.csv",
+                    mime="text/csv",
+                    help="Download complete analyzed dataset with all AI insights"
+                )
+                
+                # Executive summary export
+                executive_summary = create_enhanced_executive_summary_with_topics(filtered_for_sidebar)
+                st.download_button(
+                    label="📋 Executive Report",
+                    data=executive_summary,
+                    file_name=f"executive_summary_{pd.Timestamp.now().strftime('%Y%m%d_%H%M')}.md",
+                    mime="text/markdown",
+                    help="Download C-level summary report for board presentations"
+                )
+        
+        # Enhanced footer
+        st.markdown("---")
+        st.markdown(
+            '<div class="footer">Customer Reviews Intelligence Platform | Created by insights3d - email to aneesh@insights3d.com</div>', 
+            unsafe_allow_html=True
+        )
 
 if __name__ == "__main__":
     main()
