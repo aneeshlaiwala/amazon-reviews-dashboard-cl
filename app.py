@@ -2834,39 +2834,43 @@ def main():
                         help="Download all suspicious reviews identified by the risk engine."
                     )
             
-            else:
-                # Enhanced onboarding experience
-                st.markdown('<div class="chart-container">', unsafe_allow_html=True)
-                st.markdown("""
-                ### 🚀 **Welcome to Your C-Level Customer Intelligence Platform**
-                
-                **Transform Raw Reviews into Strategic Business Intelligence**
-                
-                This enterprise-grade dashboard converts customer feedback into actionable insights for executive decision making.
-                
-                #### **🎯 What You'll Discover:**
-                - **📊 Executive KPIs:** Customer satisfaction, business impact, and market position metrics
-                - **🧠 AI-Powered Analytics:** Advanced sentiment analysis and topic modeling
-                - **🔍 Fraud Detection:** Sophisticated algorithms to identify suspicious reviews
-                - **💬 Customer Voices:** Strategic verbatims driving business decisions
-                - **🚨 Risk Management:** Enterprise-level threat detection and mitigation
-                - **📈 Competitive Intelligence:** Market positioning and performance benchmarks
-                
-                #### **📋 Required Data Format:**
-                Upload a CSV file containing Amazon reviews with these columns:
-                - Review ID, Reviewer Name, Review Text, Rating (1-5)
-                - Summary, Helpful Votes, Total Votes, Review Date, Year
-                
-                #### **🎨 Advanced Features:**
-                - **3D-Enhanced Visualizations** for premium presentation quality
-                - **Interactive Filtering** with smart controls in the left sidebar
-                - **Word Cloud Analysis** showing customer priority keywords
-                - **Strategic Recommendations** with C-level action items
-                - **Export Capabilities** for board presentations and reports
-                
-                **Ready to unlock your customer intelligence? Upload your dataset to begin the analysis.**
-                """)
-                st.markdown('</div>', unsafe_allow_html=True)
+        #added the new code
+
+                        # Show onboarding experience if no data is loaded
+        if st.session_state.processed_data is None:
+            st.markdown('<div class="chart-container">', unsafe_allow_html=True)
+            st.markdown("""
+            ### 🚀 **Welcome to Your C-Level Customer Intelligence Platform**
+            
+            **Transform Raw Reviews into Strategic Business Intelligence**
+            
+            This enterprise-grade dashboard converts customer feedback into actionable insights for executive decision making.
+            
+            #### **🎯 What You'll Discover:**
+            - **📊 Executive KPIs:** Customer satisfaction, business impact, and market position metrics
+            - **🧠 AI-Powered Analytics:** Advanced sentiment analysis and topic modeling
+            - **🔍 Fraud Detection:** Sophisticated algorithms to identify suspicious reviews
+            - **💬 Customer Voices:** Strategic verbatims driving business decisions
+            - **🚨 Risk Management:** Enterprise-level threat detection and mitigation
+            - **📈 Competitive Intelligence:** Market positioning and performance benchmarks
+            
+            #### **📋 Required Data Format:**
+            Upload a CSV file containing Amazon reviews with these columns:
+            - Review ID, Reviewer Name, Review Text, Rating (1-5)
+            - Summary, Helpful Votes, Total Votes, Review Date, Year
+            
+            #### **🎨 Advanced Features:**
+            - **3D-Enhanced Visualizations** for premium presentation quality
+            - **Interactive Filtering** with smart controls in the left sidebar
+            - **Word Cloud Analysis** showing customer priority keywords
+            - **Strategic Recommendations** with C-level action items
+            - **Export Capabilities** for board presentations and reports
+            
+            **Ready to unlock your customer intelligence? Upload your dataset to begin the analysis.**
+            """)
+            st.markdown('</div>', unsafe_allow_html=True)
+            
+            # added till here
         
         # Enhanced sidebar with quick analytics
         if st.session_state.processed_data is not None:
