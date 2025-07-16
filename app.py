@@ -2264,7 +2264,7 @@ def main():
 
 
             st.markdown("</div>", unsafe_allow_html=True)
-        st.markdown("<div class='chart-container' style='margin-top:1.5rem;'>", unsafe_allow_html=True)
+            st.markdown("<div class='chart-container' style='margin-top:1.5rem;'>", unsafe_allow_html=True)
             for idx, row in top_topics_perf.iterrows():
                 topic = row['Topic']
                 avg_rating = row['Avg Rating']
