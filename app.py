@@ -2210,7 +2210,7 @@ def main():
                     
                     topic_performance = filtered_df.groupby('topic').agg({
                         'rating': 'mean',
-                        'businessImpact': 'mean',a
+                        'businessImpact': 'mean',
                         'sentimentScore': 'mean',
                         'reviewId': 'count'
                     }).round(2).reset_index()
