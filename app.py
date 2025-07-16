@@ -2260,36 +2260,37 @@ def main():
                 )
             else:
                 insight_text = "No topic performance data available."
-            create_chart_with_insights(fig_topics, insight_text)
+                create_chart_with_insights(fig_topics, insight_text)
 
 
-            st.markdown("</div>", unsafe_allow_html=True)
-            st.markdown("<div class='chart-container' style='margin-top:1.5rem;'>", unsafe_allow_html=True)
-            for idx, row in top_topics_perf.iterrows():
-                topic = row['Topic']
-                avg_rating = row['Avg Rating']
-                    business_impact = row['Business Impact']
-                    sentiment_score = row['Sentiment Score']
-                    volume = row['Volume']
-                    # Placeholder for topic description (could be replaced with a lookup or ML summary)
-                    topic_desc = f"<b>{topic}</b>: This topic covers customer feedback related to {topic.lower()}."
-                    # Generate a summary and actionable recommendation
-                    summary = f"<b>Summary:</b> {volume} reviews, Avg Rating: {avg_rating:.2f}, Impact: {business_impact:.2f}, Sentiment Score: {sentiment_score:.2f}."
-                    if avg_rating >= 4.5:
-                        recommendation = "Maintain excellence and leverage this topic in marketing."
-                    elif avg_rating >= 4.0:
-                        recommendation = "Solid performance, but monitor for emerging issues."
-                    elif avg_rating >= 3.5:
-                        recommendation = "Opportunity for improvement; address minor pain points."
-                    else:
-                        recommendation = "Critical area: prioritize improvements and customer outreach."
-                    st.markdown(f"""
-                    <div style='background:linear-gradient(135deg,#f8fafc 0%,#e0e7ef 100%);border-radius:15px;padding:1.2rem 1.5rem;margin-bottom:1rem;box-shadow:0 2px 8px rgba(102,126,234,0.08);'>
-                        <div style='font-size:1.1rem;margin-bottom:0.3rem;'>{topic_desc}</div>
-                        <div style='margin-bottom:0.2rem;'>{summary}</div>
-                        <div style='color:#764ba2;font-weight:600;'>Action: {recommendation}</div>
-                    </div>
-                    """, unsafe_allow_html=True)
+                st.markdown("</div>", unsafe_allow_html=True)
+                st.markdown("<div class='chart-container' style='margin-top:1.5rem;'>", unsafe_allow_html=True)
+            
+                for idx, row in top_topics_perf.iterrows():
+                    topic = row['Topic']
+                    avg_rating = row['Avg Rating']
+                        business_impact = row['Business Impact']
+                        sentiment_score = row['Sentiment Score']
+                        volume = row['Volume']
+                        # Placeholder for topic description (could be replaced with a lookup or ML summary)
+                        topic_desc = f"<b>{topic}</b>: This topic covers customer feedback related to {topic.lower()}."
+                        # Generate a summary and actionable recommendation
+                        summary = f"<b>Summary:</b> {volume} reviews, Avg Rating: {avg_rating:.2f}, Impact: {business_impact:.2f}, Sentiment Score: {sentiment_score:.2f}."
+                        if avg_rating >= 4.5:
+                            recommendation = "Maintain excellence and leverage this topic in marketing."
+                        elif avg_rating >= 4.0:
+                            recommendation = "Solid performance, but monitor for emerging issues."
+                        elif avg_rating >= 3.5:
+                            recommendation = "Opportunity for improvement; address minor pain points."
+                        else:
+                            recommendation = "Critical area: prioritize improvements and customer outreach."
+                        st.markdown(f"""
+                        <div style='background:linear-gradient(135deg,#f8fafc 0%,#e0e7ef 100%);border-radius:15px;padding:1.2rem 1.5rem;margin-bottom:1rem;box-shadow:0 2px 8px rgba(102,126,234,0.08);'>
+                            <div style='font-size:1.1rem;margin-bottom:0.3rem;'>{topic_desc}</div>
+                            <div style='margin-bottom:0.2rem;'>{summary}</div>
+                            <div style='color:#764ba2;font-weight:600;'>Action: {recommendation}</div>
+                        </div>
+                        """, unsafe_allow_html=True)
                 st.markdown("</div>", unsafe_allow_html=True)
         
             # TAB 3: Deep Intelligence
