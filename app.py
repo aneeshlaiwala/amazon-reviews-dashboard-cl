@@ -1286,21 +1286,9 @@ def calculate_business_impact(df):
     
     return impact_scores
 
-# Add a helper to get the sentiment model display name
-
-def get_sentiment_model_display(fallback_info, selected_model):
-    if fallback_info and fallback_info.get('used', False):
-        return f"Fallback used: {fallback_info.get('model', 'Unknown')} (original: {selected_model})"
-    return selected_model
-
-# Update create_chart_with_insights to accept model info and fallback
-
-def create_chart_with_insights(fig, insight_text, sentiment_model=None, fallback_info=None):
+def create_chart_with_insights(fig, insight_text):
     st.plotly_chart(fig, use_container_width=True)
-    model_info = ""
-    if sentiment_model:
-        model_info = f"<br><span style='font-size:0.95em;color:#888;'>Sentiment Model Used: <b>{get_sentiment_model_display(fallback_info, sentiment_model)}</b></span>"
-    st.markdown(f'<div class="insight-box"><div class="insight-title">📊 Key Insight</div> {insight_text}{model_info}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="insight-box"><div class="insight-title">📊 Key Insight</div> {insight_text}</div>', unsafe_allow_html=True)
 
 def extract_sample_verbatims(df):
     positive_reviews = df[
@@ -1774,6 +1762,8 @@ def main():
                 with col1:
                     st.markdown('<div class="chart-container">', unsafe_allow_html=True)
                     st.markdown("<h3 style='text-align:center; margin-bottom:1rem;'>📊 Customer Rating Distribution</h3>", unsafe_allow_html=True)
+                    
+                    # 3D-enhanced rating distribution
                     fig_rating = px.histogram(
                         filtered_df, x='rating', 
                         color_discrete_sequence=['#667eea'],
@@ -1781,6 +1771,8 @@ def main():
                         category_orders={"rating": [1, 2, 3, 4, 5]},
                         title="Customer Rating Distribution"
                     )
+                    
+                    # Enhanced 3D styling
                     fig_rating.update_layout(
                         xaxis_title="Star Rating",
                         yaxis_title="Number of Reviews",
@@ -1808,33 +1800,32 @@ def main():
                             linecolor='rgb(204, 204, 204)'
                         )
                     )
+                    
+                    # Add shadow effect
                     fig_rating.update_traces(
                         marker=dict(
                             line=dict(width=2, color='rgba(102, 126, 234, 0.8)'),
                             opacity=0.8
                         )
                     )
-                    high_satisfaction = (filtered_df['rating'] >= 4).sum() / len(filtered_df) * 100 if len(filtered_df) > 0 else 0
-                    if high_satisfaction > 70:
-                        insight_text = f"**{high_satisfaction:.1f}% customer satisfaction rate**. Outstanding market position."
-                    elif high_satisfaction > 40:
-                        insight_text = f"**{high_satisfaction:.1f}% customer satisfaction rate**. Good, but there is room for improvement."
-                    elif high_satisfaction > 0:
-                        insight_text = f"**{high_satisfaction:.1f}% customer satisfaction rate**. Customer satisfaction is low—immediate action required."
-                    else:
-                        insight_text = "No satisfied customers in the current view. Investigate root causes urgently."
-                    create_chart_with_insights(fig_rating, insight_text, sentiment_model=sentiment_model, fallback_info=getattr(st.session_state, 'fallback_info', None))
+                    
+                    high_satisfaction = (filtered_df['rating'] >= 4).sum() / len(filtered_df) * 100
+                    insight_text = f"**{high_satisfaction:.1f}% customer satisfaction rate** indicates strong market position. Focus on converting 4-star experiences to 5-star loyalty."
+                    
+                    create_chart_with_insights(fig_rating, insight_text)
                     st.markdown('</div>', unsafe_allow_html=True)
                 
                 with col2:
                     st.markdown('<div class="chart-container">', unsafe_allow_html=True)
                     st.markdown("<h3 style='text-align:center; margin-bottom:1rem;'>🛡️ Customer Sentiment Analysis</h3>", unsafe_allow_html=True)
+                    
                     # 3D-enhanced sentiment pie chart
                     sentiment_counts = filtered_df['sentiment'].value_counts()
                     colors = {
                         'Extremely Positive': '#0d7377', 'Very Positive': '#14a085', 'Positive': '#2ca02c',
                         'Neutral': '#ffbb33', 'Negative': '#ff6b6b', 'Very Negative': '#d62728', 'Extremely Negative': '#8b0000'
                     }
+                    
                     fig_sentiment = px.pie(
                         values=sentiment_counts.values, 
                         names=sentiment_counts.index,
@@ -1842,6 +1833,8 @@ def main():
                         color_discrete_map=colors,
                         title="Customer Sentiment Analysis"
                     )
+                    
+                    # Enhanced 3D styling for pie chart
                     fig_sentiment.update_layout(
                         height=450,
                         plot_bgcolor='rgba(0,0,0,0)',
@@ -1858,6 +1851,8 @@ def main():
                             x=1.05
                         )
                     )
+                    
+                    # Add 3D effect to pie slices
                     fig_sentiment.update_traces(
                         textposition='inside',
                         textinfo='percent+label',
@@ -1866,19 +1861,14 @@ def main():
                         ),
                         pull=[0.1 if 'Positive' in name else 0 for name in sentiment_counts.index]
                     )
+                    
                     brand_advocates = sentiment_counts.get('Extremely Positive', 0) + sentiment_counts.get('Very Positive', 0)
                     detractors = sentiment_counts.get('Very Negative', 0) + sentiment_counts.get('Extremely Negative', 0)
-                    nps_proxy = (brand_advocates - detractors) / len(filtered_df) * 100 if len(filtered_df) > 0 else 0
-                    # Dynamic insight text
-                    if nps_proxy > 50:
-                        insight_text = f"**Net Promoter Score: {nps_proxy:.1f}%** - {brand_advocates:,} brand advocates vs {detractors:,} detractors. Outstanding customer loyalty."
-                    elif nps_proxy > 0:
-                        insight_text = f"**Net Promoter Score: {nps_proxy:.1f}%** - {brand_advocates:,} brand advocates vs {detractors:,} detractors. Customer loyalty is positive, but there is room for improvement."
-                    elif nps_proxy == 0:
-                        insight_text = f"**Net Promoter Score: {nps_proxy:.1f}%** - {brand_advocates:,} brand advocates vs {detractors:,} detractors. Customer loyalty is neutral. Monitor for shifts."
-                    else:
-                        insight_text = f"**Net Promoter Score: {nps_proxy:.1f}%** - {brand_advocates:,} brand advocates vs {detractors:,} detractors. Customer loyalty is at risk. Immediate action is required to address negative feedback."
-                    create_chart_with_insights(fig_sentiment, insight_text, sentiment_model=sentiment_model, fallback_info=getattr(st.session_state, 'fallback_info', None))
+                    nps_proxy = (brand_advocates - detractors) / len(filtered_df) * 100
+                    
+                    insight_text = f"**Net Promoter Score: {nps_proxy:.1f}%** - {brand_advocates:,} brand advocates vs {detractors:,} detractors. Excellent customer loyalty foundation."
+                    
+                    create_chart_with_insights(fig_sentiment, insight_text)
                     st.markdown('</div>', unsafe_allow_html=True)
                 
                 # Word Cloud Section
@@ -2011,14 +2001,8 @@ def main():
                 st.markdown("<h3 style='text-align:center; margin-bottom:1rem;'>📊 Business Impact Score Penetration</h3>", unsafe_allow_html=True)
                 st.plotly_chart(fig_impact, use_container_width=True)
                 top_cat = impact_labels[impact_counts.argmax()]
-                if impact_counts.max() > 50:
-                    summary = f"Majority of reviews ({impact_counts.max():.1f}%) are <b>{top_cat}</b>. Strong business impact in this category."
-                elif impact_counts.max() > 20:
-                    summary = f"Significant portion ({impact_counts.max():.1f}%) are <b>{top_cat}</b>. Monitor for shifts in impact."
-                else:
-                    summary = f"Impact is distributed. No dominant category. Monitor for emerging trends."
-                model_info = f"<br><span style='font-size:0.95em;color:#888;'>Sentiment Model Used: <b>{get_sentiment_model_display(getattr(st.session_state, 'fallback_info', None), sentiment_model)}</b></span>"
-                st.markdown(f"<div class='insight-box'><div class='insight-title'>🔑 Executive Summary</div> {summary}{model_info}</div>", unsafe_allow_html=True)
+                summary = f"Most reviews ({impact_counts.max():.1f}%) fall into the <b>{top_cat}</b> category. Focus on leveraging strengths and addressing weaknesses for optimal business outcomes."
+                st.markdown(f"<div class='insight-box'><div class='insight-title'>🔑 Executive Summary</div> {summary}</div>", unsafe_allow_html=True)
                 st.markdown('</div>', unsafe_allow_html=True)
             
             # TAB 2: Strategic Analytics
@@ -2465,9 +2449,9 @@ def main():
                 st.markdown("*Authentic customer feedback driving strategic decisions*")
                 
                 # Always dynamically select top 5 positive and negative verbatims from filtered_df
-                positive_verbatims = filtered_df[(filtered_df['sentiment'].str.contains('Positive')) & (filtered_df['fraudFlag'] == 'Legitimate')]
+                positive_verbatims = filtered_df[(filtered_df['rating'] == 5) & (filtered_df['sentiment'].str.contains('Positive'))]
                 positive_verbatims = positive_verbatims.nlargest(5, 'businessImpact') if len(positive_verbatims) > 0 else pd.DataFrame()
-                negative_verbatims = filtered_df[(filtered_df['sentiment'].str.contains('Negative')) & (filtered_df['fraudFlag'] == 'Legitimate')]
+                negative_verbatims = filtered_df[(filtered_df['rating'] == 1) & (filtered_df['sentiment'].str.contains('Negative'))]
                 negative_verbatims = negative_verbatims.nsmallest(5, 'businessImpact') if len(negative_verbatims) > 0 else pd.DataFrame()
                 
                 col1, col2 = st.columns(2)
