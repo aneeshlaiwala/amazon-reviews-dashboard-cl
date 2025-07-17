@@ -990,7 +990,7 @@ def create_business_topic_label(key_words):
     else:
         return "General Product Discussion"
 
-def create_executive_summary(df):
+def create_executive_summary(filtered_df):
     total_reviews = len(df)
     avg_rating = df['rating'].mean()
     
@@ -1040,7 +1040,7 @@ def create_executive_summary(df):
     
     return summary
 
-def create_enhanced_executive_summary_with_topics(df):
+def create_enhanced_executive_summary_with_topics(filtered_df):
     """Create a comprehensive executive summary with strategic insights"""
     total_reviews = len(df)
     avg_rating = df['rating'].mean()
@@ -1387,7 +1387,7 @@ def generate_wordcloud(df):
     except:
         return None
 
-def generate_executive_summary_card(df):
+def generate_executive_summary_card(filtered_df):
     total_reviews = len(df)
     avg_rating = df['rating'].mean()
     sentiment_dist = df['sentiment'].value_counts(normalize=True) * 100
@@ -1594,7 +1594,11 @@ def main():
             
             # TAB 1: Executive Dashboard
             with tab1:
+                if filtered_df.empty:
+                    st.warning('⚠️ No data matches the applied filters. Please adjust your criteria.')
+                    st.stop()
                 # Enhanced Executive Summary
+                st.markdown('<div class="active-filters">📌 <b>Note:</b> The insights below reflect only the filtered dataset.</div>', unsafe_allow_html=True)
                 st.markdown(generate_executive_summary_card(filtered_df), unsafe_allow_html=True)
 
                 # --- Business Impact Score Penetration Trend (Time Series) ---
