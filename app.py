@@ -1497,16 +1497,16 @@ def main():
                 st.markdown('<div class="filter-section">', unsafe_allow_html=True)
                 st.markdown('<span class="filter-label">⭐ Rating Filter</span>', unsafe_allow_html=True)
                 rating_filter = st.multiselect("", 
-                                              sorted(df['rating'].unique()), 
-                                              default=sorted(df['rating'].unique()),
+                                              sorted(st.session_state.processed_data['rating'].unique()), 
+                                              default=sorted(st.session_state.processed_data['rating'].unique()),
                                               key="rating_filter")
                 st.markdown('</div>', unsafe_allow_html=True)
                 
                 st.markdown('<div class="filter-section">', unsafe_allow_html=True)
                 st.markdown('<span class="filter-label">😊 Sentiment Filter</span>', unsafe_allow_html=True)
                 sentiment_filter = st.multiselect("", 
-                                                 df['sentiment'].unique(), 
-                                                 default=df['sentiment'].unique(),
+                                                 st.session_state.processed_data['sentiment'].unique(), 
+                                                 default=st.session_state.processed_data['sentiment'].unique(),
                                                  key="sentiment_filter")
                 st.markdown('</div>', unsafe_allow_html=True)
                 
@@ -1520,8 +1520,8 @@ def main():
                 st.markdown('<div class="filter-section">', unsafe_allow_html=True)
                 st.markdown('<span class="filter-label">👥 Customer Segments</span>', unsafe_allow_html=True)
                 segment_filter = st.multiselect("", 
-                                               df['customerSegment'].unique(), 
-                                               default=df['customerSegment'].unique(),
+                                               st.session_state.processed_data['customerSegment'].unique(), 
+                                               default=st.session_state.processed_data['customerSegment'].unique(),
                                                key="segment_filter")
                 st.markdown('</div>', unsafe_allow_html=True)
                 
