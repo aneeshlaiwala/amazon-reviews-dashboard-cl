@@ -15,12 +15,13 @@ import warnings
 warnings.filterwarnings('ignore')
 
 # Try to import optional dependencies with fallbacks
+# Try to import optional dependencies with fallbacks
 try:
-from wordcloud import WordCloud
-import matplotlib.pyplot as plt
-WORDCLOUD_AVAILABLE = True
+    from wordcloud import WordCloud
+    import matplotlib.pyplot as plt
+    WORDCLOUD_AVAILABLE = True
 except ImportError:
-WORDCLOUD_AVAILABLE = False
+    WORDCLOUD_AVAILABLE = False
 
 try:
 import nltk
