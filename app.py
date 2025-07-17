@@ -1497,10 +1497,12 @@ def main():
                 
         st.markdown('<div class="filter-section">', unsafe_allow_html=True)
         st.markdown('<span class="filter-label">⭐ Rating Filter</span>', unsafe_allow_html=True)
-        rating_filter = st.multiselect("", 
+        if st.session_state.processed_data is not None:
+            rating_filter = st.multiselect("", 
         sorted(st.session_state.processed_data['rating'].unique()), 
         default=sorted(st.session_state.processed_data['rating'].unique()),
-        key="rating_filter")
+        if st.session_state.processed_data is not None:
+            key="rating_filter")
                 st.markdown('</div>', unsafe_allow_html=True)
                 
                 st.markdown('<div class="filter-section">', unsafe_allow_html=True)
@@ -1562,9 +1564,10 @@ def main():
         # Apply filters only when button is clicked
         if st.session_state.apply_filters:
         filtered_df = df[
-        (df['rating'].isin(rating_filter)) & 
-        (df['sentiment'].isin(sentiment_filter)) &
-        (df['customerSegment'].isin(segment_filter)) &
+        if st.session_state.processed_data is not None:
+            (df['rating'].isin(rating_filter)) & 
+            (df['sentiment'].isin(sentiment_filter)) &
+            (df['customerSegment'].isin(segment_filter)) &
         (df['businessImpact'] >= min_impact) &
         (df['sentimentConfidence'] >= min_confidence)
         ]
