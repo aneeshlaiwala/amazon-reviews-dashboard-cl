@@ -1498,34 +1498,74 @@ def main():
         st.markdown('<div class="filter-section">', unsafe_allow_html=True)
         st.markdown('<span class="filter-label">⭐ Rating Filter</span>', unsafe_allow_html=True)
         if st.session_state.processed_data is not None:
-            rating_filter = st.multiselect("", 
+        if st.session_state.processed_data is not None:
+            rating_filter = st.multiselect(
+                "",
+                sorted(st.session_state.processed_data['rating'].unique()),
+                default=sorted(st.session_state.processed_data['rating'].unique()),
+                key="rating_filter"
+            )
         sorted(st.session_state.processed_data['rating'].unique()), 
         default=sorted(st.session_state.processed_data['rating'].unique()),
         if st.session_state.processed_data is not None:
-            key="rating_filter")
+        if st.session_state.processed_data is not None:
+            rating_filter = st.multiselect(
+                "",
+                sorted(st.session_state.processed_data['rating'].unique()),
+                default=sorted(st.session_state.processed_data['rating'].unique()),
+                key="rating_filter"
+            )
                 st.markdown('</div>', unsafe_allow_html=True)
                 
                 st.markdown('<div class="filter-section">', unsafe_allow_html=True)
                 st.markdown('<span class="filter-label">😊 Sentiment Filter</span>', unsafe_allow_html=True)
-                sentiment_filter = st.multiselect("", 
+            sentiment_filter = st.multiselect(
+                "",
+                st.session_state.processed_data['sentiment'].unique(),
+                default=st.session_state.processed_data['sentiment'].unique(),
+                key="sentiment_filter"
+            )
                                                  st.session_state.processed_data['sentiment'].unique(), 
                                                  default=st.session_state.processed_data['sentiment'].unique(),
-                                                 key="sentiment_filter")
+            sentiment_filter = st.multiselect(
+                "",
+                st.session_state.processed_data['sentiment'].unique(),
+                default=st.session_state.processed_data['sentiment'].unique(),
+                key="sentiment_filter"
+            )
                 st.markdown('</div>', unsafe_allow_html=True)
                 
                 st.markdown('<div class="filter-section">', unsafe_allow_html=True)
                 st.markdown('<span class="filter-label">🔍 Trust Level</span>', unsafe_allow_html=True)
-                trust_filter = st.selectbox("", 
+            trust_filter = st.selectbox(
+                "",
+                ['All Reviews', 'Trusted Only', 'Suspicious Only', 'High Risk Only'],
+                key="trust_filter"
+            )
                                            ['All Reviews', 'Trusted Only', 'Suspicious Only', 'High Risk Only'],
-                                           key="trust_filter")
+            trust_filter = st.selectbox(
+                "",
+                ['All Reviews', 'Trusted Only', 'Suspicious Only', 'High Risk Only'],
+                key="trust_filter"
+            )
                 st.markdown('</div>', unsafe_allow_html=True)
                 
                 st.markdown('<div class="filter-section">', unsafe_allow_html=True)
                 st.markdown('<span class="filter-label">👥 Customer Segments</span>', unsafe_allow_html=True)
-                segment_filter = st.multiselect("", 
+            segment_filter = st.multiselect(
+                "",
+                st.session_state.processed_data['customerSegment'].unique(),
+                default=st.session_state.processed_data['customerSegment'].unique(),
+                key="segment_filter"
+            )
                                                st.session_state.processed_data['customerSegment'].unique(), 
                                                default=st.session_state.processed_data['customerSegment'].unique(),
-                                               key="segment_filter")
+            segment_filter = st.multiselect(
+                "",
+                st.session_state.processed_data['customerSegment'].unique(),
+                default=st.session_state.processed_data['customerSegment'].unique(),
+                key="segment_filter"
+            )
                 st.markdown('</div>', unsafe_allow_html=True)
                 
                 st.markdown('<div class="filter-section">', unsafe_allow_html=True)
@@ -1534,12 +1574,22 @@ def main():
                                       float(df['businessImpact'].min()), 
                                       float(df['businessImpact'].max()), 
                                       float(df['businessImpact'].min()),
-                                      key="impact_filter")
+            min_impact = st.slider(
+                "",
+                float(st.session_state.processed_data['businessImpact'].min()),
+                float(st.session_state.processed_data['businessImpact'].max()),
+                float(st.session_state.processed_data['businessImpact'].min()),
+                key="impact_filter"
+            )
                 st.markdown('</div>', unsafe_allow_html=True)
                 
                 st.markdown('<div class="filter-section">', unsafe_allow_html=True)
                 st.markdown('<span class="filter-label">🎯 Confidence Level</span>', unsafe_allow_html=True)
-                min_confidence = st.slider("", 0.0, 1.0, 0.0, 0.1, key="confidence_filter")
+            min_confidence = st.slider(
+                "",
+                0.0, 1.0, 0.0, 0.1,
+                key="confidence_filter"
+            )
                 st.markdown('</div>', unsafe_allow_html=True)
                 
                 # Filter action buttons
@@ -1565,18 +1615,46 @@ def main():
         if st.session_state.apply_filters:
         filtered_df = df[
         if st.session_state.processed_data is not None:
-            (df['rating'].isin(rating_filter)) & 
-            (df['sentiment'].isin(sentiment_filter)) &
-            (df['customerSegment'].isin(segment_filter)) &
+        if st.session_state.processed_data is not None:
+            rating_filter = st.multiselect(
+                "",
+                sorted(st.session_state.processed_data['rating'].unique()),
+                default=sorted(st.session_state.processed_data['rating'].unique()),
+                key="rating_filter"
+            )
+            sentiment_filter = st.multiselect(
+                "",
+                st.session_state.processed_data['sentiment'].unique(),
+                default=st.session_state.processed_data['sentiment'].unique(),
+                key="sentiment_filter"
+            )
+            segment_filter = st.multiselect(
+                "",
+                st.session_state.processed_data['customerSegment'].unique(),
+                default=st.session_state.processed_data['customerSegment'].unique(),
+                key="segment_filter"
+            )
         (df['businessImpact'] >= min_impact) &
         (df['sentimentConfidence'] >= min_confidence)
         ]
                 
-        if trust_filter == 'Trusted Only':
+            trust_filter = st.selectbox(
+                "",
+                ['All Reviews', 'Trusted Only', 'Suspicious Only', 'High Risk Only'],
+                key="trust_filter"
+            )
         filtered_df = filtered_df[filtered_df['fraudFlag'] == 'Legitimate']
-        elif trust_filter == 'Suspicious Only':
+            trust_filter = st.selectbox(
+                "",
+                ['All Reviews', 'Trusted Only', 'Suspicious Only', 'High Risk Only'],
+                key="trust_filter"
+            )
         filtered_df = filtered_df[filtered_df['fraudFlag'].isin(['Low Risk', 'Medium Risk'])]
-        elif trust_filter == 'High Risk Only':
+            trust_filter = st.selectbox(
+                "",
+                ['All Reviews', 'Trusted Only', 'Suspicious Only', 'High Risk Only'],
+                key="trust_filter"
+            )
         filtered_df = filtered_df[filtered_df['fraudFlag'] == 'High Risk']
         else:
         filtered_df = df
