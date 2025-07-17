@@ -1387,20 +1387,20 @@ def generate_wordcloud(df):
     except:
         return None
 
-def generate_executive_summary_card(filtered_df):
-    total_reviews = len(df)
-    avg_rating = df['rating'].mean()
-    sentiment_dist = df['sentiment'].value_counts(normalize=True) * 100
-    high_risk_rate = (df['fraudFlag'] == 'High Risk').sum() / total_reviews * 100
-    medium_risk_rate = (df['fraudFlag'] == 'Medium Risk').sum() / total_reviews * 100
+def generate_executive_summary_card(filtered_filtered_df):
+    total_reviews = len(filtered_df)
+    avg_rating = filtered_df['rating'].mean()
+    sentiment_dist = filtered_df['sentiment'].value_counts(normalize=True) * 100
+    high_risk_rate = (filtered_df['fraudFlag'] == 'High Risk').sum() / total_reviews * 100
+    medium_risk_rate = (filtered_df['fraudFlag'] == 'Medium Risk').sum() / total_reviews * 100
     total_risk_rate = high_risk_rate + medium_risk_rate
-    recent_reviews = df[df['reviewDate'] > df['reviewDate'].max() - pd.Timedelta(days=90)]
+    recent_reviews = filtered_df[filtered_df['reviewDate'] > filtered_df['reviewDate'].max() - pd.Timedelta(days=90)]
     recent_avg_rating = recent_reviews['rating'].mean() if len(recent_reviews) > 0 else avg_rating
     rating_trend = "📈 Improving" if recent_avg_rating > avg_rating else "📉 Declining" if recent_avg_rating < avg_rating else "➡️ Stable"
-    detailed_reviews = df[df['wordCount'] > 50]
+    detailed_reviews = filtered_df[filtered_df['wordCount'] > 50]
     engagement_rate = len(detailed_reviews) / total_reviews * 100
     brand_health_score = int((avg_rating / 5.0) * 40 + (sentiment_dist.get('Extremely Positive', 0) + sentiment_dist.get('Very Positive', 0) + sentiment_dist.get('Positive', 0)) * 0.4 + (100 - total_risk_rate) * 0.2)
-    top_topics = df['topic'].value_counts().head(3).index.tolist()
+    top_topics = filtered_df['topic'].value_counts().head(3).index.tolist()
     actionable_insight = (
         f"Focus on <b>{top_topics[0]}</b> and <b>{top_topics[1]}</b> to maximize customer satisfaction. "
         f"Monitor <b>{top_topics[2]}</b> for emerging issues. "
