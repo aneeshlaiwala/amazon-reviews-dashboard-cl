@@ -1496,10 +1496,15 @@ def main():
                 
                 st.markdown('<div class="filter-section">', unsafe_allow_html=True)
                 st.markdown('<span class="filter-label">⭐ Rating Filter</span>', unsafe_allow_html=True)
-                rating_filter = st.multiselect("", 
-                                              sorted(df['rating'].unique()), 
-                                              default=sorted(df['rating'].unique()),
-                                              key="rating_filter")
+                
+                df['rating'] = pd.to_numeric(df['rating'], errors='coerce')
+                ratings = sorted([r for r in df['rating'].unique() if pd.notna(r)])
+                rating_filter = st.multiselect(
+                    "",
+                    ratings,
+                    default=ratings,
+                    key="rating_filter"
+                
                 st.markdown('</div>', unsafe_allow_html=True)
                 
                 st.markdown('<div class="filter-section">', unsafe_allow_html=True)
