@@ -1504,7 +1504,7 @@ def main():
                     ratings,
                     default=ratings,
                     key="rating_filter"
-                
+                )
                 st.markdown('</div>', unsafe_allow_html=True)
                 
                 st.markdown('<div class="filter-section">', unsafe_allow_html=True)
